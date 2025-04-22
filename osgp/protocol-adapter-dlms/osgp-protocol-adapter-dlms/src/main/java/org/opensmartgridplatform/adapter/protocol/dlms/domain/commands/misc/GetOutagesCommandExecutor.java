@@ -27,7 +27,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesReques
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -38,7 +37,6 @@ public class GetOutagesCommandExecutor
   private final DataObjectToOutageListConverter dataObjectToOutageListConverter;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public GetOutagesCommandExecutor(
       final DataObjectToOutageListConverter dataObjectToOutageListConverter,
       final ObjectConfigServiceHelper objectConfigServiceHelper) {

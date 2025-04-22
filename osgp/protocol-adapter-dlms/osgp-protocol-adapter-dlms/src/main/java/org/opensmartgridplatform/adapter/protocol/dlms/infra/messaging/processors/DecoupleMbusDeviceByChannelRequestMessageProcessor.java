@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDevi
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DecoupleMbusDeviceByChannelRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private InstallationService installationService;
+  private final InstallationService installationService;
 
-  protected DecoupleMbusDeviceByChannelRequestMessageProcessor() {
+  protected DecoupleMbusDeviceByChannelRequestMessageProcessor(
+      final InstallationService installationService) {
     super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
+    this.installationService = installationService;
   }
 
   @Override

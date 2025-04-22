@@ -13,7 +13,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptio
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing the get M-Bus encryption keys status request message */
@@ -21,10 +20,12 @@ import org.springframework.stereotype.Component;
 public class GetMbusEncryptionKeyStatusRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public GetMbusEncryptionKeyStatusRequestMessageProcessor() {
+  public GetMbusEncryptionKeyStatusRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
+    this.configurationService = configurationService;
   }
 
   @Override

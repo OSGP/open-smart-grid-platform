@@ -32,7 +32,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,7 +41,6 @@ public class ConfigureDefinableLoadProfileCommandExecutor
   private final MapperFacade configurationMapper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public ConfigureDefinableLoadProfileCommandExecutor(
       final MapperFacade configurationMapper,
       final ObjectConfigServiceHelper objectConfigServiceHelper) {

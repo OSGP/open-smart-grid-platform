@@ -15,7 +15,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -26,9 +25,13 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageSender.class);
 
-  @Autowired
-  @Qualifier("protocolDlmsOutboundOsgpCoreResponsesJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
+
+  public DeviceResponseMessageSender(
+      @Qualifier("protocolDlmsOutboundOsgpCoreResponsesJmsTemplate")
+          final JmsTemplate jmsTemplate) {
+    this.jmsTemplate = jmsTemplate;
+  }
 
   @Override
   public void send(final ResponseMessage responseMessage) {

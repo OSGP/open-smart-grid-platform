@@ -13,7 +13,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnC
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,10 +22,11 @@ public class GetMBusDeviceOnChannelCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetMBusDeviceOnChannelCommandExecutor.class);
 
-  @Autowired private DeviceChannelsHelper deviceChannelsHelper;
+  private final DeviceChannelsHelper deviceChannelsHelper;
 
-  public GetMBusDeviceOnChannelCommandExecutor() {
+  public GetMBusDeviceOnChannelCommandExecutor(final DeviceChannelsHelper deviceChannelsHelper) {
     super(GetMBusDeviceOnChannelRequestDataDto.class);
+    this.deviceChannelsHelper = deviceChannelsHelper;
   }
 
   @Override

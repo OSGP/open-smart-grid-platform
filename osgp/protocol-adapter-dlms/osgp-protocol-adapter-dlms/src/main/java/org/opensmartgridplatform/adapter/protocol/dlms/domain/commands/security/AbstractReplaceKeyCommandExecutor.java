@@ -29,8 +29,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -38,13 +36,9 @@ import org.springframework.stereotype.Component;
 public abstract class AbstractReplaceKeyCommandExecutor<T>
     extends AbstractCommandExecutor<T, ActionResponseDto> {
 
-  @Autowired private SecretManagementService secretManagementService;
-
-  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
-
-  @Autowired
-  @Qualifier("decrypterForGxfSmartMetering")
-  private RsaEncrypter decrypterForGxfSmartMetering;
+  private final SecretManagementService secretManagementService;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
+  private final RsaEncrypter decrypterForGxfSmartMetering;
 
   private static final Long INVOCATION_COUNTER_AFTER_KEY_CHANGE = 250L;
 
@@ -54,8 +48,15 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
    * @param clazz the class of the ActionRequestDto subtype for which this CommandExecutor needs to
    *     be called.
    */
-  public AbstractReplaceKeyCommandExecutor(final Class<? extends ActionRequestDto> clazz) {
+  public AbstractReplaceKeyCommandExecutor(
+      final Class<? extends ActionRequestDto> clazz,
+      final SecretManagementService secretManagementService,
+      final DlmsDeviceRepository dlmsDeviceRepository,
+      final RsaEncrypter decrypterForGxfSmartMetering) {
     super(clazz);
+    this.secretManagementService = secretManagementService;
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
+    this.decrypterForGxfSmartMetering = decrypterForGxfSmartMetering;
   }
 
   protected ActionResponseDto replaceKeys(

@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityP
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Power Quality Profile request messages. */
 @Component
 public class GetPowerQualityProfileRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private MonitoringService monitoringService;
+  private final MonitoringService monitoringService;
 
-  public GetPowerQualityProfileRequestMessageProcessor() {
+  public GetPowerQualityProfileRequestMessageProcessor(final MonitoringService monitoringService) {
     super(MessageType.GET_PROFILE_GENERIC_DATA);
+    this.monitoringService = monitoringService;
   }
 
   @Override

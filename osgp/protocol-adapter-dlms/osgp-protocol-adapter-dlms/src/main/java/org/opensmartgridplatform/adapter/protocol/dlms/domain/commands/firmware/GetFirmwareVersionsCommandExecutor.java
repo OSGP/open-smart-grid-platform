@@ -31,7 +31,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionR
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -48,7 +47,6 @@ public class GetFirmwareVersionsCommandExecutor
   private final DlmsHelper dlmsHelper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public GetFirmwareVersionsCommandExecutor(
       final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(GetFirmwareVersionRequestDto.class);

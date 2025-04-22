@@ -20,7 +20,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyBy
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,12 +39,16 @@ import org.springframework.stereotype.Component;
 public class SetMbusUserKeyByChannelCommandExecutor
     extends AbstractCommandExecutor<SetKeyOnGMeterRequestDto, MethodResultCode> {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  @Autowired private SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor;
+  private final SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor;
 
-  public SetMbusUserKeyByChannelCommandExecutor() {
+  public SetMbusUserKeyByChannelCommandExecutor(
+      final ConfigurationService configurationService,
+      final SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor) {
     super(SetMbusUserKeyByChannelRequestDataDto.class);
+    this.configurationService = configurationService;
+    this.setKeyOnGMeterCommandExecutor = setKeyOnGMeterCommandExecutor;
   }
 
   @Override

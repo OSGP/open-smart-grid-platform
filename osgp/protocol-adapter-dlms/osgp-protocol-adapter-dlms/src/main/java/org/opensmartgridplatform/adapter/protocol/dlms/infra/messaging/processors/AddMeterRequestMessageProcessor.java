@@ -12,17 +12,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDev
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing add meter request messages */
 @Component
 public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private InstallationService installationService;
+  private final InstallationService installationService;
 
-  public AddMeterRequestMessageProcessor() {
+  public AddMeterRequestMessageProcessor(final InstallationService installationService) {
     super(MessageType.ADD_METER);
+    this.installationService = installationService;
   }
 
   @Override

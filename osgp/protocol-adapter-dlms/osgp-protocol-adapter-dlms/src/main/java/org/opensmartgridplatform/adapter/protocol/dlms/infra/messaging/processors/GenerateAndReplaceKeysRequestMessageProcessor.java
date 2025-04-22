@@ -12,16 +12,17 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GenerateAndReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public GenerateAndReplaceKeysRequestMessageProcessor() {
+  public GenerateAndReplaceKeysRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.GENERATE_AND_REPLACE_KEYS);
+    this.configurationService = configurationService;
   }
 
   @Override

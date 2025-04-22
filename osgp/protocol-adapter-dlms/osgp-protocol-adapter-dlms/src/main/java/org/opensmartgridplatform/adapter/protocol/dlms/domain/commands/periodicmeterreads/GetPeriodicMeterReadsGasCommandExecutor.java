@@ -39,7 +39,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -66,7 +65,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
   private final DlmsHelper dlmsHelper;
 
-  @Autowired
   public GetPeriodicMeterReadsGasCommandExecutor(
       final DlmsHelper dlmsHelper,
       final AmrProfileStatusCodeHelper amrProfileStatusCodeHelper,

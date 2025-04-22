@@ -23,7 +23,6 @@ import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetThdConfigurationRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -34,7 +33,6 @@ public class SetThdConfigurationCommandExecutor
   private final DlmsHelper dlmsHelper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public SetThdConfigurationCommandExecutor(
       final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(SetThdConfigurationRequestDto.class);

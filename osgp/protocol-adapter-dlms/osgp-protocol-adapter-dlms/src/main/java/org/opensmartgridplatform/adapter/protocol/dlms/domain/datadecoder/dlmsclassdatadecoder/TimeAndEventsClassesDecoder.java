@@ -15,7 +15,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
 import org.opensmartgridplatform.dlms.enums.ClockBase;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusBitDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -31,7 +30,6 @@ public class TimeAndEventsClassesDecoder {
   private final DlmsHelper dlmsHelper;
   private final BasicDlmsDataDecoder basicDlmsDataDecoder;
 
-  @Autowired
   public TimeAndEventsClassesDecoder(
       final DlmsHelper dlmsHelper, final BasicDlmsDataDecoder basicDlmsDataDecoder) {
     this.dlmsHelper = dlmsHelper;

@@ -17,7 +17,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -33,7 +32,6 @@ public class DlmsConnectionFactory {
   private final Lls0Connector lls0Connector;
   private final DomainHelperService domainHelperService;
 
-  @Autowired
   public DlmsConnectionFactory(
       final Hls5Connector hls5Connector,
       final Lls1Connector lls1Connector,

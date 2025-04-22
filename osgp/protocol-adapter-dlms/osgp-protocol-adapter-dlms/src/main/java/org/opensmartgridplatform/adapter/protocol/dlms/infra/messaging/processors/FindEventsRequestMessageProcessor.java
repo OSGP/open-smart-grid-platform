@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing find events request messages */
 @Component
 public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  public FindEventsRequestMessageProcessor() {
+  public FindEventsRequestMessageProcessor(final ManagementService managementService) {
     super(MessageType.FIND_EVENTS);
+    this.managementService = managementService;
   }
 
   @Override

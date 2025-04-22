@@ -13,16 +13,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnostic
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetGsmDiagnosticRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  protected GetGsmDiagnosticRequestMessageProcessor() {
+  protected GetGsmDiagnosticRequestMessageProcessor(final ManagementService managementService) {
     super(MessageType.GET_GSM_DIAGNOSTIC);
+    this.managementService = managementService;
   }
 
   @Override

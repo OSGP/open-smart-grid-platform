@@ -42,6 +42,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class BundleMessageProcessorTest {
@@ -77,6 +78,20 @@ class BundleMessageProcessorTest {
   void setUp() throws OsgpException, JMSException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     this.messageMetadata = MessageMetadata.fromMessage(this.message);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "throttlingService", this.throttlingService);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "responseMessageSender", this.responseMessageSender);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "retryHeaderFactory", this.retryHeaderFactory);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "messagePriorityHandler", this.messagePriorityHandler);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "osgpExceptionConverter", this.osgpExceptionConverter);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "domainHelperService", this.domainHelperService);
+    ReflectionTestUtils.setField(
+        this.messageProcessor, "dlmsConnectionHelper", this.dlmsConnectionHelper);
   }
 
   @Test

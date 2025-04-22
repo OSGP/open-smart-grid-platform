@@ -17,17 +17,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing find events request messages */
 @Component
 public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private BundleService bundleService;
+  private final BundleService bundleService;
 
-  public BundleMessageProcessor() {
+  public BundleMessageProcessor(final BundleService bundleService) {
     super(MessageType.HANDLE_BUNDLED_ACTIONS);
+    this.bundleService = bundleService;
   }
 
   @Override

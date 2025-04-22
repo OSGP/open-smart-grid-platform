@@ -18,17 +18,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupUdpR
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing set push setup udp request messages */
 @Component
 public class SetPushSetupUdpRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetPushSetupUdpRequestMessageProcessor() {
+  public SetPushSetupUdpRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.SET_PUSH_SETUP_UDP);
+    this.configurationService = configurationService;
   }
 
   @Override

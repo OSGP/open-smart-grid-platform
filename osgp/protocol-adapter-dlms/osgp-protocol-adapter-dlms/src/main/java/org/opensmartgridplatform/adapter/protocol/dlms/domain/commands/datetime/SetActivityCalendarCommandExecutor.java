@@ -34,7 +34,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -58,7 +57,6 @@ public class SetActivityCalendarCommandExecutor
 
   private final ObjectConfigService objectConfigService;
 
-  @Autowired
   public SetActivityCalendarCommandExecutor(
       final DlmsHelper dlmsHelper,
       final SetActivityCalendarCommandActivationExecutor

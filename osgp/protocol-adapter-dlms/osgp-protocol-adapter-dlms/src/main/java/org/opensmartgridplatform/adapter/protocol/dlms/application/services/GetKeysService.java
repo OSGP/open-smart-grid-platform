@@ -16,7 +16,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,6 @@ public class GetKeysService {
   private final SecretManagementService secretManagementService;
   private final RsaEncrypter encrypterForGxfSmartMetering;
 
-  @Autowired
   public GetKeysService(
       final SecretManagementService secretManagementService,
       @Qualifier(value = "encrypterForGxfSmartMetering")

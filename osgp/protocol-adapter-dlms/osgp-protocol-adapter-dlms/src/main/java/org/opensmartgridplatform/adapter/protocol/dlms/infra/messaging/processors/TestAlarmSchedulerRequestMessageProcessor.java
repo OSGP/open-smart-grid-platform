@@ -13,17 +13,17 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing TestAlarm Schedule request messages */
 @Component
 public class TestAlarmSchedulerRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  public TestAlarmSchedulerRequestMessageProcessor() {
+  public TestAlarmSchedulerRequestMessageProcessor(final AdhocService adhocService) {
     super(MessageType.SCHEDULE_TEST_ALARM);
+    this.adhocService = adhocService;
   }
 
   @Override

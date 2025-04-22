@@ -14,17 +14,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  protected UpdateFirmwareRequestMessageProcessor() {
+  protected UpdateFirmwareRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.UPDATE_FIRMWARE);
+    this.configurationService = configurationService;
   }
 
   @Override

@@ -40,10 +40,6 @@ public class FindCommunicationEventsReads extends AbstractFindEventsReads {
         FindCommunicationEventsReads.class.getSimpleName());
   }
 
-  @Then("^communication events should be returned$")
-  @Override
-  public void eventsShouldBeReturned(final Map<String, String> settings) throws Throwable {}
-
   @Then("^communication events for all types should be returned$")
   public void communicationEventsForAllTypesShouldBeReturned(final Map<String, String> settings)
       throws Throwable {

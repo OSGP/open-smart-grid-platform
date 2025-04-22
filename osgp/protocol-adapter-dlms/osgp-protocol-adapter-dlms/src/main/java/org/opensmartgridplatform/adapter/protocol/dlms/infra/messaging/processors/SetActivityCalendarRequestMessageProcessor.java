@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendar
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing set Activity Calendar request messages */
 @Component
 public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetActivityCalendarRequestMessageProcessor() {
+  public SetActivityCalendarRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.SET_ACTIVITY_CALENDAR);
+    this.configurationService = configurationService;
   }
 
   @Override

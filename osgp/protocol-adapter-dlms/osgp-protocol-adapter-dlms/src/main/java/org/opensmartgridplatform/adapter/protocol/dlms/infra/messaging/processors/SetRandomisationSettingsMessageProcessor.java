@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Set Configuration Request messages */
 @Component
 public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetRandomisationSettingsMessageProcessor() {
+  public SetRandomisationSettingsMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.SET_RANDOMISATION_SETTINGS);
+    this.configurationService = configurationService;
   }
 
   @Override

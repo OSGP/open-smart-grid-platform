@@ -41,7 +41,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -49,22 +48,30 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
 
-  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
+  private final InstallationMapper installationMapper;
+  private final RsaEncrypter decrypterForGxfSmartMetering;
+  private final SecretManagementService secretManagementService;
+  private final CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
+  private final DecoupleMBusDeviceCommandExecutor decoupleMBusDeviceCommandExecutor;
+  private final CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
-  @Autowired private InstallationMapper installationMapper;
-
-  @Autowired
-  @Qualifier("decrypterForGxfSmartMetering")
-  private RsaEncrypter decrypterForGxfSmartMetering;
-
-  @Autowired private SecretManagementService secretManagementService;
-
-  @Autowired private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
-
-  @Autowired private DecoupleMBusDeviceCommandExecutor decoupleMBusDeviceCommandExecutor;
-
-  @Autowired
-  private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
+  public InstallationService(
+      final DlmsDeviceRepository dlmsDeviceRepository,
+      final InstallationMapper installationMapper,
+      @Qualifier("decrypterForGxfSmartMetering") final RsaEncrypter decrypterForGxfSmartMetering,
+      final SecretManagementService secretManagementService,
+      final CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor,
+      final DecoupleMBusDeviceCommandExecutor decoupleMBusDeviceCommandExecutor,
+      final CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor) {
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
+    this.installationMapper = installationMapper;
+    this.decrypterForGxfSmartMetering = decrypterForGxfSmartMetering;
+    this.secretManagementService = secretManagementService;
+    this.coupleMBusDeviceCommandExecutor = coupleMBusDeviceCommandExecutor;
+    this.decoupleMBusDeviceCommandExecutor = decoupleMBusDeviceCommandExecutor;
+    this.coupleMbusDeviceByChannelCommandExecutor = coupleMbusDeviceByChannelCommandExecutor;
+  }
 
   public void addMeter(
       final MessageMetadata messageMetadata, final SmartMeteringDeviceDto smartMeteringDevice)

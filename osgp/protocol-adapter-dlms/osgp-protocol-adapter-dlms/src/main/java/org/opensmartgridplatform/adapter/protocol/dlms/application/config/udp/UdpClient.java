@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config.udp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.ip.udp.UnicastSendingMessageHandler;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ public class UdpClient {
 
   private final UnicastSendingMessageHandler udpSendingAdapter;
 
-  @Autowired
   public UdpClient(final UnicastSendingMessageHandler udpSendingAdapter) {
     this.udpSendingAdapter = udpSendingAdapter;
   }

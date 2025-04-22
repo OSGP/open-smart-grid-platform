@@ -11,7 +11,6 @@ import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.dlms.enums.SortMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -23,7 +22,6 @@ public class MeasurementDataClassesDecoder {
 
   private final DlmsHelper dlmsHelper;
 
-  @Autowired
   public MeasurementDataClassesDecoder(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
   }

@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificatio
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing set alarm notifications request messages */
 @Component
 public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetAlarmNotificationsRequestMessageProcessor() {
+  public SetAlarmNotificationsRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.SET_ALARM_NOTIFICATIONS);
+    this.configurationService = configurationService;
   }
 
   @Override

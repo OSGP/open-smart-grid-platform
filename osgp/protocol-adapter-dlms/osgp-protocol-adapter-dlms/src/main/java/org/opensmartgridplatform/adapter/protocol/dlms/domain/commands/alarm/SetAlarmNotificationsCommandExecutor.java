@@ -33,7 +33,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetAlarmNotifica
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -48,7 +47,6 @@ public class SetAlarmNotificationsCommandExecutor
   private final AlarmHelperService alarmHelperService = new AlarmHelperService();
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public SetAlarmNotificationsCommandExecutor(
       final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(SetAlarmNotificationsRequestDto.class);

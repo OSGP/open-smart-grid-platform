@@ -13,17 +13,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ClearMBusStatusOnAllChannelsRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  public ClearMBusStatusOnAllChannelsRequestMessageProcessor() {
+  public ClearMBusStatusOnAllChannelsRequestMessageProcessor(
+      final ManagementService managementService) {
     super(MessageType.CLEAR_MBUS_STATUS_ON_ALL_CHANNELS);
+    this.managementService = managementService;
   }
 
   @Override

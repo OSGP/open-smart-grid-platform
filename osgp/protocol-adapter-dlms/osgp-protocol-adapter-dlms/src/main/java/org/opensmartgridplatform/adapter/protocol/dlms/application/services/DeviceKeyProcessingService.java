@@ -14,7 +14,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,6 @@ public class DeviceKeyProcessingService {
 
   private final DlmsDeviceRepository dlmsDeviceRepository;
 
-  @Autowired
   public DeviceKeyProcessingService(final DlmsDeviceRepository dlmsDeviceRepository) {
     this.dlmsDeviceRepository = dlmsDeviceRepository;
   }

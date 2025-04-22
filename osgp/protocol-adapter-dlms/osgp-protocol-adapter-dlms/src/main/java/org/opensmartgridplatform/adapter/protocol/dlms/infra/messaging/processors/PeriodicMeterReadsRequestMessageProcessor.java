@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Periodic Meter Request messages */
 @Component
 public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private MonitoringService monitoringService;
+  private final MonitoringService monitoringService;
 
-  public PeriodicMeterReadsRequestMessageProcessor() {
+  public PeriodicMeterReadsRequestMessageProcessor(final MonitoringService monitoringService) {
     super(MessageType.REQUEST_PERIODIC_METER_DATA);
+    this.monitoringService = monitoringService;
   }
 
   @Override

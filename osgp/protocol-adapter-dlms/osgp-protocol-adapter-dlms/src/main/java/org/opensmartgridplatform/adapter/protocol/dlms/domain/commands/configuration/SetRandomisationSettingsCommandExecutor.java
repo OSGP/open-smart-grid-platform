@@ -32,7 +32,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,7 +44,6 @@ public class SetRandomisationSettingsCommandExecutor
   private final ProtocolServiceLookup protocolServiceLookup;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public SetRandomisationSettingsCommandExecutor(
       final ProtocolServiceLookup protocolServiceLookup,
       final ObjectConfigServiceHelper objectConfigServiceHelper) {

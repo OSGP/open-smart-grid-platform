@@ -27,7 +27,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -45,7 +44,6 @@ public class DataObjectToEventListConverter {
 
   private final ObjectConfigService objectConfigService;
 
-  @Autowired
   public DataObjectToEventListConverter(
       final DlmsHelper dlmsHelper, final ObjectConfigService objectConfigService) {
     this.dlmsHelper = dlmsHelper;
