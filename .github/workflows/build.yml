@@ -91,13 +91,13 @@ jobs:
             context: ./osgp/platform/osgp-adapter-ws-smartmetering/
           - image: ghcr.io/osgp/osgp-adapter-ws-tariffswitching
             context: ./osgp/platform/osgp-adapter-ws-tariffswitching/
-          - image: ghcr.io/osgp/osgp-secret-management/
+          - image: ghcr.io/osgp/osgp-secret-management
             context: ./osgp/platform/osgp-secret-management
-          - image: ghcr.io/osgp/platform/osgp-throttling-service/
+          - image: ghcr.io/osgp/platform/osgp-throttling-service
             context: ./osgp/platform/osgp-throttling-service
-          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms/
+          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms
             context: ./osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms
-          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered/
+          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered
             context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered
           - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/dlms-device-simulator-starter
             context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/dlms-device-simulator-starter
@@ -150,7 +150,7 @@ jobs:
             type=semver,pattern={{version}},value=${{ steps.maven.outputs.version }}
             type=ref,event=branch
             type=ref,event=tag
-            type=ref,event=pr,enable=false
+            type=ref,event=pr
             type=raw,value=latest,enable={{is_default_branch}}
       - name: Build and push Docker image
         id: push
