@@ -18,7 +18,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,12 +26,15 @@ public class SetDeviceLifecycleStatusByChannelCommandExecutor
         SetDeviceLifecycleStatusByChannelRequestDataDto,
         SetDeviceLifecycleStatusByChannelResponseDto> {
 
-  @Autowired private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
+  private final GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
 
-  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
-
-  public SetDeviceLifecycleStatusByChannelCommandExecutor() {
+  public SetDeviceLifecycleStatusByChannelCommandExecutor(
+      final GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor,
+      final DlmsDeviceRepository dlmsDeviceRepository) {
     super(SetDeviceLifecycleStatusByChannelRequestDataDto.class);
+    this.getMBusDeviceOnChannelCommandExecutor = getMBusDeviceOnChannelCommandExecutor;
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
   }
 
   @Override

@@ -20,20 +20,20 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetSpecificAttributeValueCommandExecutor
     extends AbstractCommandExecutor<SpecificAttributeValueRequestDto, String> {
 
-  @Autowired private DlmsHelper dlmsHelper;
+  private final DlmsHelper dlmsHelper;
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetSpecificAttributeValueCommandExecutor.class);
 
-  public GetSpecificAttributeValueCommandExecutor() {
+  public GetSpecificAttributeValueCommandExecutor(final DlmsHelper dlmsHelper) {
     super(SpecificAttributeValueRequestDto.class);
+    this.dlmsHelper = dlmsHelper;
   }
 
   @Override

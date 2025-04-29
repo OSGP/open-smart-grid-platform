@@ -12,7 +12,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +21,13 @@ public class DeviceRequestMessageListener implements MessageListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
 
-  @Autowired
-  @Qualifier("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
-  private MessageProcessorMap dlmsRequestMessageProcessorMap;
+  private final MessageProcessorMap dlmsRequestMessageProcessorMap;
+
+  public DeviceRequestMessageListener(
+      @Qualifier("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
+          final MessageProcessorMap dlmsRequestMessageProcessorMap) {
+    this.dlmsRequestMessageProcessorMap = dlmsRequestMessageProcessorMap;
+  }
 
   @Override
   public void onMessage(final Message message) {

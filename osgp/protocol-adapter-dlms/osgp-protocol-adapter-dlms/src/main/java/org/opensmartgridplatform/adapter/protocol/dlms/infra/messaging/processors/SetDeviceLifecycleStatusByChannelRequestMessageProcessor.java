@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecyc
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetDeviceLifecycleStatusByChannelRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  public SetDeviceLifecycleStatusByChannelRequestMessageProcessor() {
+  public SetDeviceLifecycleStatusByChannelRequestMessageProcessor(
+      final ManagementService managementService) {
     super(MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL);
+    this.managementService = managementService;
   }
 
   @Override

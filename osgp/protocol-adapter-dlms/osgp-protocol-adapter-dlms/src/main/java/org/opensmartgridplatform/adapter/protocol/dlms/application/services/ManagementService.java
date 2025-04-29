@@ -30,25 +30,34 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateProtocolRe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateProtocolResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service(value = "dlmsManagementService")
 public class ManagementService {
 
-  @Autowired private FindEventsCommandExecutor findEventsCommandExecutor;
-
-  @Autowired private GetGsmDiagnosticCommandExecutor getGsmDiagnosticCommandExecutor;
-
-  @Autowired
-  private ClearMBusStatusOnAllChannelsCommandExecutor clearMBusStatusOnAllChannelsCommandExecutor;
-
-  @Autowired
-  private SetDeviceLifecycleStatusByChannelCommandExecutor
+  private final FindEventsCommandExecutor findEventsCommandExecutor;
+  private final GetGsmDiagnosticCommandExecutor getGsmDiagnosticCommandExecutor;
+  private final ClearMBusStatusOnAllChannelsCommandExecutor
+      clearMBusStatusOnAllChannelsCommandExecutor;
+  private final SetDeviceLifecycleStatusByChannelCommandExecutor
       setDeviceLifecycleStatusByChannelCommandExecutor;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
 
-  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
+  public ManagementService(
+      final FindEventsCommandExecutor findEventsCommandExecutor,
+      final GetGsmDiagnosticCommandExecutor getGsmDiagnosticCommandExecutor,
+      final ClearMBusStatusOnAllChannelsCommandExecutor clearMBusStatusOnAllChannelsCommandExecutor,
+      final SetDeviceLifecycleStatusByChannelCommandExecutor
+          setDeviceLifecycleStatusByChannelCommandExecutor,
+      final DlmsDeviceRepository dlmsDeviceRepository) {
+    this.findEventsCommandExecutor = findEventsCommandExecutor;
+    this.getGsmDiagnosticCommandExecutor = getGsmDiagnosticCommandExecutor;
+    this.clearMBusStatusOnAllChannelsCommandExecutor = clearMBusStatusOnAllChannelsCommandExecutor;
+    this.setDeviceLifecycleStatusByChannelCommandExecutor =
+        setDeviceLifecycleStatusByChannelCommandExecutor;
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
+  }
 
   public GetGsmDiagnosticResponseDto getGsmDiagnostic(
       final DlmsConnectionManager conn,

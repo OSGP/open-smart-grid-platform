@@ -14,17 +14,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttribut
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetSpecificAttributeValueRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  protected GetSpecificAttributeValueRequestMessageProcessor() {
+  protected GetSpecificAttributeValueRequestMessageProcessor(final AdhocService adhocService) {
     super(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
+    this.adhocService = adhocService;
   }
 
   @Override

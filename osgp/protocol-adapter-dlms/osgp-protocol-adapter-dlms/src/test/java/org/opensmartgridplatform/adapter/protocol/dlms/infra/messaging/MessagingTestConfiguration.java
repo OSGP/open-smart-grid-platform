@@ -78,7 +78,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
   @Bean("protocolDlmsInboundOsgpCoreRequestsMessageListener")
   public DeviceRequestMessageListener deviceRequestMessageListener() {
-    return new DeviceRequestMessageListener();
+    return new DeviceRequestMessageListener(this.messageProcessorMap());
   }
 
   @Bean("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
@@ -101,6 +101,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
     return Mockito.mock(JmsTemplate.class);
   }
 
+  @Bean
+  public JmsTemplate protocolDlmsOutboundLogItemRequestsJmsTemplate() {
+    return Mockito.mock(JmsTemplate.class);
+  }
+
   // Beans, Mocks and Stubs
 
   @Bean
@@ -110,7 +115,8 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
   @Bean
   public DeviceRequestMessageSender deviceRequestMessageSender() {
-    return new DeviceRequestMessageSender();
+    return new DeviceRequestMessageSender(
+        this.protocolDlmsDeviceRequestMessageSenderJmsTemplate(), this.jmsMessageCreator());
   }
 
   @Bean
@@ -176,7 +182,8 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
   @Bean
   public DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender() {
-    return new DlmsLogItemRequestMessageSender();
+    return new DlmsLogItemRequestMessageSender(
+        this.protocolDlmsOutboundLogItemRequestsJmsTemplate());
   }
 
   @Bean
@@ -192,7 +199,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public GetPowerQualityProfileRequestMessageProcessor
       getPowerQualityProfileRequestMessageProcessor() {
-    return new GetPowerQualityProfileRequestMessageProcessor();
+    return new GetPowerQualityProfileRequestMessageProcessor(this.monitoringService());
   }
 
   @Bean

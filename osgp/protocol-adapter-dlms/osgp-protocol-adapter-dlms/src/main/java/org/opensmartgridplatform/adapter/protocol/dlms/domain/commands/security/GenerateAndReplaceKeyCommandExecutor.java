@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GenerateAndReplaceKeysRequestDataDto;
@@ -25,9 +26,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,12 +39,21 @@ public class GenerateAndReplaceKeyCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
 
-  @Autowired private SecretManagementService secretManagementService;
+  private final SecretManagementService secretManagementService;
+  private final DeviceKeyProcessingService deviceKeyProcessingService;
 
-  @Autowired private DeviceKeyProcessingService deviceKeyProcessingService;
-
-  public GenerateAndReplaceKeyCommandExecutor() {
-    super(GenerateAndReplaceKeysRequestDataDto.class);
+  public GenerateAndReplaceKeyCommandExecutor(
+      final SecretManagementService secretManagementService,
+      final DeviceKeyProcessingService deviceKeyProcessingService,
+      final DlmsDeviceRepository dlmsDeviceRepository,
+      @Qualifier("decrypterForGxfSmartMetering") final RsaEncrypter decrypterForGxfSmartMetering) {
+    super(
+        GenerateAndReplaceKeysRequestDataDto.class,
+        secretManagementService,
+        dlmsDeviceRepository,
+        decrypterForGxfSmartMetering);
+    this.secretManagementService = secretManagementService;
+    this.deviceKeyProcessingService = deviceKeyProcessingService;
   }
 
   @Override

@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDt
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  protected GetKeysRequestMessageProcessor() {
+  protected GetKeysRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.GET_KEYS);
+    this.configurationService = configurationService;
   }
 
   @Override

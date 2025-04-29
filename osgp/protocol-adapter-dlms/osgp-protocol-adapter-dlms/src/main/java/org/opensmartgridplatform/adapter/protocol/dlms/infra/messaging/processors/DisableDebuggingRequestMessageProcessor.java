@@ -11,16 +11,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  public DisableDebuggingRequestMessageProcessor() {
+  public DisableDebuggingRequestMessageProcessor(final ManagementService managementService) {
     super(MessageType.DISABLE_DEBUGGING);
+    this.managementService = managementService;
   }
 
   @Override

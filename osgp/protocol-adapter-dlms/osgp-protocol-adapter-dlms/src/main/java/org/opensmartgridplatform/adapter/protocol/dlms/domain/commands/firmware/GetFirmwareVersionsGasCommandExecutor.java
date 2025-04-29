@@ -28,7 +28,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersi
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,7 +37,6 @@ public class GetFirmwareVersionsGasCommandExecutor
   private final DlmsHelper dlmsHelper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public GetFirmwareVersionsGasCommandExecutor(
       final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(GetFirmwareVersionGasRequestDto.class);

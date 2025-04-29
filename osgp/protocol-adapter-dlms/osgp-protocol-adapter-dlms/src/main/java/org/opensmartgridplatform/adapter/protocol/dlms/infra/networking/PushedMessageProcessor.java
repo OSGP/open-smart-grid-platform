@@ -17,7 +17,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata.Builder;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,12 +27,21 @@ public class PushedMessageProcessor {
   private static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
   private static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
 
-  @Autowired private OsgpRequestMessageSender osgpRequestMessageSender;
-  @Autowired private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
-  @Autowired private DeviceSessionService deviceSessionService;
+  private final OsgpRequestMessageSender osgpRequestMessageSender;
+  private final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
+  private final DeviceSessionService deviceSessionService;
 
   @Value("${push.wakeup.alarm.to.core}")
   private boolean pushWakeupAlarmToCore;
+
+  public PushedMessageProcessor(
+      final OsgpRequestMessageSender osgpRequestMessageSender,
+      final DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender,
+      final DeviceSessionService deviceSessionService) {
+    this.osgpRequestMessageSender = osgpRequestMessageSender;
+    this.dlmsLogItemRequestMessageSender = dlmsLogItemRequestMessageSender;
+    this.deviceSessionService = deviceSessionService;
+  }
 
   public void process(
       final DlmsPushNotification message,

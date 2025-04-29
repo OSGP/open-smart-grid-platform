@@ -37,7 +37,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -79,7 +78,6 @@ public class FindEventsCommandExecutor
 
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public FindEventsCommandExecutor(
       final DlmsHelper dlmsHelper,
       final DataObjectToEventListConverter dataObjectToEventListConverter,

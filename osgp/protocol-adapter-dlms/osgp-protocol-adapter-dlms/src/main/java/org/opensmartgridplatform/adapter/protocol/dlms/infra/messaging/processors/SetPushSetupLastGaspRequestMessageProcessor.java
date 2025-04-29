@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupLastGas
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing set push setup last gasp request messages */
 @Component
 public class SetPushSetupLastGaspRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetPushSetupLastGaspRequestMessageProcessor() {
+  public SetPushSetupLastGaspRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.SET_PUSH_SETUP_LAST_GASP);
+    this.configurationService = configurationService;
   }
 
   @Override

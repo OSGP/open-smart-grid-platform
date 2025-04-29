@@ -30,7 +30,6 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.datadecoder.BasicDlmsDataDecoder;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -45,7 +44,6 @@ public class DlmsClassDataDecoder {
   private final Map<AttributeType, Function<DataObject, String>> map =
       new EnumMap<>(AttributeType.class);
 
-  @Autowired
   public DlmsClassDataDecoder(
       final BasicDlmsDataDecoder basicDlmsDataDecoder,
       final DataExchangeClassesDecoder dataExchangeDecoder,

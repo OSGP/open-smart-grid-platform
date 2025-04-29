@@ -5,8 +5,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DeviceKeyProcessingService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceKeyProcessAlreadyRunningException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
@@ -15,7 +17,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -35,14 +36,19 @@ public class ReplaceKeyCommandExecutor
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
-  @Autowired private DeviceKeyProcessingService deviceKeyProcessingService;
+  private final DeviceKeyProcessingService deviceKeyProcessingService;
 
-  @Autowired
-  @Qualifier("decrypterForGxfSmartMetering")
-  private RsaEncrypter decrypterForGxfSmartMetering;
-
-  public ReplaceKeyCommandExecutor() {
-    super(SetKeysRequestDto.class);
+  public ReplaceKeyCommandExecutor(
+      final SecretManagementService secretManagementService,
+      final DeviceKeyProcessingService deviceKeyProcessingService,
+      final DlmsDeviceRepository dlmsDeviceRepository,
+      @Qualifier("decrypterForGxfSmartMetering") final RsaEncrypter decrypterForGxfSmartMetering) {
+    super(
+        SetKeysRequestDto.class,
+        secretManagementService,
+        dlmsDeviceRepository,
+        decrypterForGxfSmartMetering);
+    this.deviceKeyProcessingService = deviceKeyProcessingService;
   }
 
   @Override

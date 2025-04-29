@@ -19,7 +19,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.objectconfig.Attribute;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dlms.objectconfig.DlmsProfile;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -31,7 +30,6 @@ public class DataDecoder {
   private final DlmsClassDataDecoder dlmsClassDataDecoder;
   private final ProfileDataDecoder profileDataDecoder;
 
-  @Autowired
   public DataDecoder(
       final DlmsHelper dlmsHelper,
       final BasicDlmsDataDecoder basicDlmsDataDecoder,

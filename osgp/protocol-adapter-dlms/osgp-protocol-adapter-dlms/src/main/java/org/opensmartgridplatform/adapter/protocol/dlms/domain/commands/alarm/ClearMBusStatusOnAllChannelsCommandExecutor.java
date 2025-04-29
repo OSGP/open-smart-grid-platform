@@ -33,7 +33,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusO
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelShortEquipmentIdentifierDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -44,7 +43,6 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
   final ObjectConfigServiceHelper config;
   private final AdhocService adhocService;
 
-  @Autowired
   public ClearMBusStatusOnAllChannelsCommandExecutor(
       final ObjectConfigServiceHelper objectConfigServiceHelper, final AdhocService adhocService) {
     super(ClearMBusStatusOnAllChannelsRequestDto.class);

@@ -12,7 +12,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedS
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -24,7 +23,6 @@ public class DataExchangeClassesDecoder {
 
   private final DlmsHelper dlmsHelper;
 
-  @Autowired
   public DataExchangeClassesDecoder(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
   }

@@ -13,16 +13,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRe
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetKeyOnGMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetKeyOnGMeterRequestMessageProcessor() {
+  public SetKeyOnGMeterRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.SET_KEY_ON_G_METER);
+    this.configurationService = configurationService;
   }
 
   @Override

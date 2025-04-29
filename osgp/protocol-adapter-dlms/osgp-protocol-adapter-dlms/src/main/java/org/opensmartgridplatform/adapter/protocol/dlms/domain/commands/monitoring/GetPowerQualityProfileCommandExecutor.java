@@ -11,7 +11,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,15 +18,22 @@ public class GetPowerQualityProfileCommandExecutor
     extends AbstractCommandExecutor<
         GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDto> {
 
-  @Autowired
-  private GetPowerQualityProfileNoSelectiveAccessHandler
+  private final GetPowerQualityProfileNoSelectiveAccessHandler
       getPowerQualityProfileNoSelectiveAccessHandler;
 
-  @Autowired
-  private GetPowerQualityProfileSelectiveAccessHandler getPowerQualityProfileSelectiveAccessHandler;
+  private final GetPowerQualityProfileSelectiveAccessHandler
+      getPowerQualityProfileSelectiveAccessHandler;
 
-  public GetPowerQualityProfileCommandExecutor() {
+  public GetPowerQualityProfileCommandExecutor(
+      final GetPowerQualityProfileNoSelectiveAccessHandler
+          getPowerQualityProfileNoSelectiveAccessHandler,
+      final GetPowerQualityProfileSelectiveAccessHandler
+          getPowerQualityProfileSelectiveAccessHandler) {
     super(GetPowerQualityProfileRequestDataDto.class);
+    this.getPowerQualityProfileNoSelectiveAccessHandler =
+        getPowerQualityProfileNoSelectiveAccessHandler;
+    this.getPowerQualityProfileSelectiveAccessHandler =
+        getPowerQualityProfileSelectiveAccessHandler;
   }
 
   @Override

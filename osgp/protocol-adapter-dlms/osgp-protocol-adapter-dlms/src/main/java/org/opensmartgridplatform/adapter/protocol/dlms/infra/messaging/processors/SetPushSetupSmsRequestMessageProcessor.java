@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing set push setup sms request messages */
 @Component
 public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetPushSetupSmsRequestMessageProcessor() {
+  public SetPushSetupSmsRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.SET_PUSH_SETUP_SMS);
+    this.configurationService = configurationService;
   }
 
   @Override

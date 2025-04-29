@@ -6,7 +6,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
@@ -19,12 +18,15 @@ public class DlmsLogItemRequestMessageSender {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(DlmsLogItemRequestMessageSender.class);
 
-  @Autowired
-  @Qualifier("protocolDlmsOutboundLogItemRequestsJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
 
   @Value("${auditlogging.message.create.json:false}")
   private boolean createJsonMessage;
+
+  public DlmsLogItemRequestMessageSender(
+      @Qualifier("protocolDlmsOutboundLogItemRequestsJmsTemplate") final JmsTemplate jmsTemplate) {
+    this.jmsTemplate = jmsTemplate;
+  }
 
   public void send(final DlmsLogItemRequestMessage dlmsLogItemRequestMessage) {
     if (dlmsLogItemRequestMessage == null) {

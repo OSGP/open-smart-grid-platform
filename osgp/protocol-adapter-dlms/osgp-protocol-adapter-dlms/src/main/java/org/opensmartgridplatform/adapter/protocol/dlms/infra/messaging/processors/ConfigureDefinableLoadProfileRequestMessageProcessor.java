@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadPro
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ConfigureDefinableLoadProfileRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public ConfigureDefinableLoadProfileRequestMessageProcessor() {
+  public ConfigureDefinableLoadProfileRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE);
+    this.configurationService = configurationService;
   }
 
   @Override

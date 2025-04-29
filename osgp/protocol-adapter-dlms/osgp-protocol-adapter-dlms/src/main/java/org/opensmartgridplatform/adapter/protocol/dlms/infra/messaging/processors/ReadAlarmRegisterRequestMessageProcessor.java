@@ -13,16 +13,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegiste
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private MonitoringService monitoringService;
+  private final MonitoringService monitoringService;
 
-  protected ReadAlarmRegisterRequestMessageProcessor() {
+  protected ReadAlarmRegisterRequestMessageProcessor(final MonitoringService monitoringService) {
     super(MessageType.READ_ALARM_REGISTER);
+    this.monitoringService = monitoringService;
   }
 
   @Override

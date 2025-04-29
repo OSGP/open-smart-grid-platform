@@ -13,17 +13,17 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Synchronize Time Request messages */
 @Component
 public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  public SynchronizeTimeRequestMessageProcessor() {
+  public SynchronizeTimeRequestMessageProcessor(final AdhocService adhocService) {
     super(MessageType.SYNCHRONIZE_TIME);
+    this.adhocService = adhocService;
   }
 
   @Override

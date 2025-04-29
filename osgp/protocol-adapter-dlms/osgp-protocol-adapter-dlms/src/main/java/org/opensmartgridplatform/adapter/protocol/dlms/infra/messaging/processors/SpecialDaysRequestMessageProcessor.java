@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysReque
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Special Days Request messages */
 @Component
 public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SpecialDaysRequestMessageProcessor() {
+  public SpecialDaysRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.SET_SPECIAL_DAYS);
+    this.configurationService = configurationService;
   }
 
   @Override

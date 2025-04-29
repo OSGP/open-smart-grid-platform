@@ -12,17 +12,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Get Configuration Object Request messages */
 @Component
 public class GetConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public GetConfigurationObjectRequestMessageProcessor() {
+  public GetConfigurationObjectRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.GET_CONFIGURATION_OBJECT);
+    this.configurationService = configurationService;
   }
 
   @Override

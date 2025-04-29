@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyBy
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing Set M-Bus User Key By Channel request messages */
 @Component
 public class SetMbusUserKeyByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetMbusUserKeyByChannelRequestMessageProcessor() {
+  public SetMbusUserKeyByChannelRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.SET_MBUS_USER_KEY_BY_CHANNEL);
+    this.configurationService = configurationService;
   }
 
   @Override

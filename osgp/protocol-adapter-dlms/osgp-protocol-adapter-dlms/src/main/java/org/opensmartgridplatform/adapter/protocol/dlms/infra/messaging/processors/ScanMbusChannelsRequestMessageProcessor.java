@@ -13,16 +13,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannels
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  public ScanMbusChannelsRequestMessageProcessor() {
+  public ScanMbusChannelsRequestMessageProcessor(final AdhocService adhocService) {
     super(MessageType.SCAN_MBUS_CHANNELS);
+    this.adhocService = adhocService;
   }
 
   @Override

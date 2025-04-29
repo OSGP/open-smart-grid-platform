@@ -12,17 +12,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing the Get Administrative Status request message */
 @Component
 public class GetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public GetAdministrativeStatusRequestMessageProcessor() {
+  public GetAdministrativeStatusRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.GET_ADMINISTRATIVE_STATUS);
+    this.configurationService = configurationService;
   }
 
   @Override

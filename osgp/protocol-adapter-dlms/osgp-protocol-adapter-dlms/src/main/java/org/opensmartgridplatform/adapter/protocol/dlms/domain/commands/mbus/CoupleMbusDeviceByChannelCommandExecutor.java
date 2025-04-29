@@ -13,7 +13,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementVa
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -22,10 +21,11 @@ public class CoupleMbusDeviceByChannelCommandExecutor
     extends AbstractCommandExecutor<
         CoupleMbusDeviceByChannelRequestDataDto, CoupleMbusDeviceByChannelResponseDto> {
 
-  @Autowired private DeviceChannelsHelper deviceChannelsHelper;
+  private final DeviceChannelsHelper deviceChannelsHelper;
 
-  public CoupleMbusDeviceByChannelCommandExecutor() {
+  public CoupleMbusDeviceByChannelCommandExecutor(final DeviceChannelsHelper deviceChannelsHelper) {
     super(CoupleMbusDeviceByChannelRequestDataDto.class);
+    this.deviceChannelsHelper = deviceChannelsHelper;
   }
 
   @Override

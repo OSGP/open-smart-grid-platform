@@ -13,17 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegist
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing the clear alarm register request message */
 @Component
 public class ClearAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private MonitoringService monitoringService;
+  private final MonitoringService monitoringService;
 
-  public ClearAlarmRegisterRequestMessageProcessor() {
+  public ClearAlarmRegisterRequestMessageProcessor(final MonitoringService monitoringService) {
     super(MessageType.CLEAR_ALARM_REGISTER);
+    this.monitoringService = monitoringService;
   }
 
   @Override

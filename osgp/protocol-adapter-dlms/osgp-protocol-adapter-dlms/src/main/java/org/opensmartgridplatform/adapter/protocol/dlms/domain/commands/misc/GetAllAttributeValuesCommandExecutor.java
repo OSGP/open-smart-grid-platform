@@ -40,7 +40,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -63,7 +62,6 @@ public class GetAllAttributeValuesCommandExecutor extends AbstractCommandExecuto
 
   private final DataDecoder dataDecoder;
 
-  @Autowired
   public GetAllAttributeValuesCommandExecutor(
       final ObjectConfigService objectConfigService,
       final ObjectConfigServiceHelper objectConfigServiceHelper,

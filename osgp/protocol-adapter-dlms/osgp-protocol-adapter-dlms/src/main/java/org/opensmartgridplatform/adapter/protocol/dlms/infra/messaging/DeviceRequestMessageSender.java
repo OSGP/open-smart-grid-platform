@@ -10,7 +10,6 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.infra.jms.JmsMessageCreator;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -19,11 +18,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeviceRequestMessageSender {
 
-  @Autowired
-  @Qualifier("protocolDlmsDeviceRequestMessageSenderJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
+  private final JmsMessageCreator jmsMessageCreator;
 
-  @Autowired private JmsMessageCreator jmsMessageCreator;
+  public DeviceRequestMessageSender(
+      @Qualifier("protocolDlmsDeviceRequestMessageSenderJmsTemplate") final JmsTemplate jmsTemplate,
+      final JmsMessageCreator jmsMessageCreator) {
+    this.jmsTemplate = jmsTemplate;
+    this.jmsMessageCreator = jmsMessageCreator;
+  }
 
   public void send(
       final Serializable payload, final MessageMetadata messageMetadata, final Duration delay) {

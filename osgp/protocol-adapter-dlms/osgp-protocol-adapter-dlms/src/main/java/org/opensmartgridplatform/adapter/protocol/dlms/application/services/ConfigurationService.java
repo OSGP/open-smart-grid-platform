@@ -72,7 +72,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsConfigurationService")
@@ -82,62 +81,93 @@ public class ConfigurationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private FirmwareService firmwareService;
-
-  @Autowired private SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
-
-  @Autowired private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
-
-  @Autowired private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
-
-  @Autowired private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
-
-  @Autowired private SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor;
-
-  @Autowired private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
-
-  @Autowired private SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
-
-  @Autowired private SetThdConfigurationCommandExecutor setThdConfigurationCommandExecutor;
-
-  @Autowired private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
-
-  @Autowired private SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor;
-
-  @Autowired private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
-
-  @Autowired private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
-
-  @Autowired private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
-
-  @Autowired private GetFirmwareVersionsCommandExecutor getFirmwareVersionCommandExecutor;
-
-  @Autowired private GetFirmwareVersionsGasCommandExecutor getFirmwareVersionGasCommandExecutor;
-
-  @Autowired private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
-
-  @Autowired private SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor;
-
-  @Autowired private GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
-
-  @Autowired private GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
-
-  @Autowired
-  private ConfigureDefinableLoadProfileCommandExecutor configureDefinableLoadProfileCommandExecutor;
-
-  @Autowired
-  private GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
-
-  @Autowired
-  private GetMbusEncryptionKeyStatusByChannelCommandExecutor
+  private final DomainHelperService domainHelperService;
+  private final FirmwareService firmwareService;
+  private final SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
+  private final SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+  private final SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
+  private final SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+  private final SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor;
+  private final SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
+  private final SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor;
+  private final SetThdConfigurationCommandExecutor setThdConfigurationCommandExecutor;
+  private final SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
+  private final SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor;
+  private final GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
+  private final SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
+  private final GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
+  private final GetFirmwareVersionsCommandExecutor getFirmwareVersionCommandExecutor;
+  private final GetFirmwareVersionsGasCommandExecutor getFirmwareVersionGasCommandExecutor;
+  private final ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
+  private final SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor;
+  private final GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor;
+  private final GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor;
+  private final ConfigureDefinableLoadProfileCommandExecutor
+      configureDefinableLoadProfileCommandExecutor;
+  private final GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor;
+  private final GetMbusEncryptionKeyStatusByChannelCommandExecutor
       getMbusEncryptionKeyStatusByChannelCommandExecutor;
+  private final SetRandomisationSettingsCommandExecutor setRandomisationSettingsCommandExecutor;
+  private final GetKeysService getKeysService;
 
-  @Autowired
-  private SetRandomisationSettingsCommandExecutor setRandomisationSettingsCommandExecutor;
-
-  @Autowired private GetKeysService getKeysService;
+  public ConfigurationService(
+      final DomainHelperService domainHelperService,
+      final FirmwareService firmwareService,
+      final SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor,
+      final SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor,
+      final SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor,
+      final SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor,
+      final SetPushSetupLastGaspCommandExecutor setPushSetupLastGaspCommandExecutor,
+      final SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor,
+      final SetPushSetupUdpCommandExecutor setPushSetupUdpCommandExecutor,
+      final SetThdConfigurationCommandExecutor setThdConfigurationCommandExecutor,
+      final SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor,
+      final SetKeyOnGMeterCommandExecutor setKeyOnGMeterCommandExecutor,
+      final GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor,
+      final SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor,
+      final GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor,
+      final GetFirmwareVersionsCommandExecutor getFirmwareVersionCommandExecutor,
+      final GetFirmwareVersionsGasCommandExecutor getFirmwareVersionGasCommandExecutor,
+      final ReplaceKeyCommandExecutor replaceKeyCommandExecutor,
+      final SetClockConfigurationCommandExecutor setClockConfigurationCommandExecutor,
+      final GetConfigurationObjectCommandExecutor getConfigurationObjectCommandExecutor,
+      final GenerateAndReplaceKeyCommandExecutor generateAndReplaceKeyCommandExecutor,
+      final ConfigureDefinableLoadProfileCommandExecutor
+          configureDefinableLoadProfileCommandExecutor,
+      final GetMbusEncryptionKeyStatusCommandExecutor getMbusEncryptionKeyStatusCommandExecutor,
+      final GetMbusEncryptionKeyStatusByChannelCommandExecutor
+          getMbusEncryptionKeyStatusByChannelCommandExecutor,
+      final SetRandomisationSettingsCommandExecutor setRandomisationSettingsCommandExecutor,
+      final GetKeysService getKeysService) {
+    this.domainHelperService = domainHelperService;
+    this.firmwareService = firmwareService;
+    this.setSpecialDaysCommandExecutor = setSpecialDaysCommandExecutor;
+    this.setAlarmNotificationsCommandExecutor = setAlarmNotificationsCommandExecutor;
+    this.setConfigurationObjectCommandExecutor = setConfigurationObjectCommandExecutor;
+    this.setPushSetupAlarmCommandExecutor = setPushSetupAlarmCommandExecutor;
+    this.setPushSetupLastGaspCommandExecutor = setPushSetupLastGaspCommandExecutor;
+    this.setPushSetupSmsCommandExecutor = setPushSetupSmsCommandExecutor;
+    this.setPushSetupUdpCommandExecutor = setPushSetupUdpCommandExecutor;
+    this.setThdConfigurationCommandExecutor = setThdConfigurationCommandExecutor;
+    this.setActivityCalendarCommandExecutor = setActivityCalendarCommandExecutor;
+    this.setKeyOnGMeterCommandExecutor = setKeyOnGMeterCommandExecutor;
+    this.getMBusDeviceOnChannelCommandExecutor = getMBusDeviceOnChannelCommandExecutor;
+    this.setAdministrativeStatusCommandExecutor = setAdministrativeStatusCommandExecutor;
+    this.getAdministrativeStatusCommandExecutor = getAdministrativeStatusCommandExecutor;
+    this.getFirmwareVersionCommandExecutor = getFirmwareVersionCommandExecutor;
+    this.getFirmwareVersionGasCommandExecutor = getFirmwareVersionGasCommandExecutor;
+    this.replaceKeyCommandExecutor = replaceKeyCommandExecutor;
+    this.setClockConfigurationCommandExecutor = setClockConfigurationCommandExecutor;
+    this.getConfigurationObjectCommandExecutor = getConfigurationObjectCommandExecutor;
+    this.generateAndReplaceKeyCommandExecutor = generateAndReplaceKeyCommandExecutor;
+    this.configureDefinableLoadProfileCommandExecutor =
+        configureDefinableLoadProfileCommandExecutor;
+    this.getMbusEncryptionKeyStatusCommandExecutor = getMbusEncryptionKeyStatusCommandExecutor;
+    this.getMbusEncryptionKeyStatusByChannelCommandExecutor =
+        getMbusEncryptionKeyStatusByChannelCommandExecutor;
+    this.setRandomisationSettingsCommandExecutor = setRandomisationSettingsCommandExecutor;
+    this.getKeysService = getKeysService;
+  }
 
   public void setSpecialDays(
       final DlmsConnectionManager conn,

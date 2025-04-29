@@ -13,16 +13,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public ReplaceKeysRequestMessageProcessor() {
+  public ReplaceKeysRequestMessageProcessor(final ConfigurationService configurationService) {
     super(MessageType.REPLACE_KEYS);
+    this.configurationService = configurationService;
   }
 
   @Override

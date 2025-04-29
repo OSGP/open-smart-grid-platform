@@ -12,16 +12,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetAllAttributeValuesRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private AdhocService adhocService;
+  private final AdhocService adhocService;
 
-  protected GetAllAttributeValuesRequestMessageProcessor() {
+  protected GetAllAttributeValuesRequestMessageProcessor(final AdhocService adhocService) {
     super(MessageType.GET_ALL_ATTRIBUTE_VALUES);
+    this.adhocService = adhocService;
   }
 
   @Override

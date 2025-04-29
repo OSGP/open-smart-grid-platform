@@ -13,17 +13,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeSt
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /** Class for processing the Set Administrative Status request message */
 @Component
 public class SetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ConfigurationService configurationService;
+  private final ConfigurationService configurationService;
 
-  public SetAdministrativeStatusRequestMessageProcessor() {
+  public SetAdministrativeStatusRequestMessageProcessor(
+      final ConfigurationService configurationService) {
     super(MessageType.SET_ADMINISTRATIVE_STATUS);
+    this.configurationService = configurationService;
   }
 
   @Override

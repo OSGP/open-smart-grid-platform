@@ -12,7 +12,6 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -23,7 +22,6 @@ public class DataObjectToOutageListConverter {
   private static final int NUMBER_OF_ELEMENTS = 2;
   private final DlmsHelper dlmsHelper;
 
-  @Autowired
   public DataObjectToOutageListConverter(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
   }

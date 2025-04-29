@@ -12,16 +12,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateProtocolRe
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UpdateProtocolRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  public UpdateProtocolRequestMessageProcessor() {
+  public UpdateProtocolRequestMessageProcessor(final ManagementService managementService) {
     super(MessageType.UPDATE_PROTOCOL);
+    this.managementService = managementService;
   }
 
   @Override

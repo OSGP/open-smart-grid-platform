@@ -27,7 +27,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -59,7 +58,11 @@ public class MacGenerationService {
   private static final int ADDRESS_LENGTH = 8;
   private static final int SECURITY_LENGTH = 16;
 
-  @Autowired private SecretManagementService secretManagementService;
+  private final SecretManagementService secretManagementService;
+
+  public MacGenerationService(final SecretManagementService secretManagementService) {
+    this.secretManagementService = secretManagementService;
+  }
 
   public byte[] calculateMac(
       final MessageMetadata messageMetadata,

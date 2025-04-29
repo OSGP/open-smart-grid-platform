@@ -16,7 +16,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata.Builder;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,6 @@ public class SystemEventService {
   private final CorrelationIdProviderService correlationIdProviderService;
   private final long invocationCounterEventThreshold;
 
-  @Autowired
   public SystemEventService(
       final OsgpRequestMessageSender osgpRequestMessageSender,
       final CorrelationIdProviderService correlationIdProviderService,

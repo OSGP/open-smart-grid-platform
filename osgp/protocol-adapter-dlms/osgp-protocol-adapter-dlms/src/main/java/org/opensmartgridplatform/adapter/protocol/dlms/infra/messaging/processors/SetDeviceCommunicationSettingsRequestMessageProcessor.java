@@ -12,17 +12,18 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommuni
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetDeviceCommunicationSettingsRequestMessageProcessor
     extends DeviceRequestMessageProcessor {
 
-  @Autowired private ManagementService managementService;
+  private final ManagementService managementService;
 
-  public SetDeviceCommunicationSettingsRequestMessageProcessor() {
+  public SetDeviceCommunicationSettingsRequestMessageProcessor(
+      final ManagementService managementService) {
     super(MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
+    this.managementService = managementService;
   }
 
   @Override

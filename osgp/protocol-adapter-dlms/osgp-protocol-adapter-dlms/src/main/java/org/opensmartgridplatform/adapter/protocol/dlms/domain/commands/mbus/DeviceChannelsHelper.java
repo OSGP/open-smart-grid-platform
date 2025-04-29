@@ -38,7 +38,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dlms.objectconfig.CosemObject;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -62,7 +61,6 @@ public class DeviceChannelsHelper {
   private final DlmsHelper dlmsHelper;
   private final ObjectConfigServiceHelper objectConfigServiceHelper;
 
-  @Autowired
   public DeviceChannelsHelper(
       final DlmsHelper dlmsHelper, final ObjectConfigServiceHelper objectConfigServiceHelper) {
     this.dlmsHelper = dlmsHelper;

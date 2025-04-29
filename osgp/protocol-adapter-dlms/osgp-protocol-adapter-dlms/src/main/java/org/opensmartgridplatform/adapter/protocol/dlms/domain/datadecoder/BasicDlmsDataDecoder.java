@@ -13,7 +13,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.enums.DayOfWeek;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -35,7 +34,6 @@ public class BasicDlmsDataDecoder {
 
   private final DlmsHelper dlmsHelper;
 
-  @Autowired
   public BasicDlmsDataDecoder(final DlmsHelper dlmsHelper) {
     this.dlmsHelper = dlmsHelper;
   }
