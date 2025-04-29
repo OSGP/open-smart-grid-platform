@@ -13,7 +13,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersi
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +20,11 @@ public class GetFirmwareVersionGasRequestDataConverter
     implements CustomValueToDtoConverter<
         GetFirmwareVersionGasRequestData, GetFirmwareVersionGasRequestDto> {
 
-  @Autowired private DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
+
+  public GetFirmwareVersionGasRequestDataConverter(final DomainHelperService domainHelperService) {
+    this.domainHelperService = domainHelperService;
+  }
 
   /**
    * This overridden convert is used from the bundle flow where the deviceIdentification from the

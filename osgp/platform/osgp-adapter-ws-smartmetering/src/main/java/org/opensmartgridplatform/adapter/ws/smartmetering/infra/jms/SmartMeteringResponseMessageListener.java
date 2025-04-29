@@ -11,17 +11,16 @@ import jakarta.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor.DomainResponseMessageProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component(value = "wsSmartMeteringInboundDomainResponsesMessageListener")
 public class SmartMeteringResponseMessageListener implements MessageListener {
 
-  @Autowired private DomainResponseMessageProcessor processor;
+  private final DomainResponseMessageProcessor processor;
 
-  public SmartMeteringResponseMessageListener() {
-    // empty constructor
+  public SmartMeteringResponseMessageListener(final DomainResponseMessageProcessor processor) {
+    this.processor = processor;
   }
 
   @Override

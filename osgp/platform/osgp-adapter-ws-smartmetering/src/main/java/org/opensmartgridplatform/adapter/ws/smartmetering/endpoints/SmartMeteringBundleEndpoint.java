@@ -22,7 +22,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -40,7 +39,6 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
   private final ActionMapperService actionMapperService;
   private final ActionMapperResponseService actionMapperResponseService;
 
-  @Autowired
   public SmartMeteringBundleEndpoint(
       @Qualifier(value = "wsSmartMeteringBundleService") final BundleService bundleService,
       @Qualifier(value = "wsSmartMeteringActionMapperService")

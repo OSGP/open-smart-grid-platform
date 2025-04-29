@@ -8,7 +8,6 @@ import jakarta.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class ResendNotificationService extends AbstractResendNotificationService<NotificationType> {
 
-  @Autowired private NotificationService smartMeteringNotificationService;
+  private final NotificationService smartMeteringNotificationService;
+  private final String webserviceNotificationApplicationName;
 
-  @Autowired private String webserviceNotificationApplicationName;
-
-  public ResendNotificationService() {
+  public ResendNotificationService(
+      final NotificationService smartMeteringNotificationService,
+      final String webserviceNotificationApplicationName) {
     super(NotificationType.class);
+    this.smartMeteringNotificationService = smartMeteringNotificationService;
+    this.webserviceNotificationApplicationName = webserviceNotificationApplicationName;
   }
 
   @PostConstruct

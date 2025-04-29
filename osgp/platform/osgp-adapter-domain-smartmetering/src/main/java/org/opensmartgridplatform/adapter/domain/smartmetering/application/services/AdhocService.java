@@ -32,7 +32,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,22 +44,25 @@ public class AdhocService {
   private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION =
       "Device Response not ok. Unexpected Exception";
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
+  private final DomainHelperService domainHelperService;
+  private final MapperFactory mapperFactory;
+  private final ConfigurationMapper configurationMapper;
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-  private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private MapperFactory mapperFactory;
-
-  @Autowired private ConfigurationMapper configurationMapper;
-
-  public AdhocService() {
-    // Parameterless constructor required for transactions...
+  public AdhocService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      final DomainHelperService domainHelperService,
+      final MapperFactory mapperFactory,
+      final ConfigurationMapper configurationMapper) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+    this.domainHelperService = domainHelperService;
+    this.mapperFactory = mapperFactory;
+    this.configurationMapper = configurationMapper;
   }
 
   public void synchronizeTime(

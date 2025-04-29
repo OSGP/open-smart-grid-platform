@@ -7,7 +7,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class ResponseUrlDataCleanupService {
 
-  @Autowired private ResponseUrlDataRepository responseUrlDataRepository;
+  private final ResponseUrlDataRepository responseUrlDataRepository;
+  private final int cleanupJobRetentionTimeInDays;
 
-  @Autowired private int cleanupJobRetentionTimeInDays;
+  public ResponseUrlDataCleanupService(
+      final ResponseUrlDataRepository responseUrlDataRepository,
+      final int cleanupJobRetentionTimeInDays) {
+    this.responseUrlDataRepository = responseUrlDataRepository;
+    this.cleanupJobRetentionTimeInDays = cleanupJobRetentionTimeInDays;
+  }
 
   public void execute() {
 

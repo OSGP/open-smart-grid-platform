@@ -21,7 +21,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,16 +34,20 @@ public class FirmwareService {
   public static final String MODULE_DESCRIPTION_ACTIVE_FIRMWARE = "active_firmware";
   public static final String MODULE_DESCRIPTION_MODULE_ACTIVE_FIRMWARE = "module_active_firmware";
 
-  @Autowired private FirmwareFileRepository firmwareFileRepository;
+  private final FirmwareFileRepository firmwareFileRepository;
+  private final FirmwareModuleRepository firmwareModuleRepository;
+  private final DeviceFirmwareModuleRepository deviceFirmwareModuleRepository;
+  private final SmartMeterRepository smartMeterRepository;
 
-  @Autowired private FirmwareModuleRepository firmwareModuleRepository;
-
-  @Autowired private DeviceFirmwareModuleRepository deviceFirmwareModuleRepository;
-
-  @Autowired private SmartMeterRepository smartMeterRepository;
-
-  public FirmwareService() {
-    // Parameterless constructor required for transactions...
+  public FirmwareService(
+      final FirmwareFileRepository firmwareFileRepository,
+      final FirmwareModuleRepository firmwareModuleRepository,
+      final DeviceFirmwareModuleRepository deviceFirmwareModuleRepository,
+      final SmartMeterRepository smartMeterRepository) {
+    this.firmwareFileRepository = firmwareFileRepository;
+    this.firmwareModuleRepository = firmwareModuleRepository;
+    this.deviceFirmwareModuleRepository = deviceFirmwareModuleRepository;
+    this.smartMeterRepository = smartMeterRepository;
   }
 
   public FirmwareFile getFirmwareFile(final String firmwareIdentification)

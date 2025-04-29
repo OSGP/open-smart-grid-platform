@@ -15,7 +15,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "wsSmartMeteringDomainHelperService")
@@ -23,11 +22,18 @@ public class DomainHelperService {
 
   private static final ComponentType COMPONENT_TYPE = ComponentType.WS_SMART_METERING;
 
-  @Autowired private DeviceDomainService deviceDomainService;
+  private final DeviceDomainService deviceDomainService;
+  private final OrganisationDomainService organisationDomainService;
+  private final SecurityService securityService;
 
-  @Autowired private OrganisationDomainService organisationDomainService;
-
-  @Autowired private SecurityService securityService;
+  public DomainHelperService(
+      final DeviceDomainService deviceDomainService,
+      final OrganisationDomainService organisationDomainService,
+      final SecurityService securityService) {
+    this.deviceDomainService = deviceDomainService;
+    this.organisationDomainService = organisationDomainService;
+    this.securityService = securityService;
+  }
 
   Device findDevice(final String deviceIdentification) throws FunctionalException {
     return this.deviceDomainService.searchDevice(deviceIdentification);
@@ -39,7 +45,7 @@ public class DomainHelperService {
 
   Organisation findOrganisation(final String organisationIdentification)
       throws FunctionalException {
-    Organisation organisation;
+    final Organisation organisation;
     try {
       organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
     } catch (final UnknownEntityException e) {

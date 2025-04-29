@@ -13,14 +13,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeyOnGMeterRe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SetKeyOnGMeterDataConverter
     implements CustomValueToDtoConverter<SetKeyOnGMeterRequestData, SetKeyOnGMeterRequestDto> {
 
-  @Autowired private DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
+
+  public SetKeyOnGMeterDataConverter(final DomainHelperService domainHelperService) {
+    this.domainHelperService = domainHelperService;
+  }
 
   @Override
   public SetKeyOnGMeterRequestDto convert(

@@ -5,11 +5,12 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.syncrequest;
 
 import java.io.Serializable;
+import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
+import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,12 +19,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class FindMessageLogsSyncRequestExecutor extends SyncRequestExecutor {
 
-  @Autowired private DeviceLogItemPagingRepository logItemRepository;
+  private final DeviceLogItemPagingRepository logItemRepository;
+  private final PagingSettings pagingSettings;
 
-  @Autowired private PagingSettings pagingSettings;
-
-  public FindMessageLogsSyncRequestExecutor() {
-    super(DeviceFunction.GET_MESSAGES);
+  public FindMessageLogsSyncRequestExecutor(
+      final NotificationService notificationService,
+      final ResponseDataService responseDataService,
+      final DeviceLogItemPagingRepository logItemRepository,
+      final PagingSettings pagingSettings) {
+    super(notificationService, responseDataService, DeviceFunction.GET_MESSAGES);
+    this.logItemRepository = logItemRepository;
+    this.pagingSettings = pagingSettings;
   }
 
   public void execute(

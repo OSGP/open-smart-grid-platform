@@ -113,7 +113,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFi
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -334,15 +333,24 @@ public class ActionMapperService {
         ClearMBusStatusOnAllChannelsRequest.class, ClearMBusStatusOnAllChannelsRequestData.class);
   }
 
-  @Autowired private ManagementMapper managementMapper;
+  private final ManagementMapper managementMapper;
+  private final AdhocMapper adhocMapper;
+  private final ConfigurationMapper configurationMapper;
+  private final MonitoringMapper monitoringMapper;
+  private final InstallationMapper installationMapper;
 
-  @Autowired private AdhocMapper adhocMapper;
-
-  @Autowired private ConfigurationMapper configurationMapper;
-
-  @Autowired private MonitoringMapper monitoringMapper;
-
-  @Autowired private InstallationMapper installationMapper;
+  public ActionMapperService(
+      final ManagementMapper managementMapper,
+      final AdhocMapper adhocMapper,
+      final ConfigurationMapper configurationMapper,
+      final MonitoringMapper monitoringMapper,
+      final InstallationMapper installationMapper) {
+    this.managementMapper = managementMapper;
+    this.adhocMapper = adhocMapper;
+    this.configurationMapper = configurationMapper;
+    this.monitoringMapper = monitoringMapper;
+    this.installationMapper = installationMapper;
+  }
 
   /** Specifies which mapper to use for the ws class received. */
   @PostConstruct

@@ -13,7 +13,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +20,11 @@ public class PeriodicReadsRequestGasDataConverter
     implements CustomValueToDtoConverter<
         PeriodicMeterReadsGasRequestData, PeriodicMeterReadsGasRequestDto> {
 
-  @Autowired private DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
+
+  public PeriodicReadsRequestGasDataConverter(final DomainHelperService domainHelperService) {
+    this.domainHelperService = domainHelperService;
+  }
 
   @Override
   public PeriodicMeterReadsGasRequestDto convert(

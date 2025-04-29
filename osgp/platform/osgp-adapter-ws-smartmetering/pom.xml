@@ -236,6 +236,11 @@ SPDX-License-Identifier: Apache-2.0
 
     <!-- Testing dependencies -->
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
@@ -276,6 +281,7 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>
     </dependency>
+
   </dependencies>
 
 </project>

@@ -25,7 +25,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.validation.Identification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -41,20 +40,26 @@ public class ManagementService {
 
   private static final int PAGE_SIZE = 30;
 
-  @Autowired private RequestService requestService;
+  private final RequestService requestService;
+  private final DomainHelperService domainHelperService;
+  private final DeviceRepository deviceRepository;
+  private final ResponseDataRepository responseDataRepository;
+  private final CorrelationIdProviderService correlationIdProviderService;
+  private final FindMessageLogsSyncRequestExecutor findMessageLogsSyncRequestExecutor;
 
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private DeviceRepository deviceRepository;
-
-  @Autowired private ResponseDataRepository responseDataRepository;
-
-  @Autowired private CorrelationIdProviderService correlationIdProviderService;
-
-  @Autowired private FindMessageLogsSyncRequestExecutor findMessageLogsSyncRequestExecutor;
-
-  public ManagementService() {
-    // Parameterless constructor required for transactions
+  public ManagementService(
+      final RequestService requestService,
+      final DomainHelperService domainHelperService,
+      final DeviceRepository deviceRepository,
+      final ResponseDataRepository responseDataRepository,
+      final CorrelationIdProviderService correlationIdProviderService,
+      final FindMessageLogsSyncRequestExecutor findMessageLogsSyncRequestExecutor) {
+    this.requestService = requestService;
+    this.domainHelperService = domainHelperService;
+    this.deviceRepository = deviceRepository;
+    this.responseDataRepository = responseDataRepository;
+    this.correlationIdProviderService = correlationIdProviderService;
+    this.findMessageLogsSyncRequestExecutor = findMessageLogsSyncRequestExecutor;
   }
 
   public AsyncResponse enqueueAndSendFindLogsRequest(

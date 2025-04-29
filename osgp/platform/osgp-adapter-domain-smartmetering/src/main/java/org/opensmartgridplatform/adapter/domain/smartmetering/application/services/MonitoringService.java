@@ -53,7 +53,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,20 +66,22 @@ public class MonitoringService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final MonitoringMapper monitoringMapper;
+  private final DomainHelperService domainHelperService;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-  @Autowired private MonitoringMapper monitoringMapper;
-
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-  private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-  public MonitoringService() {
-    // Parameterless constructor required for transactions...
+  public MonitoringService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      final MonitoringMapper monitoringMapper,
+      final DomainHelperService domainHelperService,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.monitoringMapper = monitoringMapper;
+    this.domainHelperService = domainHelperService;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
   }
 
   public void requestPeriodicMeterReads(

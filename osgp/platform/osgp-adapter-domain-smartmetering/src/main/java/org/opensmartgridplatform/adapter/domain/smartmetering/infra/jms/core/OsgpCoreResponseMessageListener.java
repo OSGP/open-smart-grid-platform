@@ -12,7 +12,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -23,12 +22,12 @@ public class OsgpCoreResponseMessageListener implements MessageListener {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(OsgpCoreResponseMessageListener.class);
 
-  @Autowired
-  @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-  private MessageProcessorMap osgpCoreResponseMessageProcessorMap;
+  private final MessageProcessorMap osgpCoreResponseMessageProcessorMap;
 
-  public OsgpCoreResponseMessageListener() {
-    // empty constructor
+  public OsgpCoreResponseMessageListener(
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+    this.osgpCoreResponseMessageProcessorMap = osgpCoreResponseMessageProcessorMap;
   }
 
   @Override

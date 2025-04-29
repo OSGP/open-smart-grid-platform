@@ -11,13 +11,17 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 @DisallowConcurrentExecution
 public class ResponseUrlDataCleanupJob implements Job {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ResponseUrlDataCleanupJob.class);
 
-  @Autowired private ResponseUrlDataCleanupService responseUrlDataCleanupService;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Constructor injection doesn't work with quartz jobs
+  private ResponseUrlDataCleanupService responseUrlDataCleanupService;
 
   @Override
   public void execute(final JobExecutionContext context) throws JobExecutionException {

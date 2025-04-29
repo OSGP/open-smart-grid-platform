@@ -21,9 +21,13 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringEndpoint.class);
 
-  @Autowired protected ResponseUrlService responseUrlService;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  protected ResponseUrlService responseUrlService;
 
-  @Autowired protected ResponseDataService responseDataService;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  protected ResponseDataService responseDataService;
 
   /**
    * Rethrow exception if it already is a functional or technical exception, otherwise throw new

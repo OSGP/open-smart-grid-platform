@@ -10,7 +10,6 @@ import jakarta.jms.ObjectMessage;
 import jakarta.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -20,9 +19,13 @@ import org.springframework.stereotype.Component;
 @Component(value = "domainSmartMeteringOutboundOsgpCoreResponsesMessageSender")
 public class OsgpCoreResponseMessageSender {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringOutboundOsgpCoreResponsesJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
+
+  public OsgpCoreResponseMessageSender(
+      @Qualifier("domainSmartMeteringOutboundOsgpCoreResponsesJmsTemplate")
+          final JmsTemplate jmsTemplate) {
+    this.jmsTemplate = jmsTemplate;
+  }
 
   public void send(final ResponseMessage responseMessage, final String messageType) {
 

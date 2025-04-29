@@ -11,7 +11,6 @@ import org.opensmartgridplatform.domain.core.services.SmartMeterDomainService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "domainSmartMeteringHelperService")
@@ -19,7 +18,11 @@ public class DomainHelperService {
 
   private static final ComponentType COMPONENT_TYPE = ComponentType.DOMAIN_SMART_METERING;
 
-  @Autowired private SmartMeterDomainService smartMeteringDeviceDomainService;
+  private final SmartMeterDomainService smartMeteringDeviceDomainService;
+
+  public DomainHelperService(final SmartMeterDomainService smartMeteringDeviceDomainService) {
+    this.smartMeteringDeviceDomainService = smartMeteringDeviceDomainService;
+  }
 
   /**
    * @param deviceIdentification

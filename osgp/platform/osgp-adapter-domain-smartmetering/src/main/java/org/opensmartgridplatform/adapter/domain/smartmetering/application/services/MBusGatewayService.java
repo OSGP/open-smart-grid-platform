@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
@@ -32,8 +33,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,18 +46,22 @@ public class MBusGatewayService {
 
   private static final int MAXIMUM_NUMBER_OF_MBUS_CHANNELS = 4;
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
+  private final SmartMeterRepository smartMeteringDeviceRepository;
+  private final DomainHelperService domainHelperService;
 
-  @Autowired private SmartMeterRepository smartMeteringDeviceRepository;
-
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private InstallationService installationService;
-
-  public MBusGatewayService() {
-    // Parameterless constructor required for transactions...
+  public MBusGatewayService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      final SmartMeterRepository smartMeteringDeviceRepository,
+      final DomainHelperService domainHelperService) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+    this.smartMeteringDeviceRepository = smartMeteringDeviceRepository;
+    this.domainHelperService = domainHelperService;
   }
 
   /**
@@ -120,8 +125,17 @@ public class MBusGatewayService {
     // If Mbus device is already decoupled, return response OK, otherwise,
     // decouple it.
     if (!this.isMbusDeviceCoupled(mbusDevice)) {
-      this.installationService.handleResponse(
-          "decoupleMbusDevice", messageMetadata, ResponseMessageResultType.OK, null);
+
+      log.debug("decoupleMbusDevice for MessageType: {}", messageMetadata.getMessageType());
+
+      final ResponseMessage responseMessage =
+          ResponseMessage.newResponseMessageBuilder()
+              .withMessageMetadata(messageMetadata)
+              .withResult(ResponseMessageResultType.OK)
+              .build();
+
+      this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+
     } else {
       final DecoupleMbusDeviceDto requestDto = new DecoupleMbusDeviceDto(mbusDevice.getChannel());
       this.osgpCoreRequestMessageSender.send(

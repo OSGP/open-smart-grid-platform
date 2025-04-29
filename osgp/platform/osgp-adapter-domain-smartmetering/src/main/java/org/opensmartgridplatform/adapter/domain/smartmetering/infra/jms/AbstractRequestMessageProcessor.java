@@ -26,7 +26,9 @@ public abstract class AbstractRequestMessageProcessor {
       "Operation %s is not supported, it must be " + "overridden by the implementing class.";
   private final ComponentType componentType;
 
-  @Autowired protected NotificationResponseMessageSender responseMessageSender;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  protected NotificationResponseMessageSender responseMessageSender;
 
   protected AbstractRequestMessageProcessor() {
     this.componentType = ComponentType.DOMAIN_SMART_METERING;

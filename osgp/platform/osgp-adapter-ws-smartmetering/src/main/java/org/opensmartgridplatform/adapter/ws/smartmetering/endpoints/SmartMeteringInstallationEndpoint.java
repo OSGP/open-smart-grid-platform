@@ -55,7 +55,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -68,12 +67,13 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
   private static final String SMARTMETER_INSTALLATION_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10";
 
-  @Autowired private RequestService requestService;
+  private final RequestService requestService;
+  private final InstallationMapper installationMapper;
 
-  @Autowired private InstallationMapper installationMapper;
-
-  public SmartMeteringInstallationEndpoint() {
-    // Empty constructor
+  public SmartMeteringInstallationEndpoint(
+      final RequestService requestService, final InstallationMapper installationMapper) {
+    this.requestService = requestService;
+    this.installationMapper = installationMapper;
   }
 
   @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)

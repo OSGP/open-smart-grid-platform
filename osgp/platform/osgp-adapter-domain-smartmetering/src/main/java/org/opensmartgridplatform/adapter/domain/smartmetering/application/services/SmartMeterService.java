@@ -26,7 +26,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,18 +34,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class SmartMeterService {
 
-  @Autowired private SmartMeterRepository smartMeterRepository;
-  @Autowired private ManufacturerRepository manufacturerRepository;
+  private final SmartMeterRepository smartMeterRepository;
+  private final ManufacturerRepository manufacturerRepository;
+  private final DeviceModelRepository deviceModelRepository;
+  private final ProtocolInfoRepository protocolInfoRepository;
+  private final OrganisationRepository organisationRepository;
+  private final DeviceAuthorizationRepository deviceAuthorizationRepository;
+  private final MapperFactory mapperFactory;
 
-  @Autowired private DeviceModelRepository deviceModelRepository;
-
-  @Autowired private ProtocolInfoRepository protocolInfoRepository;
-
-  @Autowired private OrganisationRepository organisationRepository;
-
-  @Autowired private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
-  @Autowired private MapperFactory mapperFactory;
+  public SmartMeterService(
+      final SmartMeterRepository smartMeterRepository,
+      final ManufacturerRepository manufacturerRepository,
+      final DeviceModelRepository deviceModelRepository,
+      final ProtocolInfoRepository protocolInfoRepository,
+      final OrganisationRepository organisationRepository,
+      final DeviceAuthorizationRepository deviceAuthorizationRepository,
+      final MapperFactory mapperFactory) {
+    this.smartMeterRepository = smartMeterRepository;
+    this.manufacturerRepository = manufacturerRepository;
+    this.deviceModelRepository = deviceModelRepository;
+    this.protocolInfoRepository = protocolInfoRepository;
+    this.organisationRepository = organisationRepository;
+    this.deviceAuthorizationRepository = deviceAuthorizationRepository;
+    this.mapperFactory = mapperFactory;
+  }
 
   public void storeMeter(
       final String organisationIdentification,

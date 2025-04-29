@@ -15,7 +15,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "domainSmartMeteringNotificationService")
@@ -23,9 +22,15 @@ public class NotificationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
-  @Autowired private MapperFactory mapperFactory;
+  private final MapperFactory mapperFactory;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-  @Autowired private WebServiceResponseMessageSender webServiceResponseMessageSender;
+  public NotificationService(
+      final MapperFactory mapperFactory,
+      final WebServiceResponseMessageSender webServiceResponseMessageSender) {
+    this.mapperFactory = mapperFactory;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+  }
 
   public void handlePushNotificationAlarm(
       final MessageMetadata messageMetadata, final PushNotificationAlarmDto pushNotificationAlarm) {

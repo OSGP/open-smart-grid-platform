@@ -53,7 +53,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -65,9 +64,14 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
   private static final String SMARTMETER_ADHOC_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10";
 
-  @Autowired private RequestService requestService;
+  private final RequestService requestService;
+  private final AdhocMapper adhocMapper;
 
-  @Autowired private AdhocMapper adhocMapper;
+  public SmartMeteringAdhocEndpoint(
+      final RequestService requestService, final AdhocMapper adhocMapper) {
+    this.requestService = requestService;
+    this.adhocMapper = adhocMapper;
+  }
 
   @PayloadRoot(localPart = "SynchronizeTimeRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
   @ResponsePayload

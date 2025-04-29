@@ -8,7 +8,6 @@ import jakarta.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -20,9 +19,13 @@ public class SmartMeteringRequestMessageSender {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SmartMeteringRequestMessageSender.class);
 
-  @Autowired
-  @Qualifier("wsSmartMeteringOutboundDomainRequestsJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
+
+  public SmartMeteringRequestMessageSender(
+      @Qualifier("wsSmartMeteringOutboundDomainRequestsJmsTemplate")
+          final JmsTemplate jmsTemplate) {
+    this.jmsTemplate = jmsTemplate;
+  }
 
   /**
    * Method for sending a request message to the queue

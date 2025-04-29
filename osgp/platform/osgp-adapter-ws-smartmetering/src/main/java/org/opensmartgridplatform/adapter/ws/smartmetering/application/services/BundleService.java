@@ -15,7 +15,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -25,14 +24,17 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class BundleService {
 
-  @Autowired private DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
+  private final CorrelationIdProviderService correlationIdProviderService;
+  private final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-  @Autowired private CorrelationIdProviderService correlationIdProviderService;
-
-  @Autowired private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
-
-  public BundleService() {
-    // Parameterless constructor required for transactions
+  public BundleService(
+      final DomainHelperService domainHelperService,
+      final CorrelationIdProviderService correlationIdProviderService,
+      final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender) {
+    this.domainHelperService = domainHelperService;
+    this.correlationIdProviderService = correlationIdProviderService;
+    this.smartMeteringRequestMessageSender = smartMeteringRequestMessageSender;
   }
 
   public String enqueueBundleRequest(

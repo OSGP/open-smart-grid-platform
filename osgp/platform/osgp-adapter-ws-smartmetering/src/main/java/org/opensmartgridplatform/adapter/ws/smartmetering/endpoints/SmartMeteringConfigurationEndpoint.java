@@ -147,7 +147,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -163,20 +162,23 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   private static final String SMARTMETER_CONFIGURATION_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10";
 
-  @Autowired private RequestService requestService;
+  private final RequestService requestService;
+  private final ConfigurationMapper configurationMapper;
+  private final ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+  private final RsaEncrypter decrypterForGxfSmartMetering;
+  private final String webserviceNotificationApplicationName;
 
-  @Autowired private ConfigurationMapper configurationMapper;
-
-  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
-
-  @Autowired
-  @Qualifier("decrypterForGxfSmartMetering")
-  private RsaEncrypter decrypterForGxfSmartMetering;
-
-  @Autowired private String webserviceNotificationApplicationName;
-
-  public SmartMeteringConfigurationEndpoint() {
-    // Default constructor
+  public SmartMeteringConfigurationEndpoint(
+      final RequestService requestService,
+      final ConfigurationMapper configurationMapper,
+      final ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
+      @Qualifier("decrypterForGxfSmartMetering") final RsaEncrypter decrypterForGxfSmartMetering,
+      final String webserviceNotificationApplicationName) {
+    this.requestService = requestService;
+    this.configurationMapper = configurationMapper;
+    this.applicationKeyConfigurationRepository = applicationKeyConfigurationRepository;
+    this.decrypterForGxfSmartMetering = decrypterForGxfSmartMetering;
+    this.webserviceNotificationApplicationName = webserviceNotificationApplicationName;
   }
 
   /**

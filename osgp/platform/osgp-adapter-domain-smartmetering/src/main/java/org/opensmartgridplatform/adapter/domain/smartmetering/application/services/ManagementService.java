@@ -38,7 +38,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,26 +52,31 @@ public class ManagementService {
   private static final String SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG =
       "Sending request message to core.";
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
+  private final DomainHelperService domainHelperService;
+  private final ManagementMapper managementMapper;
+  private final SmartMeterRepository smartMeterRepository;
+  private final EventService eventService;
+  private final ProtocolInfoRepository protocolRepository;
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-  private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private ManagementMapper managementMapper;
-
-  @Autowired private SmartMeterRepository smartMeterRepository;
-
-  @Autowired private EventService eventService;
-
-  @Autowired private ProtocolInfoRepository protocolRepository;
-
-  public ManagementService() {
-    // Parameterless constructor required for transactions...
+  public ManagementService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      final DomainHelperService domainHelperService,
+      final ManagementMapper managementMapper,
+      final SmartMeterRepository smartMeterRepository,
+      final EventService eventService,
+      final ProtocolInfoRepository protocolRepository) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+    this.domainHelperService = domainHelperService;
+    this.managementMapper = managementMapper;
+    this.smartMeterRepository = smartMeterRepository;
+    this.eventService = eventService;
+    this.protocolRepository = protocolRepository;
   }
 
   public void findEvents(

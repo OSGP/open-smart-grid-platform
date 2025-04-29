@@ -12,7 +12,6 @@ import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -27,13 +26,17 @@ public abstract class SyncRequestExecutor {
   @Value("${sync.notification.delay}")
   private int syncNotificationDelay;
 
-  @Autowired private NotificationService notificationService;
-
-  @Autowired private ResponseDataService responseDataService;
+  private final NotificationService notificationService;
+  private final ResponseDataService responseDataService;
 
   final DeviceFunction messageType;
 
-  SyncRequestExecutor(final DeviceFunction messageType) {
+  SyncRequestExecutor(
+      final NotificationService notificationService,
+      final ResponseDataService responseDataService,
+      final DeviceFunction messageType) {
+    this.notificationService = notificationService;
+    this.responseDataService = responseDataService;
     this.messageType = messageType;
   }
 

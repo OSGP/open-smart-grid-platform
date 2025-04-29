@@ -72,7 +72,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -92,7 +91,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
   private final ManagementService managementService;
   private final ManagementMapper managementMapper;
 
-  @Autowired
   public SmartMeteringManagementEndpoint(
       final RequestService requestService,
       final ManagementService managementService,

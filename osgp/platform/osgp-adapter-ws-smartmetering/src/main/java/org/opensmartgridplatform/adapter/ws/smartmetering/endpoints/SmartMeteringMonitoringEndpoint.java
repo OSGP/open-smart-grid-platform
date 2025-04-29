@@ -67,7 +67,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -80,12 +79,13 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
   private static final String SMARTMETER_MONITORING_NAMESPACE =
       "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10";
 
-  @Autowired private RequestService requestService;
+  private final RequestService requestService;
+  private final MonitoringMapper monitoringMapper;
 
-  @Autowired private MonitoringMapper monitoringMapper;
-
-  public SmartMeteringMonitoringEndpoint() {
-    // Empty constructor
+  public SmartMeteringMonitoringEndpoint(
+      final RequestService requestService, final MonitoringMapper monitoringMapper) {
+    this.requestService = requestService;
+    this.monitoringMapper = monitoringMapper;
   }
 
   @PayloadRoot(localPart = "PeriodicMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)

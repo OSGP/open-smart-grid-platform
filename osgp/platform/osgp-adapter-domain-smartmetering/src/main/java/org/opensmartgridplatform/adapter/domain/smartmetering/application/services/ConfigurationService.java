@@ -85,7 +85,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,22 +97,25 @@ public class ConfigurationService {
   private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG =
       "Device Response not ok. Unexpected Exception";
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final ConfigurationMapper configurationMapper;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
+  private final DomainHelperService domainHelperService;
+  private final FirmwareService firmwareService;
 
-  @Autowired private ConfigurationMapper configurationMapper;
-
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-  private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private FirmwareService firmwareService;
-
-  public ConfigurationService() {
-    // Parameterless constructor required for transactions...
+  public ConfigurationService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      final ConfigurationMapper configurationMapper,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      final DomainHelperService domainHelperService,
+      final FirmwareService firmwareService) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.configurationMapper = configurationMapper;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+    this.domainHelperService = domainHelperService;
+    this.firmwareService = firmwareService;
   }
 
   public void setSpecialDays(

@@ -33,7 +33,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,33 +43,40 @@ public class BundleService {
   private static final String SMART_METER_G = "SMART_METER_G";
   private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
+  private final DomainHelperService domainHelperService;
+  private final ActionMapperService actionMapperService;
+  private final ActionMapperResponseService actionMapperResponseService;
+  private final MBusGatewayService mBusGatewayService;
+  private final ManagementService managementService;
+  private final ConfigurationMapper configurationMapper;
+  private final FirmwareService firmwareService;
+  private final EventService eventService;
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-  private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-  @Autowired private DomainHelperService domainHelperService;
-
-  @Autowired private ActionMapperService actionMapperService;
-
-  @Autowired private ActionMapperResponseService actionMapperResponseService;
-
-  @Autowired private MBusGatewayService mBusGatewayService;
-
-  @Autowired private ManagementService managementService;
-
-  @Autowired private ConfigurationMapper configurationMapper;
-
-  @Autowired private FirmwareService firmwareService;
-
-  @Autowired private EventService eventService;
-
-  public BundleService() {
-
-    // Parameterless constructor required for transactions...
+  public BundleService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      final DomainHelperService domainHelperService,
+      final ActionMapperService actionMapperService,
+      final ActionMapperResponseService actionMapperResponseService,
+      final MBusGatewayService mBusGatewayService,
+      final ManagementService managementService,
+      final ConfigurationMapper configurationMapper,
+      final FirmwareService firmwareService,
+      final EventService eventService) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+    this.domainHelperService = domainHelperService;
+    this.actionMapperService = actionMapperService;
+    this.actionMapperResponseService = actionMapperResponseService;
+    this.mBusGatewayService = mBusGatewayService;
+    this.managementService = managementService;
+    this.configurationMapper = configurationMapper;
+    this.firmwareService = firmwareService;
+    this.eventService = eventService;
   }
 
   @Transactional(value = "transactionManager")

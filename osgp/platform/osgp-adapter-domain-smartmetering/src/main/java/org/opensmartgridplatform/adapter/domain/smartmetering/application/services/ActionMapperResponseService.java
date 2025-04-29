@@ -74,7 +74,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -82,15 +81,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class ActionMapperResponseService {
 
-  @Autowired private ManagementMapper managementMapper;
-
-  @Autowired private ConfigurationMapper configurationMapper;
-
-  @Autowired private MonitoringMapper monitoringMapper;
-
-  @Autowired private CommonMapper commonMapper;
-
-  @Autowired private InstallationMapper installationMapper;
+  private final ManagementMapper managementMapper;
+  private final ConfigurationMapper configurationMapper;
+  private final MonitoringMapper monitoringMapper;
+  private final CommonMapper commonMapper;
+  private final InstallationMapper installationMapper;
 
   private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper>
       classToMapperMap = new HashMap<>();
@@ -133,6 +128,19 @@ public class ActionMapperResponseService {
     classMap.put(GetOutagesResponseDto.class, GetOutagesResponseData.class);
     classMap.put(GetGsmDiagnosticResponseDto.class, GetGsmDiagnosticResponseData.class);
     classMap.put(GetKeysResponseDto.class, GetKeysResponseData.class);
+  }
+
+  public ActionMapperResponseService(
+      final ManagementMapper managementMapper,
+      final ConfigurationMapper configurationMapper,
+      final MonitoringMapper monitoringMapper,
+      final CommonMapper commonMapper,
+      final InstallationMapper installationMapper) {
+    this.managementMapper = managementMapper;
+    this.configurationMapper = configurationMapper;
+    this.monitoringMapper = monitoringMapper;
+    this.commonMapper = commonMapper;
+    this.installationMapper = installationMapper;
   }
 
   /** Specifies which mapper to use for the DTO class received. */

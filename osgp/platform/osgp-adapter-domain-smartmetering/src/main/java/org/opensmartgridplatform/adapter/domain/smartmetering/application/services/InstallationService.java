@@ -33,7 +33,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,28 +42,32 @@ public class InstallationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private JmsMessageSender osgpCoreRequestMessageSender;
+  private final JmsMessageSender osgpCoreRequestMessageSender;
+  private final MapperFactory mapperFactory;
+  private final WebServiceResponseMessageSender webServiceResponseMessageSender;
+  private final SmartMeterService smartMeterService;
+  private final MBusGatewayService mBusGatewayService;
+  private final CommonMapper commonMapper;
+  private final InstallationMapper installationMapper;
 
-  @Autowired private MapperFactory mapperFactory;
-
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-  private WebServiceResponseMessageSender webServiceResponseMessageSender;
-
-  @Autowired
-  @Qualifier(value = "domainSmartMeteringSmartMeterService")
-  private SmartMeterService smartMeterService;
-
-  @Autowired private MBusGatewayService mBusGatewayService;
-
-  @Autowired private CommonMapper commonMapper;
-
-  @Autowired private InstallationMapper installationMapper;
-
-  public InstallationService() {
-    // No-args constructor required for transactions...
+  public InstallationService(
+      @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+          final JmsMessageSender osgpCoreRequestMessageSender,
+      final MapperFactory mapperFactory,
+      @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      @Qualifier(value = "domainSmartMeteringSmartMeterService")
+          final SmartMeterService smartMeterService,
+      final MBusGatewayService mBusGatewayService,
+      final CommonMapper commonMapper,
+      final InstallationMapper installationMapper) {
+    this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+    this.mapperFactory = mapperFactory;
+    this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+    this.smartMeterService = smartMeterService;
+    this.mBusGatewayService = mBusGatewayService;
+    this.commonMapper = commonMapper;
+    this.installationMapper = installationMapper;
   }
 
   public void addMeter(
@@ -263,16 +266,6 @@ public class InstallationService {
             .build();
 
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
-  }
-
-  @Transactional(value = "transactionManager")
-  public void handleResponse(
-      final String methodName,
-      final MessageMetadata messageMetadata,
-      final ResponseMessageResultType deviceResult,
-      final OsgpException exception) {
-
-    this.doHandleResponse(methodName, messageMetadata, deviceResult, exception);
   }
 
   private void doHandleResponse(

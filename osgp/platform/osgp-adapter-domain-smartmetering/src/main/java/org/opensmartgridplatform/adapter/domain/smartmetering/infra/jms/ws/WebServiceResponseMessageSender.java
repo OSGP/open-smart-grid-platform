@@ -11,7 +11,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -20,9 +19,13 @@ import org.springframework.stereotype.Component;
 @Component(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
 public class WebServiceResponseMessageSender implements NotificationResponseMessageSender {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringOutboundWebServiceResponsesJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
+
+  public WebServiceResponseMessageSender(
+      @Qualifier("domainSmartMeteringOutboundWebServiceResponsesJmsTemplate")
+          final JmsTemplate jmsTemplate) {
+    this.jmsTemplate = jmsTemplate;
+  }
 
   /**
    * Send a response message to the web service adapter using a custom time to live.
