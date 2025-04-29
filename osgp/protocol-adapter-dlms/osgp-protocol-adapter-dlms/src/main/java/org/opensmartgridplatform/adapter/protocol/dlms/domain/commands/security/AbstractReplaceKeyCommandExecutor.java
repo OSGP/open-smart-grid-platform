@@ -42,13 +42,7 @@ public abstract class AbstractReplaceKeyCommandExecutor<T>
 
   private static final Long INVOCATION_COUNTER_AFTER_KEY_CHANGE = 250L;
 
-  /**
-   * Constructor for CommandExecutors that need to be executed in the context of bundle actions.
-   *
-   * @param clazz the class of the ActionRequestDto subtype for which this CommandExecutor needs to
-   *     be called.
-   */
-  public AbstractReplaceKeyCommandExecutor(
+  protected AbstractReplaceKeyCommandExecutor(
       final Class<? extends ActionRequestDto> clazz,
       final SecretManagementService secretManagementService,
       final DlmsDeviceRepository dlmsDeviceRepository,
