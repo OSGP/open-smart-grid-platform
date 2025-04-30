@@ -190,9 +190,13 @@ jobs:
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
       - name: Wait for jobs to finish
         run: >
-          if ! kubectl wait --for=condition=complete --all jobs --timeout=1s; then
-            kubectl get pods 
-            kubectl get ns
+          if ! kubectl wait --for=condition=complete --all jobs --timeout=30m; then
+            for ns in $(kubectl get ns --no-headers); do 
+              for pod in $(kubectl -n $ns get pod -o name); do 
+                logs=$(kubectl -n $ns logs $pod --all-containers=true) 
+              done; 
+            done
+            echo "::error::Kubectl timed out with logs:\n $logs"
             exit 1
           fi
       - name: Run maven cucumber reporting
