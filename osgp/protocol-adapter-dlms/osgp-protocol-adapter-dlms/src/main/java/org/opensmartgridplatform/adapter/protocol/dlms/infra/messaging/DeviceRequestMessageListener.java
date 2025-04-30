@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings({"java:S1181", "java:S2139"})
 @Component(value = "protocolDlmsInboundOsgpCoreRequestsMessageListener")
 public class DeviceRequestMessageListener implements MessageListener {
 
@@ -27,18 +28,33 @@ public class DeviceRequestMessageListener implements MessageListener {
 
   @Override
   public void onMessage(final Message message) {
+    String jmsCorrelationID = "<unknown>";
     try {
-      LOGGER.info("Received message of type: {}", message.getJMSType());
+      jmsCorrelationID = message.getJMSCorrelationID();
+
+      LOGGER.info(
+          "Received RequestMessage of type {} in DLMS Protocol Adapter with JMSCorrelationID: {}",
+          message.getJMSType(),
+          message.getJMSCorrelationID());
 
       final ObjectMessage objectMessage = (ObjectMessage) message;
 
       final MessageProcessor processor =
           this.dlmsRequestMessageProcessorMap.getMessageProcessor(objectMessage);
 
-      processor.processMessage(objectMessage);
+      if (processor != null) {
+        processor.processMessage(objectMessage);
+      } else {
+        LOGGER.error(
+            "MessageProcessor not found for message with JMSCorrelationID: {}", jmsCorrelationID);
+      }
 
     } catch (final JMSException ex) {
-      LOGGER.error("Exception: {} ", ex.getMessage(), ex);
+      LOGGER.error(
+          "Exception in dlms.DeviceRequestMessageListener. JMSCorrelationID: {} : {}",
+          jmsCorrelationID,
+          ex.getMessage(),
+          ex);
     }
   }
 }

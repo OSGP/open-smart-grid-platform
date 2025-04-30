@@ -178,7 +178,7 @@ public class LoadProfileWithPeriod2 extends ProfileGeneric {
 
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
-    final short amrProfileStatusCode = 4;
+    short amrProfileStatusCode = 0;
     long importRate1 = 0;
     long importRate2 = 0;
     long exportRate1 = 0;
@@ -189,6 +189,11 @@ public class LoadProfileWithPeriod2 extends ProfileGeneric {
     long mBusValue4 = 0;
 
     for (int i = 0; i < PROFILE_ENTRIES; i++) {
+      if (i == 0) {
+        amrProfileStatusCode = 4; // DATA_NOT_VALID
+      } else {
+        amrProfileStatusCode = 0;
+      }
       importRate1 += 1;
       importRate2 += 2;
       exportRate1 += 3;

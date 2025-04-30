@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class GetKeysService {
 
@@ -42,6 +44,12 @@ public class GetKeysService {
 
     final List<SecurityKeyType> securityKeyTypes =
         getKeysRequestDto.getSecretTypes().stream().map(this::convertToSecurityKeyType).toList();
+
+    log.info(
+        "Getting keys for device {} with security key types {}. CorrelationUid: {}",
+        device.getDeviceIdentification(),
+        securityKeyTypes,
+        messageMetadata.getCorrelationUid());
 
     final Map<SecurityKeyType, byte[]> unencryptedKeys =
         this.secretManagementService.getKeys(

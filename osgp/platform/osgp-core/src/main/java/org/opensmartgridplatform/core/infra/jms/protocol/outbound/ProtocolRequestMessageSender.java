@@ -42,19 +42,21 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
   public void send(final ProtocolRequestMessage message, final ProtocolInfo protocolInfo) {
 
     LOGGER.info(
-        "Sending protocol request message for device [{}] using protocol [{}] with version [{}]",
+        "Sending protocol request message for device [{}] using protocol [{}] with version [{}] and  [correlationUid: {} ].",
         message.getDeviceIdentification(),
         protocolInfo.getProtocol(),
-        protocolInfo.getProtocolVersion());
+        protocolInfo.getProtocolVersion(),
+        message.getCorrelationUid());
 
     final JmsTemplate jmsTemplate =
         this.protocolRequestMessageJmsTemplateFactory.getJmsTemplate(protocolInfo);
 
     LOGGER.info(
-        "Message sender destination queue: [{}] for protocol [{}] with version [{}]",
+        "Message sender destination queue: [{}] for protocol [{}] with version [{}] and [correlationUid: {} ].",
         jmsTemplate.getDefaultDestination(),
         protocolInfo.getProtocol(),
-        protocolInfo.getProtocolVersion());
+        protocolInfo.getProtocolVersion(),
+        message.getCorrelationUid());
 
     this.sendMessage(message, protocolInfo, jmsTemplate);
   }
@@ -63,7 +65,10 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
       final ProtocolRequestMessage requestMessage,
       final ProtocolInfo protocolInfo,
       final JmsTemplate jmsTemplate) {
-    LOGGER.info("Sending request message to protocol requests queue");
+    LOGGER.info(
+        "Sending RequestMessage of type {} from core (protocol.outbound) with [correlationUid: {} ] ",
+        requestMessage.getMessageType(),
+        requestMessage.getCorrelationUid());
 
     jmsTemplate.send(session -> this.createObjectMessage(requestMessage, protocolInfo, session));
 
@@ -96,9 +101,10 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
       final String messageGroupId =
           ProtocolRequestMessageSender.this.getMessageGroupId(deviceIdentification);
       LOGGER.debug(
-          "Setting message group property for device {} to: {}",
+          "Setting message group property for device {} to: {} [correlationUid: {} ]",
           deviceIdentification,
-          messageGroupId);
+          messageGroupId,
+          requestMessage.getCorrelationUid());
       objectMessage.setStringProperty(Constants.MESSAGE_GROUP, messageGroupId);
     }
     return objectMessage;

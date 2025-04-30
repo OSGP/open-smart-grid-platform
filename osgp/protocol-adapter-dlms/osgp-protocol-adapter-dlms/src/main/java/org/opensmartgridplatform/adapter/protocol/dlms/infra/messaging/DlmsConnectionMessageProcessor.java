@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionC
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage.Builder;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.throttling.api.Permit;
@@ -170,7 +171,9 @@ public abstract class DlmsConnectionMessageProcessor {
   protected void logJmsException(
       final Logger logger, final JMSException exception, final MessageMetadata messageMetadata) {
     logger.error(
-        "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
+        "UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up. correlationUid: {}",
+        messageMetadata.getCorrelationUid(),
+        exception);
     logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
     logger.debug("domain: {}", messageMetadata.getDomain());
     logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
@@ -200,6 +203,12 @@ public abstract class DlmsConnectionMessageProcessor {
         new Builder().messageMetadata(messageMetadata).result(result).dataObject(responseObject);
 
     if (exception != null) {
+
+      LOGGER.error(
+          "DlmsConnectionMessageProcessor.sendResponseMessage (exception) : {}",
+          exception.getMessage(),
+          exception);
+
       messageBuilder.osgpException(
           this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception));
     }
@@ -209,9 +218,19 @@ public abstract class DlmsConnectionMessageProcessor {
           this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount()));
       messageBuilder.messagePriority(
           this.messagePriorityHandler.recalculatePriority(messageMetadata));
+      LOGGER.info(
+          "Retrying after exception. CorrelationUid: {}", messageMetadata.getCorrelationUid());
+    } else {
+      LOGGER.info(
+          "No retrying after exception. CorrelationUid: {}", messageMetadata.getCorrelationUid());
     }
 
-    responseMessageSender.send(messageBuilder.build());
+    final ProtocolResponseMessage protocolResponseMessage = messageBuilder.build();
+    LOGGER.info(
+        "MessageMetadata [ {} ] converted to ProtocolResponseMessage [ {} ]",
+        messageMetadata.getCorrelationUid(),
+        protocolResponseMessage.getCorrelationUid());
+    responseMessageSender.send(protocolResponseMessage);
   }
 
   /* suppress unused parameter warning, because we need it in override method */

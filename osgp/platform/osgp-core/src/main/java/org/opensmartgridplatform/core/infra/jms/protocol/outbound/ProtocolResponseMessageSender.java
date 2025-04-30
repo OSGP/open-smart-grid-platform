@@ -63,7 +63,10 @@ public class ProtocolResponseMessageSender implements ProtocolResponseService {
       final JmsTemplate jmsTemplate,
       final MessageMetadata messageMetadata,
       final Destination destination) {
-    LOGGER.info("Sending response message to protocol responses incoming queue");
+    LOGGER.info(
+        "Sending ResponseMessage of type {} from core (protocol.outbound) with [correlationUid: {} ] ",
+        messageType,
+        messageMetadata.getCorrelationUid());
 
     jmsTemplate.send(
         destination,

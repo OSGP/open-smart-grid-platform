@@ -45,10 +45,11 @@ public class DomainRequestMessageSender implements DomainRequestService {
       final String messageType,
       final JmsTemplate jmsTemplate) {
     LOGGER.info(
-        "Sending request message to incoming domain requests queue, messageType: {} organisationIdentification: {} deviceIdentification: {}",
+        "Sending request message to incoming domain requests queue, messageType: {} organisationIdentification: {} deviceIdentification: {} correlationUid: {}",
         messageType,
         requestMessage.getOrganisationIdentification(),
-        requestMessage.getDeviceIdentification());
+        requestMessage.getDeviceIdentification(),
+        requestMessage.getCorrelationUid());
 
     jmsTemplate.send(
         new MessageCreator() {

@@ -29,9 +29,9 @@ public class ProtocolResponseMessageListener implements MessageListener {
   public void onMessage(final Message message) {
     try {
       LOGGER.info(
-          "Received protocol response message with correlationUid [{}] and type [{}]",
-          message.getJMSCorrelationID(),
-          message.getJMSType());
+          "Received ResponseMessage of type {} in core (protocol.inbound) with JMSCorrelationID: {}",
+          message.getJMSType(),
+          message.getJMSCorrelationID());
 
       final ProtocolResponseMessage protocolResponseMessage = createResponseMessage(message);
 

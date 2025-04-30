@@ -180,6 +180,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             }
           }
         }
+        case ACTIVE_ENERGY_IMPORT,
+            ACTIVE_ENERGY_EXPORT,
+            ACTIVE_ENERGY_IMPORT_RATE_1,
+            ACTIVE_ENERGY_IMPORT_RATE_2,
+            ACTIVE_ENERGY_EXPORT_RATE_1,
+            ACTIVE_ENERGY_EXPORT_RATE_2 -> {
+          // Do nothing. Special case for DSMR4.2.2 devices where E-meter and G-meter readings
+          // are combined in one profile. E-meter readings are ignored.
+        }
         default ->
             log.error(
                 "Unexpected objectType in selectedObjects: "

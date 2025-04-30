@@ -30,7 +30,10 @@ public class OsgpRequestMessageSender {
       final String messageType,
       final MessageMetadata messageMetadata) {
 
-    log.info("Sending request message to GXF.");
+    log.info(
+        "Sending RequestMessage of type {} from DLMS protocol adapter to core with correlationUID: {}",
+        messageType,
+        messageMetadata.getCorrelationUid());
 
     this.jmsTemplate.send(
         (final Session session) -> {
