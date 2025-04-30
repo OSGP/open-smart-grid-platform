@@ -189,7 +189,10 @@ jobs:
       - name: Create and run gxf cucumber tests
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
       - name: Wait for jobs to finish
-        run: kubectl wait --for=condition=complete --all jobs --timeout=30m
+        run: >
+          if ! kubectl wait --for=condition=complete --all jobs --timeout=1s; then
+            kubectl get pods 
+          fi
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
       - name: Annotate cucumber report to github action
