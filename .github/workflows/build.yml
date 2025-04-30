@@ -175,7 +175,7 @@ jobs:
       checks: write
     strategy:
       matrix:
-          values_file: [ci/common-values.yaml, ci/publiclighting-values.yaml]
+          values_file: [ci/common-values.yaml, ci/publiclighting-values.yaml, ci/smartmetering-values.yaml]
     steps:
       - name: Checkout gxf-gitops
         uses: actions/checkout@v4
