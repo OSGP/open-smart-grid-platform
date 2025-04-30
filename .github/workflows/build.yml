@@ -192,10 +192,10 @@ jobs:
         run: >
           if ! kubectl wait --for=condition=complete --all jobs --timeout=30m; then
             for pod in $(kubectl -n $ns get pod -o name); do 
-              logs=$(kubectl -n $ns logs $pod --all-containers=true) 
+              logs=$(kubectl -n $ns logs $pod --all-containers=true);
             done; 
-            echo "::error::Kubectl timed out with logs:\n $logs"
-            exit 1
+            echo "::error::Kubectl timed out with logs:\n $logs";
+            exit 1;
           fi
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
