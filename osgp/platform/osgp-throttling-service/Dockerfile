@@ -9,6 +9,6 @@ RUN mkdir -p /var/log/osp && \
     rm -rf /usr/local/tomcat/webapps/* && \
     chmod 755 /usr/local/tomcat/webapps /var/log/osp && \
     mkdir -p /usr/local/tomcat/webapps/probe/ && \
-    touch /usr/local/tomcat/webapps/probe/probe.txt \
+    touch /usr/local/tomcat/webapps/probe/probe.txt
 
 COPY target/gxf /usr/local/tomcat/webapps/
