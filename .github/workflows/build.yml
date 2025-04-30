@@ -192,6 +192,8 @@ jobs:
         run: >
           if ! kubectl wait --for=condition=complete --all jobs --timeout=1s; then
             kubectl get pods 
+            kubectl get ns
+            exit 1
           fi
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
