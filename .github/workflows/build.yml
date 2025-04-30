@@ -191,8 +191,8 @@ jobs:
       - name: Wait for jobs to finish
         run: >
           if ! kubectl wait --for=condition=complete --all jobs --timeout=30m; then
-            for pod in $(kubectl -n $ns get pod -o name); do 
-              logs=$(kubectl -n $ns logs $pod --all-containers=true);
+            for pod in $(kubectl get pod -o name); do 
+              logs=$(kubectl logs $pod --all-containers=true);
             done; 
             echo "::error::Kubectl timed out with logs:\n $logs";
             exit 1;
