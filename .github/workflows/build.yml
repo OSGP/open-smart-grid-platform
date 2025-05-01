@@ -195,6 +195,7 @@ jobs:
               logs=$(kubectl logs $pod --all-containers=true);
             done; 
             echo "::error::Kubectl timed out with logs:\n $logs";
+            kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp'
             exit 1;
           fi
       - name: Run maven cucumber reporting
