@@ -20,23 +20,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 
 public abstract class AbstractResendNotificationService<T extends Enum<T>> {
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(AbstractResendNotificationService.class);
 
-  @Autowired private int resendNotificationMultiplier;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  private int resendNotificationMultiplier;
 
-  @Autowired private Short resendNotificationMaximum;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  private Short resendNotificationMaximum;
 
-  @Autowired private int resendThresholdInMinutes;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  private int resendThresholdInMinutes;
 
-  @Autowired private ResponseDataRepository responseDataRepository;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  private ResponseDataRepository responseDataRepository;
 
-  @Autowired private int resendPageSize;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Convenient use of autowire annotation in abstract class with many inheritors
+  private int resendPageSize;
 
   private final Class<T> notificationClass;
 
@@ -44,15 +52,15 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
 
   private NotificationService notificationServiceReference;
 
-  public AbstractResendNotificationService(final Class<T> notificationClass) {
+  protected AbstractResendNotificationService(final Class<T> notificationClass) {
     this.notificationClass = notificationClass;
   }
 
-  public void setNotificationService(final NotificationService notificationService) {
+  protected void setNotificationService(final NotificationService notificationService) {
     this.notificationServiceReference = notificationService;
   }
 
-  public void setApplicationName(final String applicationName) {
+  protected void setApplicationName(final String applicationName) {
     this.applicationName = applicationName;
   }
 
@@ -127,7 +135,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
     }
   }
 
-  public void resendNotificationAndUpdateResponseData(final ResponseData responseData) {
+  private void resendNotificationAndUpdateResponseData(final ResponseData responseData) {
 
     try {
       this.resendNotification(responseData);
@@ -144,7 +152,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
     }
   }
 
-  protected void logUnknownNotificationTypeError(
+  private void logUnknownNotificationTypeError(
       final String correlationUid, final String messageType, final String notificationServiceName) {
 
     LOGGER.error(
@@ -206,7 +214,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
     return delay;
   }
 
-  public void resendNotification(final ResponseData responseData) {
+  private void resendNotification(final ResponseData responseData) {
 
     if (!EnumUtils.isValidEnum(this.notificationClass, responseData.getMessageType())) {
       this.logUnknownNotificationTypeError(
@@ -232,7 +240,7 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
         notificationWebServiceLookupKey, genericNotification);
   }
 
-  public String getNotificationMessage(final String responseData) {
+  private String getNotificationMessage(final String responseData) {
     return String.format("Response of type %s is available.", responseData);
   }
 
@@ -243,10 +251,9 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
    */
   private List<ResponseData> getResponseDataForNotifying(
       final short notificationsResent, final ZonedDateTime createdBefore) {
-    final Pageable pageable =
-        PageRequest.of(0, this.resendPageSize, Sort.by(Direction.ASC, "creationTime"));
+    final Pageable unsortedPageable = PageRequest.of(0, this.resendPageSize);
 
     return this.responseDataRepository.findByNumberOfNotificationsSentAndCreationTimeBefore(
-        notificationsResent, createdBefore.toInstant(), pageable);
+        notificationsResent, createdBefore.toInstant(), unsortedPageable);
   }
 }

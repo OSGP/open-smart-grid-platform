@@ -11,13 +11,17 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 @DisallowConcurrentExecution
 public class ResendNotificationJob implements Job {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ResendNotificationJob.class);
 
-  @Autowired private AbstractResendNotificationService<?> resendNotificationService;
+  @SuppressWarnings("java:S6813")
+  @Autowired // Constructor injection doesn't work with quartz jobs
+  private AbstractResendNotificationService<?> resendNotificationService;
 
   @Override
   public void execute(final JobExecutionContext context) throws JobExecutionException {
