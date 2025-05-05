@@ -93,13 +93,13 @@ jobs:
             context: ./osgp/platform/osgp-adapter-ws-tariffswitching/
           - image: ghcr.io/osgp/osgp-secret-management
             context: ./osgp/platform/osgp-secret-management
-          - image: ghcr.io/osgp/platform/osgp-throttling-service
+          - image: ghcr.io/osgp/osgp-throttling-service
             context: ./osgp/platform/osgp-throttling-service
-          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms
+          - image: ghcr.io/osgp/osgp-protocol-adapter-dlms
             context: ./osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms
-          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered
+          - image: ghcr.io/osgp/osgp-simulator-dlms-triggered
             context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered
-          - image: ghcr.io/osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/dlms-device-simulator-starter
+          - image: ghcr.io/osgp/dlms-device-simulator-starter
             context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/dlms-device-simulator-starter
           - image: ghcr.io/osgp/osgp-protocol-adapter-iec60870
             context: ./osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870
