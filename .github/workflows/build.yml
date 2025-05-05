@@ -206,6 +206,13 @@ jobs:
             kubectl get pods
             exit 1;
           fi
+      - name: Upload error logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: kube_error_logs
+          path: *.log
+          if_no_files_found: ignore
+          overwrite: true
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
       - name: Annotate cucumber report to github action
