@@ -199,10 +199,11 @@ jobs:
           if ! kubectl wait --for=condition=complete --all jobs --timeout=30m; then
             echo "::error::Kubectl timed out...";
             kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp'
-            kubectl get pods
             for pod in $(kubectl get pod --field-selector=status.phase==Running -o name); do 
+              echo "Logs for $pod:"
               kubectl logs $pod --all-containers=true
             done; 
+            kubectl get pods
             exit 1;
           fi
       - name: Run maven cucumber reporting
