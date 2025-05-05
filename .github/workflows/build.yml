@@ -211,7 +211,7 @@ jobs:
         with:
           name: kube_error_logs
           path: *.log
-          if_no_files_found: ignore
+          if-no-files-found: ignore
           overwrite: true
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
