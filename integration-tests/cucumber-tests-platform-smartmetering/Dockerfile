@@ -4,6 +4,7 @@ COPY target/cucumber-*-test-jar-with-dependencies.jar /
 COPY src/test/resources/logback.xml /logback.xml
 RUN wget https://repo1.maven.org/maven2/org/jacoco/org.jacoco.agent/0.8.12/org.jacoco.agent-0.8.12-runtime.jar
 CMD java -javaagent:org.jacoco.agent-0.8.12-runtime.jar=destfile=/target/code-coverage/jacoco-it.exec \
+     -Ddb.username=osp_admin -Ddb.password=1234 -Ddb.hostname=postgres \
      -Dcucumber.execution.strict=true\
      -Dcucumber.filter.tags='not @Skip' \
      -DskipITs=false\
