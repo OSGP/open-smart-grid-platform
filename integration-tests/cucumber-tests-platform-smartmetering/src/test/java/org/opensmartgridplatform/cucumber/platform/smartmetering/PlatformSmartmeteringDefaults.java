@@ -42,6 +42,7 @@ public class PlatformSmartmeteringDefaults
   public static final boolean HLS3ACTIVE = false;
   public static final boolean HLS4ACTIVE = false;
   public static final boolean HLS5ACTIVE = true;
+  public static final String HOST = "postgres";
   public static final String ICC_ID = "iccid";
   public static final boolean LLS1_ACTIVE = false;
   public static final boolean USE_HDLC = false;
@@ -108,7 +109,7 @@ public class PlatformSmartmeteringDefaults
   static {
     InetAddress localhost;
     try {
-      localhost = InetAddress.getByName("postgres");
+      localhost = InetAddress.getByName(PlatformSmartmeteringDefaults.HOST);
     } catch (final UnknownHostException e) {
       localhost = null;
     }
