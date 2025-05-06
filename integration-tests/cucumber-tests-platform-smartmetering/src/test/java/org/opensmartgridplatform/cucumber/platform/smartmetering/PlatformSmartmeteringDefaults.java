@@ -108,7 +108,7 @@ public class PlatformSmartmeteringDefaults
   static {
     InetAddress localhost;
     try {
-      localhost = InetAddress.getByName(PlatformDefaults.LOCALHOST);
+      localhost = InetAddress.getByName("postgres");
     } catch (final UnknownHostException e) {
       localhost = null;
     }
