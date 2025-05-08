@@ -195,16 +195,31 @@ jobs:
       - name: Create and run gxf cucumber tests
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
       - name: Wait for jobs to finish
+        id: cucumber_job
         run: >
           if ! kubectl wait --for=condition=complete --all jobs --timeout=30m; then
             echo "::error::Kubectl timed out...";
-            kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp'
+            kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp' 2> kube_events.log
             for pod in $(kubectl get pod --field-selector=status.phase==Running -o name); do 
-              echo "Logs for $pod:"
-              kubectl logs $pod --all-containers=true
+              echo "::debug:: Created logs for pod $pod"
+              kubectl logs $pod --all-containers=true 2> ${pod}.log 
             done; 
-            kubectl get pods
-            exit 1;
+            kubectl get pods 2> kube_status.log
+            echo "status=ERROR" >> $GITHUB_OUTPUT
+          fi
+          echo "status=SUCCES" >> $GITHUB_OUTPUT
+      - name: Upload error logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: kube_error_logs
+          path: ./*.log
+          if-no-files-found: ignore
+          overwrite: true
+      - name: Fail on error
+        run: >
+          if ${{ steps.cucumber_job.outputs.status }} == "ERROR";
+          then 
+            exit 1; 
           fi
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
