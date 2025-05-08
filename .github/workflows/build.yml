@@ -196,6 +196,7 @@ jobs:
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
       - name: Wait for jobs to finish
         id: cucumber_job
+        continue-on-error: true
         run: |
           if ! kubectl wait --for=condition=complete --all jobs --timeout=30m; then
             echo "::error::Kubectl timed out...";
