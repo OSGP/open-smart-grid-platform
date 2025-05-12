@@ -200,13 +200,13 @@ jobs:
         run: |
           if ! kubectl wait --for=condition=complete --all jobs --timeout=10s; then
             echo "::error::Kubectl timed out...";
+            echo "status=ERROR" >> $GITHUB_OUTPUT;
             kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp' 2> kube_events.log
             for pod in $(kubectl get pod --field-selector=status.phase==Running -o name); do 
               echo "::debug:: Created logs for pod $pod";
               kubectl logs $pod --all-containers=true 2> ${pod}.log ;
             done; 
             kubectl get pods 2> kube_status.log;
-            echo "status='ERROR'" >> $GITHUB_OUTPUT;
             exit 1
           fi;
           echo "status=SUCCES" >> $GITHUB_OUTPUT;
