@@ -207,7 +207,7 @@ jobs:
             done; 
             kubectl get pods 2> kube_status.log;
             echo "status='ERROR'" >> $GITHUB_OUTPUT;
-	    exit 1
+            exit 1
           fi;
           echo "status=SUCCES" >> $GITHUB_OUTPUT;
       - name: Upload error logs
