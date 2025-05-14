@@ -208,7 +208,7 @@ jobs:
             for pod in $(kubectl get pod --field-selector=status.phase==Running -o name); do 
               echo "::debug:: Created logs for pod $pod"
               ls
-              kubectl logs $pod --all-containers=true &> ${pod}.log
+              kubectl logs $pod --all-containers=true &> $(basename $pod).log
             done
             ls
             kubectl get pods &> kube_status.log
