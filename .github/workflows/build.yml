@@ -201,6 +201,8 @@ jobs:
           if ! kubectl wait --for=condition=complete --all jobs --timeout=1m; then
             echo "::error::Kubectl timed out..."
             echo "status=ERROR" >> $GITHUB_OUTPUT
+            valuesfile=${{ matrix.values_file }}
+            echo "logname=$(basename $valuesfile .yaml)" >> $GITHUB_OUTPUT
             kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp' &> kube_events.log
 
             kubectl get pods &> kube_status.log
@@ -210,7 +212,7 @@ jobs:
       - name: Upload error logs
         uses: actions/upload-artifact@v4
         with:
-          name: kube_error_logs
+          name: kube_${{ steps.cucumber_job.outputs.logname }}_error_logs
           path: ./*.log
           if-no-files-found: ignore
           overwrite: true
