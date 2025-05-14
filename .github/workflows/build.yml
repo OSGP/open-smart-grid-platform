@@ -205,7 +205,11 @@ jobs:
             valuesfile=$(basename ${{ matrix.values_file }} .yaml)
             echo "logname=${valuesfile%%-*}" >> $GITHUB_OUTPUT
             kubectl get events --all-namespaces  --sort-by='.metadata.creationTimestamp' &> kube_events.log
-
+            for pod in $(kubectl get pod --field-selector=status.phase==Running -o name); do 
+              echo "::debug:: Created logs for pod $pod"
+              kubectl logs $pod --all-containers=true &> ${pod}.log
+            done
+            ls
             kubectl get pods &> kube_status.log
             exit 1
           fi;
