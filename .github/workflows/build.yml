@@ -192,7 +192,7 @@ jobs:
       - name: Setup k3d cluster
         run: bash setup.sh
       - name: Create gxf platform
-        run: ./charts/gxf-platform/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2)
+        run: ./charts/gxf-platform/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
       - name: Create and run gxf cucumber tests
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
       - name: Wait for jobs to finish
