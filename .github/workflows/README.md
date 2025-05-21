@@ -8,3 +8,6 @@ Afterwards you can remove the label again.
 
 ### Error logs on cucumber test timeout
 If cucumber tests time out error logs are generated and uploaded as artifacts.
+
+## Editing properties for devops
+If you need to edit the configuration for OPS purposes, this can be done in the gxf-gitops repository under platform/config.yaml -- global properties.
