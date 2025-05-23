@@ -49,7 +49,7 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.dlms.version>6.19.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>6.19.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>6.19.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>6.1.17</spring.version>
+    <spring.version>6.1.20</spring.version>
     <spring.data.version>3.3.11</spring.data.version>
     <spring.data.commons.version>3.3.11</spring.data.commons.version>
     <spring.security.version>6.3.9</spring.security.version>
@@ -106,7 +106,7 @@ SPDX-License-Identifier: Apache-2.0
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
-    <apache.activemq.version>6.1.5</apache.activemq.version>
+    <apache.activemq.version>6.1.6</apache.activemq.version>
     <logback.version>1.5.15</logback.version>
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.4.0</maven.clean.plugin.version>
