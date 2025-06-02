@@ -19,7 +19,11 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 
+/**
+ * @deprecated
+ */
 @Slf4j
+@Deprecated(forRemoval = true)
 public class JasperWirelessTerminalSoapClient implements JasperWirelessTerminalClient {
 
   private static final String SERVICE_SESSION_INFO =
@@ -63,6 +67,10 @@ public class JasperWirelessTerminalSoapClient implements JasperWirelessTerminalC
                 getSessionInfoRequest, new SoapActionCallback(SERVICE_SESSION_INFO)));
   }
 
+  //  @Deprecated(forRemoval = true)
+  //  /**
+  //   * @deprecated
+  //   */
   private org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse
       convertResponse(final GetSessionInfoResponse response) throws OsgpJasperException {
     this.validateResponse(response);
@@ -80,6 +88,10 @@ public class JasperWirelessTerminalSoapClient implements JasperWirelessTerminalC
     }
   }
 
+  //  @Deprecated(forRemoval = true)
+  //  /**
+  //   * @deprecated
+  //   */
   private org.opensmartgridplatform.adapter.protocol.jasper.response.GetSessionInfoResponse
       convertSessionInfo(final SessionInfoType sessionInfoType) {
     final String ipV6Address = null;
@@ -88,7 +100,8 @@ public class JasperWirelessTerminalSoapClient implements JasperWirelessTerminalC
         sessionInfoType.getIpAddress(),
         ipV6Address,
         sessionInfoType.getDateSessionStarted().toGregorianCalendar().getTime(),
-        sessionInfoType.getDateSessionEnded().toGregorianCalendar().getTime());
+        sessionInfoType.getDateSessionEnded().toGregorianCalendar().getTime(),
+        "APN not available in this version of SOAP client: 5.90 (releaseDate:2015-25-03)");
   }
 
   // Sonar marks 'setSecurementPasswordType(WSS4JConstants.PW_TEXT)' as exposing a password.

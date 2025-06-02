@@ -38,6 +38,7 @@ class JasperWirelessTerminalRestClientTest {
 
   private static final String SERVICE_GET_SESSION_INFO = "/rws/api/%s/devices/%s/sessionInfo";
   private static final String ICCID = "12345";
+  private static final String APN = "apn-1";
   private static final String USERNAME = "user";
   private static final String APIKEY = "1234-abcd-5678-ef";
   private static final String BASEURL = "http://localhost:8081";
@@ -61,7 +62,7 @@ class JasperWirelessTerminalRestClientTest {
   @InjectMocks private JasperWirelessTerminalRestClient jasperWirelessTerminalRestClient;
 
   @BeforeEach
-  private void init() {
+  void init() {
     when(this.jasperWirelessAccess.getUri()).thenReturn(BASEURL);
     when(this.jasperWirelessAccess.getApiVersion()).thenReturn(APIVERSION);
     when(this.jasperWirelessAccess.getUsername()).thenReturn(USERNAME);
@@ -176,7 +177,7 @@ class JasperWirelessTerminalRestClientTest {
         ipAddress = null;
     }
     final GetSessionInfoResponse getSessionInfoResponse =
-        new GetSessionInfoResponse(ICCID, ipAddress, IPV6_ADDRESS, startSession, endSession);
+        new GetSessionInfoResponse(ICCID, ipAddress, IPV6_ADDRESS, startSession, endSession, APN);
     return new ResponseEntity<GetSessionInfoResponse>(getSessionInfoResponse, httpStatus);
   }
 

@@ -80,7 +80,8 @@ public class JasperWirelessTerminalRestClient extends JasperWirelessRestClient
     if (this.hasCurrentSession(getSessionInfoResponse)) {
       return getSessionInfoResponse;
     } else {
-      return new GetSessionInfoResponse(getSessionInfoResponse.getIccid(), null, null, null, null);
+      return new GetSessionInfoResponse(
+          getSessionInfoResponse.getIccid(), null, null, null, null, null);
     }
   }
 
