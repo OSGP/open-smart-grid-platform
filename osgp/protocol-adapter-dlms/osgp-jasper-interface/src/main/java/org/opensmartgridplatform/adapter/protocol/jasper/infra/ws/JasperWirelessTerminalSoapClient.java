@@ -19,11 +19,11 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor;
 
-@Slf4j
-@Deprecated(forRemoval = true)
 /**
  * @deprecated
  */
+@Slf4j
+@Deprecated(forRemoval = true)
 public class JasperWirelessTerminalSoapClient implements JasperWirelessTerminalClient {
 
   private static final String SERVICE_SESSION_INFO =
