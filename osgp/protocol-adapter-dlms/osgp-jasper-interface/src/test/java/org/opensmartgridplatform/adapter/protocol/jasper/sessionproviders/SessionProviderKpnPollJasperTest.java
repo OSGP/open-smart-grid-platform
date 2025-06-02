@@ -31,6 +31,7 @@ public class SessionProviderKpnPollJasperTest {
   private static final String DEVICE_IDENTIFICATION = "device-identification";
   private static final String ICC_ID = "icc-id";
   private static final String IP_ADDRESS = "1.2.3.4";
+  private static final String APN = "apn-1";
 
   @Mock private SessionProviderMap sessionProviderMap;
   @Mock private JasperWirelessTerminalClient jasperWirelessTerminalClient;
@@ -122,6 +123,6 @@ public class SessionProviderKpnPollJasperTest {
 
   private GetSessionInfoResponse newGetSessionInfoResponse(
       final String iccId, final String ipAddress) {
-    return new GetSessionInfoResponse(iccId, ipAddress, ipAddress, new Date(), new Date());
+    return new GetSessionInfoResponse(iccId, ipAddress, ipAddress, new Date(), new Date(), APN);
   }
 }
