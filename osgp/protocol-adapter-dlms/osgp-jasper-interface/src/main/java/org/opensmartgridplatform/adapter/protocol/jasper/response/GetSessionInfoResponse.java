@@ -15,6 +15,7 @@ public class GetSessionInfoResponse {
   private String ipV6Address;
   private Date dateSessionStarted;
   private Date dateSessionEnded;
+  private String apn;
 
   public GetSessionInfoResponse() {}
 
@@ -23,11 +24,13 @@ public class GetSessionInfoResponse {
       final String ipAddress,
       final String ipV6Address,
       final Date dateSessionStarted,
-      final Date dateSessionEnded) {
+      final Date dateSessionEnded,
+      final String apn) {
     this.iccid = iccid;
     this.ipAddress = ipAddress;
     this.ipV6Address = ipV6Address;
     this.dateSessionStarted = dateSessionStarted;
     this.dateSessionEnded = dateSessionEnded;
+    this.apn = apn;
   }
 }

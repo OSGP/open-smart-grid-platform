@@ -34,6 +34,7 @@ public class SessionProviderKpnPushAlarmTest {
   private static final String DEVICE_IDENTIFICATION = "device-identification";
   private static final String ICC_ID = "icc-id";
   private static final String IP_ADDRESS = "1.2.3.4";
+  private static final String APN = "apn-1";
 
   @Mock private SessionProviderMap sessionProviderMap;
   @Mock private JasperWirelessSmsClient jasperWirelessSmsClient;
@@ -192,6 +193,6 @@ public class SessionProviderKpnPushAlarmTest {
   }
 
   private GetSessionInfoResponse newGetSessionInfoResponse(final String ipAddress) {
-    return new GetSessionInfoResponse(ICC_ID, ipAddress, null, new Date(), new Date());
+    return new GetSessionInfoResponse(ICC_ID, ipAddress, null, new Date(), new Date(), APN);
   }
 }
