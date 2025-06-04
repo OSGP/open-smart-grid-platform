@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.DeviceRegistrationService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.shared.exceptionhandling.NoDeviceResponseException;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
   }
 
   @Override
-  public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) {
+  public void channelRead0(final ChannelHandlerContext ctx, final LegacyOslpEnvelope message) {
     final String channelId = ctx.channel().id().asLongText();
 
     LOGGER.info("channelRead0 called for channel {}.", channelId);
@@ -110,7 +110,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
   public void send(
       final InetSocketAddress address,
-      final OslpEnvelope request,
+      final LegacyOslpEnvelope request,
       final OslpResponseHandler responseHandler,
       final String deviceIdentification) {
     LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
@@ -145,7 +145,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
   private void write(
       final ChannelFuture channelFuture,
       final InetSocketAddress address,
-      final OslpEnvelope request)
+      final LegacyOslpEnvelope request)
       throws IOException {
     final Channel channel = channelFuture.channel();
 

@@ -17,12 +17,12 @@ import java.util.List;
  * encoded by the OslpEncoder, without changing fields that are serialized/deserialized in the
  * communication.
  */
-public class InboundOslpEncoder extends SimpleChannelInboundHandler<OslpEnvelope> {
+public class InboundOslpEncoder extends SimpleChannelInboundHandler<LegacyOslpEnvelope> {
 
   private final OslpEncoder oslpEncoder = new OslpEncoder();
 
   @Override
-  protected void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope msg)
+  protected void channelRead0(final ChannelHandlerContext ctx, final LegacyOslpEnvelope msg)
       throws Exception {
     final List<Object> out = new ArrayList<>();
     this.oslpEncoder.encode(ctx, msg, out);

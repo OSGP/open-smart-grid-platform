@@ -24,7 +24,7 @@ import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationRequest;
 import org.opensmartgridplatform.oslp.Oslp.LocationInfo;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
@@ -97,7 +97,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
   }
 
   @Override
-  public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message)
+  public void channelRead0(final ChannelHandlerContext ctx, final LegacyOslpEnvelope message)
       throws Exception {
     final var channelId = ctx.channel().id();
     if (LOGGER.isInfoEnabled()) {
@@ -188,7 +188,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     this.checkResponseMessageType(response);
   }
 
-  private void checkResponseMessageType(final OslpEnvelope response) {
+  private void checkResponseMessageType(final LegacyOslpEnvelope response) {
     // For the response type ConfirmRegisterDeviceResponse, check if
     // a SetScheduleRequest is pending for a device.
     if (response.getPayloadMessage().hasConfirmRegisterDeviceResponse()) {

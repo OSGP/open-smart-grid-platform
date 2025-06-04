@@ -19,7 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.Me
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -75,7 +75,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
 
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
-    final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
     final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
     final String organisationIdentification =
         unsignedOslpEnvelopeDto.getOrganisationIdentification();
@@ -114,7 +114,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
 
     try {
       this.deviceService.doGetFirmwareVersion(
-          oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+              legacyOslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
     } catch (final IOException e) {
       this.handleError(
           e,

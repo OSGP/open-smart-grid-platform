@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import com.google.protobuf.GeneratedMessage;
 import org.apache.commons.codec.binary.Base64;
 import org.assertj.core.api.AbstractAssert;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 
-public class OslpEnvelopeAssert extends AbstractAssert<OslpEnvelopeAssert, OslpEnvelope> {
+public class OslpEnvelopeAssert extends AbstractAssert<OslpEnvelopeAssert, LegacyOslpEnvelope> {
 
-  public OslpEnvelopeAssert(final OslpEnvelope actual) {
+  public OslpEnvelopeAssert(final LegacyOslpEnvelope actual) {
     super(actual, OslpEnvelopeAssert.class);
   }
 
@@ -40,11 +40,11 @@ public class OslpEnvelopeAssert extends AbstractAssert<OslpEnvelopeAssert, OslpE
     return this;
   }
 
-  private String messageName(final OslpEnvelope oslpEnvelope) {
-    if (oslpEnvelope == null) {
+  private String messageName(final LegacyOslpEnvelope legacyOslpEnvelope) {
+    if (legacyOslpEnvelope == null) {
       return null;
     }
-    return oslpEnvelope.getPayloadMessage().getAllFields().entrySet().stream()
+    return legacyOslpEnvelope.getPayloadMessage().getAllFields().entrySet().stream()
         .filter(entry -> entry.getValue() instanceof GeneratedMessage)
         .map(entry -> entry.getKey().getName())
         .findFirst()

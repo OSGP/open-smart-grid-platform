@@ -15,7 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.Up
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -84,7 +84,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
 
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
-    final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
     final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
     final String organisationIdentification =
         unsignedOslpEnvelopeDto.getOrganisationIdentification();
@@ -123,7 +123,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
 
     try {
       this.deviceService.doUpdateFirmware(
-          oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+              legacyOslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
     } catch (final IOException e) {
       this.handleError(
           e,

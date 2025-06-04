@@ -20,14 +20,14 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.Sw
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.UpdateFirmwareDeviceRequest;
 import org.opensmartgridplatform.dto.valueobjects.PageInfoDto;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 
 public interface DeviceService {
 
   void getConfiguration(DeviceRequest deviceRequest);
 
   void doGetConfiguration(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -36,7 +36,7 @@ public interface DeviceService {
   void getFirmwareVersion(DeviceRequest deviceRequest);
 
   void doGetFirmwareVersion(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -45,7 +45,7 @@ public interface DeviceService {
   void getStatus(GetStatusDeviceRequest deviceRequest);
 
   void doGetStatus(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -54,7 +54,7 @@ public interface DeviceService {
   void setReboot(DeviceRequest deviceRequest);
 
   void doSetReboot(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -63,7 +63,7 @@ public interface DeviceService {
   void setConfiguration(SetConfigurationDeviceRequest deviceRequest);
 
   void doSetConfiguration(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest setConfigurationDeviceRequest,
       DeviceRequest setRebootDeviceRequest,
       DeviceResponseHandler setConfigurationDeviceResponseHandler,
@@ -74,7 +74,7 @@ public interface DeviceService {
   void switchConfiguration(SwitchConfigurationBankRequest deviceRequest);
 
   void doSwitchConfiguration(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -83,7 +83,7 @@ public interface DeviceService {
   void setEventNotifications(SetEventNotificationsDeviceRequest deviceRequest);
 
   void doSetEventNotifications(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -92,7 +92,7 @@ public interface DeviceService {
   void startSelfTest(DeviceRequest deviceRequest);
 
   void doStartSelfTest(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -101,7 +101,7 @@ public interface DeviceService {
   void stopSelfTest(DeviceRequest deviceRequest);
 
   void doStopSelfTest(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -110,7 +110,7 @@ public interface DeviceService {
   void updateFirmware(UpdateFirmwareDeviceRequest deviceRequest);
 
   void doUpdateFirmware(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -119,7 +119,7 @@ public interface DeviceService {
   void switchFirmware(SwitchFirmwareDeviceRequest deviceRequest);
 
   void doSwitchFirmware(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -128,7 +128,7 @@ public interface DeviceService {
   void resumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
 
   void doResumeSchedule(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -137,7 +137,7 @@ public interface DeviceService {
   void setLight(SetLightDeviceRequest deviceRequest);
 
   void doSetLight(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest setLightdeviceRequest,
       ResumeScheduleDeviceRequest resumeScheduleDeviceRequest,
       DeviceResponseHandler setLightDeviceResponseHandler,
@@ -148,7 +148,7 @@ public interface DeviceService {
   void setSchedule(SetScheduleDeviceRequest deviceRequest);
 
   void doSetSchedule(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       SetScheduleDeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress,
@@ -164,7 +164,7 @@ public interface DeviceService {
   void setTransition(SetTransitionDeviceRequest deviceRequest);
 
   void doSetTransition(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -173,7 +173,7 @@ public interface DeviceService {
   void updateDeviceSslCertification(UpdateDeviceSslCertificationDeviceRequest deviceRequest);
 
   void doUpdateDeviceSslCertification(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)
@@ -182,7 +182,7 @@ public interface DeviceService {
   void setDeviceVerificationKey(SetDeviceVerificationKeyDeviceRequest deviceRequest);
 
   void doSetDeviceVerificationKey(
-      OslpEnvelope oslpRequest,
+      LegacyOslpEnvelope oslpRequest,
       DeviceRequest deviceRequest,
       DeviceResponseHandler deviceResponseHandler,
       String ipAddress)

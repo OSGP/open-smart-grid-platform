@@ -21,7 +21,7 @@ import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
 import org.opensmartgridplatform.shared.security.CertificateHelper;
 
 /** Unittests for OSLP envelope with ECDSA security. */
-public class OslpEnvelopeEcDsaTest {
+public class LegacyOslpEnvelopeEcDsaTest {
 
   // Private DER SIM key, base64 encoded using
   // http://www.motobit.com/util/base64-decoder-encoder.asp
@@ -64,16 +64,16 @@ public class OslpEnvelopeEcDsaTest {
           InvalidKeySpecException,
           NoSuchProviderException,
           Exception {
-    final OslpEnvelope request = this.buildMessage();
+    final LegacyOslpEnvelope request = this.buildMessage();
 
     // Validate security key is set in request
     final byte[] securityKey = request.getSecurityKey();
-    assertThat(securityKey.length).isEqualTo(OslpEnvelope.SECURITY_KEY_LENGTH);
+    assertThat(securityKey.length).isEqualTo(LegacyOslpEnvelope.SECURITY_KEY_LENGTH);
     assertThat(ArrayUtils.isEmpty(securityKey)).isFalse();
 
     // Verify the message using public certificate
-    final OslpEnvelope response =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope response =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(SIGNATURE)
             .withProvider(this.provider())
             .withSecurityKey(request.getSecurityKey())
@@ -104,11 +104,11 @@ public class OslpEnvelopeEcDsaTest {
           InvalidKeySpecException,
           NoSuchProviderException,
           Exception {
-    final OslpEnvelope request = this.buildMessage();
+    final LegacyOslpEnvelope request = this.buildMessage();
 
     // Verify the message using wrong public certificate
-    final OslpEnvelope response =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope response =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(SIGNATURE)
             .withProvider(this.provider())
             .withDeviceId(request.getDeviceId())
@@ -139,18 +139,18 @@ public class OslpEnvelopeEcDsaTest {
           NoSuchAlgorithmException,
           InvalidKeySpecException,
           NoSuchProviderException {
-    final OslpEnvelope request = this.buildMessage();
+    final LegacyOslpEnvelope request = this.buildMessage();
 
     final byte[] fakeDeviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9};
 
     // Validate security key is set in request
     final byte[] securityKey = request.getSecurityKey();
-    assertThat(securityKey.length).isEqualTo(OslpEnvelope.SECURITY_KEY_LENGTH);
+    assertThat(securityKey.length).isEqualTo(LegacyOslpEnvelope.SECURITY_KEY_LENGTH);
     assertThat(ArrayUtils.isEmpty(securityKey)).isFalse();
 
     // Verify the message using public certificate
-    final OslpEnvelope response =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope response =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(SIGNATURE)
             .withProvider(this.provider())
             .withSecurityKey(request.getSecurityKey())
@@ -180,16 +180,16 @@ public class OslpEnvelopeEcDsaTest {
           NoSuchAlgorithmException,
           InvalidKeySpecException,
           NoSuchProviderException {
-    final OslpEnvelope request = this.buildMessage();
+    final LegacyOslpEnvelope request = this.buildMessage();
 
     // Validate security key is set in request
     final byte[] securityKey = request.getSecurityKey();
-    assertThat(securityKey.length).isEqualTo(OslpEnvelope.SECURITY_KEY_LENGTH);
+    assertThat(securityKey.length).isEqualTo(LegacyOslpEnvelope.SECURITY_KEY_LENGTH);
     assertThat(ArrayUtils.isEmpty(securityKey)).isFalse();
 
     // Verify the message using public certificate
-    final OslpEnvelope response =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope response =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(SIGNATURE)
             .withProvider(this.provider())
             .withSecurityKey(request.getSecurityKey())
@@ -234,7 +234,7 @@ public class OslpEnvelopeEcDsaTest {
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
             () -> {
-              new OslpEnvelope.Builder()
+              new LegacyOslpEnvelope.Builder()
                   .withSignature("Incorrect")
                   .withProvider(this.provider())
                   .withPrimaryKey(
@@ -269,7 +269,7 @@ public class OslpEnvelopeEcDsaTest {
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
             () -> {
-              new OslpEnvelope.Builder()
+              new LegacyOslpEnvelope.Builder()
                   .withSignature(SIGNATURE)
                   .withProvider("Incorrect")
                   .withPrimaryKey(
@@ -282,7 +282,7 @@ public class OslpEnvelopeEcDsaTest {
             });
   }
 
-  private OslpEnvelope buildMessage()
+  private LegacyOslpEnvelope buildMessage()
       throws NoSuchAlgorithmException,
           InvalidKeySpecException,
           IOException,
@@ -290,7 +290,7 @@ public class OslpEnvelopeEcDsaTest {
     final byte[] deviceId = new byte[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
     final byte[] sequenceNumber = new byte[] {0, 1};
 
-    return new OslpEnvelope.Builder()
+    return new LegacyOslpEnvelope.Builder()
         .withSignature(SIGNATURE)
         .withProvider(this.provider())
         .withPrimaryKey(

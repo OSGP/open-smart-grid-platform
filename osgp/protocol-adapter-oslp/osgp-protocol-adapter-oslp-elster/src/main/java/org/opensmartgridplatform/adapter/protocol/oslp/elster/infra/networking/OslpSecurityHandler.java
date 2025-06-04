@@ -11,14 +11,14 @@ import java.security.PublicKey;
 import org.apache.commons.codec.binary.Base64;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.security.CertificateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Sharable
-public class OslpSecurityHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
+public class OslpSecurityHandler extends SimpleChannelInboundHandler<LegacyOslpEnvelope> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OslpSecurityHandler.class);
 
@@ -29,7 +29,7 @@ public class OslpSecurityHandler extends SimpleChannelInboundHandler<OslpEnvelop
   @Autowired private OslpDeviceSettingsService oslpDeviceSettingsService;
 
   @Override
-  public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message)
+  public void channelRead0(final ChannelHandlerContext ctx, final LegacyOslpEnvelope message)
       throws Exception {
 
     LOGGER.info("Entering method: channelRead0 for channel {}", ctx.channel().id().asLongText());

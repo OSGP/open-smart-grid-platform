@@ -13,7 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 
 /** Envelope class which holds the OSLP payload. */
-public class OslpEnvelope implements Serializable {
+public class LegacyOslpEnvelope implements Serializable {
   /** Serial Version UID. */
   private static final long serialVersionUID = -7877297705451116796L;
 
@@ -64,7 +64,7 @@ public class OslpEnvelope implements Serializable {
   private boolean valid;
 
   /** Default constructor. */
-  public OslpEnvelope() {}
+  public LegacyOslpEnvelope() {}
 
   /**
    * Private constructor.
@@ -77,7 +77,7 @@ public class OslpEnvelope implements Serializable {
    * @param deviceId deviceid of the device, 10 bytes
    * @param payloadMessage payload to deliver
    */
-  private OslpEnvelope(
+  private LegacyOslpEnvelope(
       final String signature,
       final String provider,
       final PrivateKey privateKey,
@@ -245,7 +245,7 @@ public class OslpEnvelope implements Serializable {
     if (o == null || this.getClass() != o.getClass()) {
       return false;
     }
-    final OslpEnvelope that = (OslpEnvelope) o;
+    final LegacyOslpEnvelope that = (LegacyOslpEnvelope) o;
     if (this.signature != null ? !this.signature.equals(that.signature) : that.signature != null) {
       return false;
     }
@@ -287,11 +287,11 @@ public class OslpEnvelope implements Serializable {
   }
 
   public int getSize() {
-    return OslpEnvelope.SECURITY_KEY_LENGTH
-        + OslpEnvelope.SEQUENCE_NUMBER_LENGTH
-        + OslpEnvelope.MANUFACTURER_ID_LENGTH
-        + OslpEnvelope.DEVICE_ID_LENGTH
-        + OslpEnvelope.LENGTH_INDICATOR_LENGTH
+    return LegacyOslpEnvelope.SECURITY_KEY_LENGTH
+        + LegacyOslpEnvelope.SEQUENCE_NUMBER_LENGTH
+        + LegacyOslpEnvelope.MANUFACTURER_ID_LENGTH
+        + LegacyOslpEnvelope.DEVICE_ID_LENGTH
+        + LegacyOslpEnvelope.LENGTH_INDICATOR_LENGTH
         + this.payloadMessage.getSerializedSize();
   }
 
@@ -355,8 +355,8 @@ public class OslpEnvelope implements Serializable {
       return this;
     }
 
-    public OslpEnvelope build() {
-      return new OslpEnvelope(
+    public LegacyOslpEnvelope build() {
+      return new LegacyOslpEnvelope(
           this.signature,
           this.provider,
           this.privateKey,

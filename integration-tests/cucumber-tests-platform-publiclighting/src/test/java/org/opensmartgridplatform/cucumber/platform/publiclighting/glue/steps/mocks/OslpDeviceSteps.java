@@ -68,7 +68,7 @@ import org.opensmartgridplatform.oslp.Oslp.TransitionType;
 import org.opensmartgridplatform.oslp.Oslp.TriggerType;
 import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareRequest;
 import org.opensmartgridplatform.oslp.Oslp.Weekday;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
@@ -1196,7 +1196,7 @@ public class OslpDeviceSteps {
 
     try {
       this.oslpMockServer.incrementSequenceNumber(this.getDeviceUid(settings));
-      final OslpEnvelope request =
+      final LegacyOslpEnvelope request =
           this.createEnvelopeBuilder(
                   getString(
                       settings,
@@ -1279,7 +1279,7 @@ public class OslpDeviceSteps {
               .build();
 
       this.oslpMockServer.incrementSequenceNumber(this.getDeviceUid(settings));
-      final OslpEnvelope request =
+      final LegacyOslpEnvelope request =
           this.createEnvelopeBuilder(
                   deviceUid, this.oslpMockServer.getSequenceNumber(this.getDeviceUid(settings)))
               .withPayloadMessage(message)
@@ -1311,7 +1311,7 @@ public class OslpDeviceSteps {
     builder.setIndex(ByteString.copyFrom(new byte[] {index.byteValue()}));
 
     this.oslpMockServer.incrementSequenceNumber(this.getDeviceUid(settings));
-    final OslpEnvelope request =
+    final LegacyOslpEnvelope request =
         this.createEnvelopeBuilder(
                 getString(
                     settings,
@@ -1360,7 +1360,7 @@ public class OslpDeviceSteps {
     }
 
     this.oslpMockServer.incrementSequenceNumber(this.getDeviceUid(settings));
-    final OslpEnvelope request =
+    final LegacyOslpEnvelope request =
         this.createEnvelopeBuilder(
                 getString(
                     settings,
@@ -1444,13 +1444,13 @@ public class OslpDeviceSteps {
     }
   }
 
-  public OslpEnvelope.Builder createEnvelopeBuilder(
+  public LegacyOslpEnvelope.Builder createEnvelopeBuilder(
       final String deviceUid, final Integer sequenceNumber) {
     final byte[] sequenceNumberBytes = new byte[2];
     sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
     sequenceNumberBytes[1] = sequenceNumber.byteValue();
 
-    return new OslpEnvelope.Builder()
+    return new LegacyOslpEnvelope.Builder()
         .withSignature(this.oslpMockServer.getOslpSignature())
         .withProvider(this.oslpMockServer.getOslpSignatureProvider())
         .withPrimaryKey(this.oslpMockServer.privateKey())
@@ -1458,7 +1458,7 @@ public class OslpDeviceSteps {
         .withSequenceNumber(sequenceNumberBytes);
   }
 
-  private OslpEnvelope send(final OslpEnvelope request, final Map<String, String> settings)
+  private LegacyOslpEnvelope send(final LegacyOslpEnvelope request, final Map<String, String> settings)
       throws IOException, DeviceSimulatorException {
     final String deviceIdentification =
         getString(settings, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION);

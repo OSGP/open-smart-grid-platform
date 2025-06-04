@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositorie
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessage;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpLogItemRequestMessageSender;
 import org.opensmartgridplatform.oslp.Oslp;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class LoggingService {
 
   @Autowired private OslpLogItemRequestMessageSender oslpLogItemRequestMessageSender;
 
-  public void logMessage(final OslpEnvelope message, final boolean incoming) {
+  public void logMessage(final LegacyOslpEnvelope message, final boolean incoming) {
 
     final String deviceUid = Base64.encodeBase64String(message.getDeviceId());
     String deviceIdentification =

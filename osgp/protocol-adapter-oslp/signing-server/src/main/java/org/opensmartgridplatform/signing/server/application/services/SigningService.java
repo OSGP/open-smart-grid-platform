@@ -8,7 +8,7 @@ import jakarta.annotation.Resource;
 import jakarta.jms.Destination;
 import java.security.PrivateKey;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -82,8 +82,8 @@ public class SigningService {
     final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
     final boolean scheduled = unsignedOslpEnvelopeDto.isScheduled();
 
-    final OslpEnvelope oslpEnvelope =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope legacyOslpEnvelope =
+        new LegacyOslpEnvelope.Builder()
             .withDeviceId(deviceId)
             .withSequenceNumber(sequenceNumber)
             .withPrimaryKey(this.privateKey)
@@ -94,7 +94,7 @@ public class SigningService {
 
     final ResponseMessage responseMessage;
 
-    if (oslpEnvelope == null) {
+    if (legacyOslpEnvelope == null) {
       LOGGER.error(
           "Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adapter",
           deviceIdentification,
@@ -122,7 +122,7 @@ public class SigningService {
           correlationUid);
 
       final SignedOslpEnvelopeDto signedOslpEnvelopeDto =
-          new SignedOslpEnvelopeDto(oslpEnvelope, unsignedOslpEnvelopeDto);
+          new SignedOslpEnvelopeDto(legacyOslpEnvelope, unsignedOslpEnvelopeDto);
 
       responseMessage =
           ResponseMessage.newResponseMessageBuilder()

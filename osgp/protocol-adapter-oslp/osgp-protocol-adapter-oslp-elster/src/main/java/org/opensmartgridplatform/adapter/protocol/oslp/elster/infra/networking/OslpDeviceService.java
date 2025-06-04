@@ -60,7 +60,7 @@ import org.opensmartgridplatform.oslp.Oslp.GetConfigurationRequest;
 import org.opensmartgridplatform.oslp.Oslp.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.oslp.Oslp.GetStatusRequest;
 import org.opensmartgridplatform.oslp.Oslp.SetScheduleRequest;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.opensmartgridplatform.shared.utils.JavaTimeHelpers;
@@ -106,7 +106,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doStartSelfTest(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -119,7 +119,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseStartSelfTest(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -142,7 +142,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doStopSelfTest(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -155,7 +155,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope response) {
+          public void handleResponse(final LegacyOslpEnvelope response) {
             OslpDeviceService.this.handleOslpResponseStopSelfTest(
                 deviceRequest, response, deviceResponseHandler);
           }
@@ -178,7 +178,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetLight(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest setLightDeviceRequest,
       final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest,
       final DeviceResponseHandler setLightDeviceResponseHandler,
@@ -193,7 +193,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetLight(
                 setLightDeviceRequest,
                 resumeScheduleDeviceRequest,
@@ -221,7 +221,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetEventNotifications(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -235,7 +235,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetEventNotifications(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -258,7 +258,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doUpdateFirmware(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -271,7 +271,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseUpdateFirmware(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -294,7 +294,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doGetFirmwareVersion(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -307,7 +307,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseGetFirmwareVersion(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -342,7 +342,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSwitchFirmware(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -356,7 +356,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSwitchFirmware(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -397,7 +397,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doUpdateDeviceSslCertification(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -413,7 +413,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseUpdateDeviceSslCertification(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -437,7 +437,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetDeviceVerificationKey(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -452,7 +452,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetDeviceVerificationKey(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -543,7 +543,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetSchedule(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress,
@@ -587,7 +587,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void doProcessOslpRequestSetSchedule(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress,
@@ -636,7 +636,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void doProcessOslpRequestSetScheduleGetConfiguration(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -652,7 +652,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseGetConfiguration(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -667,7 +667,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void doProcessOslpRequestSetScheduleAstronomicalOffsets(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -683,7 +683,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetScheduleAstronomicalOffsets(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -698,7 +698,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void doProcessOslpRequestSetReboot(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -714,7 +714,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetReboot(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -729,7 +729,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void doProcessOslpRequestSetScheduleSingle(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -745,7 +745,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetScheduleSingle(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -785,7 +785,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetScheduleAstronomicalOffsets(
       final SetScheduleDeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -813,7 +813,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetReboot(
       final SetScheduleDeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -841,7 +841,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetScheduleSingle(
       final SetScheduleDeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -967,7 +967,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void doProcessOslpRequestSetSchedulePaged(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final SetScheduleDeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress,
@@ -990,7 +990,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetSchedulePaged(
                 deviceRequest,
                 oslpResponse,
@@ -1014,7 +1014,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetSchedulePaged(
       final SetScheduleDeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final String domain,
       final String domainVersion,
       final String messageType,
@@ -1164,7 +1164,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetConfiguration(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest setConfigurationDeviceRequest,
       final DeviceRequest setRebootDeviceRequest,
       final DeviceResponseHandler setConfigurationDeviceResponseHandler,
@@ -1181,7 +1181,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetConfiguration(
                 setConfigurationDeviceRequest,
                 setRebootDeviceRequest,
@@ -1209,7 +1209,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doGetConfiguration(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -1222,7 +1222,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseGetConfiguration(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -1245,7 +1245,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSwitchConfiguration(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -1258,7 +1258,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSwitchConfiguration(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -1281,7 +1281,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doGetStatus(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -1294,7 +1294,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseGetStatus(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -1317,7 +1317,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doResumeSchedule(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -1330,7 +1330,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseResumeSchedule(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -1353,7 +1353,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetReboot(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -1366,7 +1366,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetReboot(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -1389,7 +1389,7 @@ public class OslpDeviceService implements DeviceService {
 
   @Override
   public void doSetTransition(
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final DeviceRequest deviceRequest,
       final DeviceResponseHandler deviceResponseHandler,
       final String ipAddress)
@@ -1402,7 +1402,7 @@ public class OslpDeviceService implements DeviceService {
         new OslpResponseHandler() {
 
           @Override
-          public void handleResponse(final OslpEnvelope oslpResponse) {
+          public void handleResponse(final LegacyOslpEnvelope oslpResponse) {
             OslpDeviceService.this.handleOslpResponseSetTransition(
                 deviceRequest, oslpResponse, deviceResponseHandler);
           }
@@ -1417,7 +1417,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private DeviceResponse buildDeviceResponseGetConfiguration(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpResponse) {
     ConfigurationDto configuration = null;
     final DeviceMessageStatus status;
 
@@ -1434,7 +1434,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private DeviceResponse buildDeviceResponseSwitchConfiguration(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpResponse) {
     final DeviceMessageStatus status;
 
     if (oslpResponse.getPayloadMessage().hasSwitchConfigurationResponse()) {
@@ -1454,7 +1454,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private DeviceResponse buildDeviceResponseSwitchFirmware(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpResponse) {
     final DeviceMessageStatus status;
 
     if (oslpResponse.getPayloadMessage().hasSwitchFirmwareResponse()) {
@@ -1474,7 +1474,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private DeviceResponse buildDeviceResponseUpdateDeviceSslCertification(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpResponse) {
     final DeviceMessageStatus status;
 
     if (oslpResponse.getPayloadMessage().hasUpdateDeviceSslCertificationResponse()) {
@@ -1497,7 +1497,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private DeviceResponse buildDeviceResponseSetDeviceVerificationKey(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpResponse) {
     final DeviceMessageStatus status;
 
     if (oslpResponse.getPayloadMessage().hasSetDeviceVerificationKeyResponse()) {
@@ -1709,7 +1709,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseGetConfiguration(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
 
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -1724,7 +1724,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSwitchConfiguration(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
 
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -1739,7 +1739,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseGetFirmwareVersion(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -1759,7 +1759,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSwitchFirmware(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
 
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -1774,7 +1774,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseUpdateDeviceSslCertification(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
 
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -1789,7 +1789,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetDeviceVerificationKey(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
 
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -1804,7 +1804,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseGetStatus(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2033,7 +2033,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseResumeSchedule(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2062,7 +2062,7 @@ public class OslpDeviceService implements DeviceService {
   private void handleOslpResponseSetConfiguration(
       final DeviceRequest setConfigurationDeviceRequest,
       final DeviceRequest setRebootDeviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler setConfigurationDeviceResponseHandler,
       final DeviceResponseHandler setRebootDeviceResponseHandler) {
 
@@ -2113,7 +2113,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetEventNotifications(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2142,7 +2142,7 @@ public class OslpDeviceService implements DeviceService {
   private void handleOslpResponseSetLight(
       final DeviceRequest deviceRequest,
       final ResumeScheduleDeviceRequest resumeScheduleDeviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler setLightDeviceResponseHandler,
       final DeviceResponseHandler resumeScheduleDeviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -2191,7 +2191,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetReboot(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2219,7 +2219,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseSetTransition(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
 
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -2247,7 +2247,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseStartSelfTest(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2274,7 +2274,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseStopSelfTest(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2301,7 +2301,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void handleOslpResponseUpdateFirmware(
       final DeviceRequest deviceRequest,
-      final OslpEnvelope oslpResponse,
+      final LegacyOslpEnvelope oslpResponse,
       final DeviceResponseHandler deviceResponseHandler) {
     this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
@@ -2408,7 +2408,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void saveOslpResponseLogEntry(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpResponse) {
     final OslpDevice oslpDevice =
         this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
             deviceRequest.getDeviceIdentification());
@@ -2427,7 +2427,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void saveOslpRequestLogEntry(
-      final DeviceRequest deviceRequest, final OslpEnvelope oslpRequest) {
+      final DeviceRequest deviceRequest, final LegacyOslpEnvelope oslpRequest) {
     final OslpDevice oslpDevice =
         this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
             deviceRequest.getDeviceIdentification());
@@ -2446,7 +2446,7 @@ public class OslpDeviceService implements DeviceService {
   }
 
   private void updateSequenceNumber(
-      final String deviceIdentification, final OslpEnvelope oslpResponse) {
+      final String deviceIdentification, final LegacyOslpEnvelope oslpResponse) {
     final Integer sequenceNumber =
         SequenceNumberUtils.convertByteArrayToInteger(oslpResponse.getSequenceNumber());
 
@@ -2458,7 +2458,7 @@ public class OslpDeviceService implements DeviceService {
 
   private void sendMessage(
       final String ipAddress,
-      final OslpEnvelope oslpRequest,
+      final LegacyOslpEnvelope oslpRequest,
       final OslpResponseHandler oslpResponseHandler,
       final DeviceRequest deviceRequest)
       throws IOException {

@@ -55,7 +55,7 @@ import org.opensmartgridplatform.oslp.Oslp.StopSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareResponse;
 import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
@@ -216,9 +216,9 @@ public class MockOslpServer {
     return deviceState.pollReceivedRequest(messageType);
   }
 
-  public OslpEnvelope send(
+  public LegacyOslpEnvelope send(
       final InetSocketAddress address,
-      final OslpEnvelope request,
+      final LegacyOslpEnvelope request,
       final String deviceIdentification)
       throws IOException, DeviceSimulatorException {
     return this.channelHandler.send(address, request, deviceIdentification);
@@ -227,7 +227,7 @@ public class MockOslpServer {
   public Message sendRequest(final String deviceUid, final Message message)
       throws DeviceSimulatorException, IOException, ParseException {
 
-    final OslpEnvelope envelope = new OslpEnvelope();
+    final LegacyOslpEnvelope envelope = new LegacyOslpEnvelope();
     envelope.setPayloadMessage(message);
 
     return this.channelHandler.handleRequest(envelope, this.getSequenceNumber(deviceUid));

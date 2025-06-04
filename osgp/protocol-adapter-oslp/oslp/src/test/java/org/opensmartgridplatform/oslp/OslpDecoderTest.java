@@ -62,76 +62,76 @@ class OslpDecoderTest {
   @Test
   void decodesAnOslpEnvelopeWhenAllBytesAreReceivedTogether() {
     final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
-    final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
 
-    ConnectionBehavior.ALL_BYTES_TOGETHER.writeOslpEnvelope(channel, oslpEnvelope);
-    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+    ConnectionBehavior.ALL_BYTES_TOGETHER.writeOslpEnvelope(channel, legacyOslpEnvelope);
+    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
 
-    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
-    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
+    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
+    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
   }
 
   @Test
   void decodesAnOslpEnvelopeWhenAllBytesAreReceivedInChunksMatchingTheParts() {
     final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
-    final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
 
-    ConnectionBehavior.FIELD_MATCHING_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
-    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+    ConnectionBehavior.FIELD_MATCHING_CHUNKS.writeOslpEnvelope(channel, legacyOslpEnvelope);
+    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
 
-    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
-    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
+    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
+    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
   }
 
   @Test
   void decodesAnOslpEnvelopeWhenAllBytesAreReceivedOneByOne() {
     final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
-    final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
 
-    ConnectionBehavior.SINGLE_BYTE_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
-    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+    ConnectionBehavior.SINGLE_BYTE_CHUNKS.writeOslpEnvelope(channel, legacyOslpEnvelope);
+    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
 
-    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
-    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
+    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
+    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
   }
 
   @Test
   void decodesAnOslpEnvelopeWhenAllBytesAreReceivedInRandomChunks() {
     final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
-    final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
 
-    ConnectionBehavior.RANDOM_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
-    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+    ConnectionBehavior.RANDOM_CHUNKS.writeOslpEnvelope(channel, legacyOslpEnvelope);
+    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
 
-    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
-    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
+    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
+    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
   }
 
   @Test
   void decodesAnOslpEnvelopeEncodedByOslpEncoder() {
     final EmbeddedChannel channel =
         new EmbeddedChannel(new InboundOslpEncoder(), this.oslpDecoder());
-    final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
 
-    assertThat(channel.writeInbound(oslpEnvelope)).isTrue();
-    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+    assertThat(channel.writeInbound(legacyOslpEnvelope)).isTrue();
+    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
 
-    final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate());
-    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
+    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
+    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
   }
 
   @Test
   void decodesMultipleOslpEnvelopesInSequence() {
     final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
-    final List<OslpEnvelope> oslpEnvelopes = this.oslpEnvelopes();
+    final List<LegacyOslpEnvelope> legacyOslpEnvelopes = this.oslpEnvelopes();
     final List<String> descriptions = new ArrayList<>();
 
-    for (final OslpEnvelope oslpEnvelope : oslpEnvelopes) {
-      descriptions.add(this.oslpEnvelopeDetails(oslpEnvelope, this.keyPair.getPrivate()));
-      this.randomConnectionBehavior().writeOslpEnvelope(channel, oslpEnvelope);
+    for (final LegacyOslpEnvelope legacyOslpEnvelope : legacyOslpEnvelopes) {
+      descriptions.add(this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate()));
+      this.randomConnectionBehavior().writeOslpEnvelope(channel, legacyOslpEnvelope);
     }
 
-    final int numberOfEnvelopes = oslpEnvelopes.size();
+    final int numberOfEnvelopes = legacyOslpEnvelopes.size();
     final StringBuilder descriptionBuilder = new StringBuilder();
     int index = 1;
     for (final String description : descriptions) {
@@ -140,18 +140,18 @@ class OslpDecoderTest {
       index += 1;
     }
     for (int i = 0; i < numberOfEnvelopes; i++) {
-      final OslpEnvelope expectedOslpEnvelope = oslpEnvelopes.get(i);
-      final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+      final LegacyOslpEnvelope expectedLegacyOslpEnvelope = legacyOslpEnvelopes.get(i);
+      final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
       final String description =
           String.format(
               "%s%nComparing OslpEnvelope %d of %d", descriptionBuilder, i + 1, numberOfEnvelopes);
       this.assertActualOslpEnvelopeEqualsExpected(
-          actualOslpEnvelope, expectedOslpEnvelope, description);
+              actualLegacyOslpEnvelope, expectedLegacyOslpEnvelope, description);
     }
   }
 
-  private OslpEnvelope oslpEnvelope() {
-    return new OslpEnvelope.Builder()
+  private LegacyOslpEnvelope oslpEnvelope() {
+    return new LegacyOslpEnvelope.Builder()
         .withSignature(ALGORITHM_DETAILS)
         .withProvider(PROVIDER_DETAILS)
         .withPrimaryKey(this.keyPair.getPrivate())
@@ -162,10 +162,10 @@ class OslpDecoderTest {
         .build();
   }
 
-  private List<OslpEnvelope> oslpEnvelopes() {
-    final List<OslpEnvelope> envelopes = new ArrayList<>();
-    final OslpEnvelope.Builder builder =
-        new OslpEnvelope.Builder()
+  private List<LegacyOslpEnvelope> oslpEnvelopes() {
+    final List<LegacyOslpEnvelope> envelopes = new ArrayList<>();
+    final LegacyOslpEnvelope.Builder builder =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(ALGORITHM_DETAILS)
             .withProvider(PROVIDER_DETAILS)
             .withPrimaryKey(this.keyPair.getPrivate())
@@ -222,7 +222,7 @@ class OslpDecoderTest {
   }
 
   private byte[] randomSequenceNumber() {
-    final byte[] randomSequenceNumber = new byte[OslpEnvelope.SEQUENCE_NUMBER_LENGTH];
+    final byte[] randomSequenceNumber = new byte[LegacyOslpEnvelope.SEQUENCE_NUMBER_LENGTH];
     this.random.nextBytes(randomSequenceNumber);
     return randomSequenceNumber;
   }
@@ -233,7 +233,7 @@ class OslpDecoderTest {
 
   private byte[] randomDeviceId() {
     final byte[] randomDeviceUid =
-        new byte[OslpEnvelope.MANUFACTURER_ID_LENGTH + OslpEnvelope.DEVICE_ID_LENGTH];
+        new byte[LegacyOslpEnvelope.MANUFACTURER_ID_LENGTH + LegacyOslpEnvelope.DEVICE_ID_LENGTH];
     this.random.nextBytes(randomDeviceUid);
     return randomDeviceUid;
   }
@@ -251,15 +251,15 @@ class OslpDecoderTest {
     return ByteString.copyFrom(new byte[] {(byte) this.random.nextInt(4)});
   }
 
-  private String oslpEnvelopeDetails(final OslpEnvelope oslpEnvelope, final PrivateKey privateKey) {
-    if (oslpEnvelope == null) {
+  private String oslpEnvelopeDetails(final LegacyOslpEnvelope legacyOslpEnvelope, final PrivateKey privateKey) {
+    if (legacyOslpEnvelope == null) {
       return "no OslpEnvelope";
     }
     final String privateKeyDetails = this.privateKeyDetails(privateKey);
-    final String securityKeyDetails = this.byteArrayDetails(oslpEnvelope.getSecurityKey());
-    final String sequenceNumberDetails = this.byteArrayDetails(oslpEnvelope.getSequenceNumber());
-    final String deviceIdDetails = this.deviceIdDetails(oslpEnvelope.getDeviceId());
-    final String lengthIndicatorDetails = this.byteArrayDetails(oslpEnvelope.getLengthIndicator());
+    final String securityKeyDetails = this.byteArrayDetails(legacyOslpEnvelope.getSecurityKey());
+    final String sequenceNumberDetails = this.byteArrayDetails(legacyOslpEnvelope.getSequenceNumber());
+    final String deviceIdDetails = this.deviceIdDetails(legacyOslpEnvelope.getDeviceId());
+    final String lengthIndicatorDetails = this.byteArrayDetails(legacyOslpEnvelope.getLengthIndicator());
 
     return String.format(
         "OslpEnvelope[%n\tsignatureAlgorithm: %s%n\tprovider: %s%n\tprivateKey: %s%n\tsize: %d"
@@ -268,12 +268,12 @@ class OslpDecoderTest {
         ALGORITHM_DETAILS,
         PROVIDER_DETAILS,
         privateKeyDetails,
-        oslpEnvelope.getSize(),
+        legacyOslpEnvelope.getSize(),
         securityKeyDetails,
         sequenceNumberDetails,
         deviceIdDetails,
         lengthIndicatorDetails,
-        oslpEnvelope.getPayloadMessage());
+        legacyOslpEnvelope.getPayloadMessage());
   }
 
   private String deviceIdDetails(final byte[] deviceId) {
@@ -307,7 +307,7 @@ class OslpDecoderTest {
   }
 
   private void assertActualOslpEnvelopeEqualsExpected(
-      final OslpEnvelope actual, final OslpEnvelope expected, final String description) {
+          final LegacyOslpEnvelope actual, final LegacyOslpEnvelope expected, final String description) {
 
     assertThat(actual)
         .usingRecursiveComparison()
@@ -327,13 +327,13 @@ class OslpDecoderTest {
   enum ConnectionBehavior {
     ALL_BYTES_TOGETHER {
       @Override
-      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
         assertThat(channel.writeInbound(byteBuf(envelope))).isTrue();
       }
     },
     FIELD_MATCHING_CHUNKS {
       @Override
-      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
         channel.writeInbound(Unpooled.copiedBuffer(envelope.getSecurityKey()));
         channel.writeInbound(Unpooled.copiedBuffer(envelope.getSequenceNumber()));
         channel.writeInbound(Unpooled.copiedBuffer(envelope.getDeviceId()));
@@ -346,7 +346,7 @@ class OslpDecoderTest {
     },
     SINGLE_BYTE_CHUNKS {
       @Override
-      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
         final ByteBuf byteBuf = byteBuf(envelope);
         final int numberOfBytes = byteBuf.array().length;
         for (int index = 0; index < numberOfBytes - 1; index++) {
@@ -378,7 +378,7 @@ class OslpDecoderTest {
       }
 
       @Override
-      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
         final ByteBuf byteBuf = byteBuf(envelope);
         final int numberOfBytes = byteBuf.array().length;
         final int[] chunkSizes = this.splitInRandomLengths(numberOfBytes);
@@ -394,7 +394,7 @@ class OslpDecoderTest {
       }
     };
 
-    public static ByteBuf byteBuf(final OslpEnvelope envelope) {
+    public static ByteBuf byteBuf(final LegacyOslpEnvelope envelope) {
       return Unpooled.copiedBuffer(
           envelope.getSecurityKey(),
           envelope.getSequenceNumber(),
@@ -404,7 +404,7 @@ class OslpDecoderTest {
     }
 
     public abstract void writeOslpEnvelope(
-        final EmbeddedChannel channel, final OslpEnvelope envelope);
+        final EmbeddedChannel channel, final LegacyOslpEnvelope envelope);
   }
 
   enum OslpMessageType {

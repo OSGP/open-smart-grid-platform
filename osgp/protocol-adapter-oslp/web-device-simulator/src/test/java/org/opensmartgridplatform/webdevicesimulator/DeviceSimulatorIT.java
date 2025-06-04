@@ -46,7 +46,7 @@ import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.opensmartgridplatform.webdevicesimulator.application.config.OslpConfig;
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
@@ -83,9 +83,9 @@ class DeviceSimulatorIT {
 
   private final Random random = new SecureRandom();
 
-  @Mock private Consumer<OslpEnvelope> oslpEnvelopeConsumer;
+  @Mock private Consumer<LegacyOslpEnvelope> oslpEnvelopeConsumer;
 
-  @Captor private ArgumentCaptor<OslpEnvelope> oslpEnvelopeCaptor;
+  @Captor private ArgumentCaptor<LegacyOslpEnvelope> oslpEnvelopeCaptor;
 
   @Captor private ArgumentCaptor<OslpLogItem> oslpLogItemCaptor;
 
@@ -152,7 +152,7 @@ class DeviceSimulatorIT {
     channel.writeAndFlush(this.setRebootEnvelope(deviceUid, sequenceNumber));
     channel.closeFuture().awaitUninterruptibly(1000 * (REBOOT_DELAY_IN_SECONDS + 1));
     verify(this.oslpEnvelopeConsumer).accept(this.oslpEnvelopeCaptor.capture());
-    final OslpEnvelope responseEnvelope = this.oslpEnvelopeCaptor.getValue();
+    final LegacyOslpEnvelope responseEnvelope = this.oslpEnvelopeCaptor.getValue();
     assertThat(responseEnvelope).hasDeviceId(deviceUid).hasMessageWithName("setRebootResponse");
   }
 
@@ -174,7 +174,7 @@ class DeviceSimulatorIT {
     channel.writeAndFlush(this.setRebootEnvelope(deviceUid, sequenceNumber));
     channel.closeFuture().awaitUninterruptibly(1000);
     verify(this.oslpLogItemRepository, times(2)).save(any(OslpLogItem.class));
-    verify(this.oslpEnvelopeConsumer).accept(any(OslpEnvelope.class));
+    verify(this.oslpEnvelopeConsumer).accept(any(LegacyOslpEnvelope.class));
   }
 
   @Test
@@ -194,7 +194,7 @@ class DeviceSimulatorIT {
     channel.writeAndFlush(this.setRebootEnvelope(deviceUid, sequenceNumber));
     channel.closeFuture().awaitUninterruptibly(1000);
     verify(this.oslpLogItemRepository, times(4)).save(any(OslpLogItem.class));
-    verify(this.oslpEnvelopeConsumer, times(2)).accept(any(OslpEnvelope.class));
+    verify(this.oslpEnvelopeConsumer, times(2)).accept(any(LegacyOslpEnvelope.class));
   }
 
   @Test
@@ -224,7 +224,7 @@ class DeviceSimulatorIT {
     channel.closeFuture().awaitUninterruptibly(1000);
     verify(this.oslpLogItemRepository, times(4)).save(any(OslpLogItem.class));
     verify(this.oslpEnvelopeConsumer, times(2)).accept(this.oslpEnvelopeCaptor.capture());
-    final List<OslpEnvelope> responseEnvelopes = this.oslpEnvelopeCaptor.getAllValues();
+    final List<LegacyOslpEnvelope> responseEnvelopes = this.oslpEnvelopeCaptor.getAllValues();
     assertThat(responseEnvelopes.get(0))
         .hasDeviceId(deviceUid1)
         .hasMessageWithName("setRebootResponse");
@@ -279,9 +279,9 @@ class DeviceSimulatorIT {
     return channelFuture.channel();
   }
 
-  private OslpEnvelope setRebootEnvelope(final byte[] deviceId, final int sequenceNumber)
+  private LegacyOslpEnvelope setRebootEnvelope(final byte[] deviceId, final int sequenceNumber)
       throws Exception {
-    return new OslpEnvelope.Builder()
+    return new LegacyOslpEnvelope.Builder()
         .withProvider(this.oslpConfig.oslpSignatureProvider())
         .withSignature(this.oslpConfig.oslpSignature())
         .withPrimaryKey(this.testConfig.privateKeySigningServer())

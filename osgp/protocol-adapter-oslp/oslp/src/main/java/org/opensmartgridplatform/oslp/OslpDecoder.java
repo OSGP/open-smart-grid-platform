@@ -27,7 +27,7 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
     PAYLOAD_MESSAGE;
   }
 
-  private OslpEnvelope.Builder builder = new OslpEnvelope.Builder();
+  private LegacyOslpEnvelope.Builder builder = new LegacyOslpEnvelope.Builder();
   private int length;
 
   public OslpDecoder(final String signature, final String provider) {
@@ -75,7 +75,7 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
   }
 
   private void outputOslpEnvelopeAndResetDecoder(final List<Object> out) {
-    final OslpEnvelope msg =
+    final LegacyOslpEnvelope msg =
         this.builder.withSignature(this.signature).withProvider(this.provider).build();
     this.reset();
     out.add(msg);
@@ -83,32 +83,32 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
   private void reset() {
     this.checkpoint(DecodingState.SECURITY_KEY);
-    this.builder = new OslpEnvelope.Builder();
+    this.builder = new LegacyOslpEnvelope.Builder();
     this.length = 0;
   }
 
   private void decodeSecurityKey(final ByteBuf buffer) {
-    final byte[] bytes = this.readBytes(buffer, OslpEnvelope.SECURITY_KEY_LENGTH);
+    final byte[] bytes = this.readBytes(buffer, LegacyOslpEnvelope.SECURITY_KEY_LENGTH);
     LOGGER.debug("Decoded security key: {}", bytes);
     this.builder.withSecurityKey(bytes);
   }
 
   private void decodeSequenceNumber(final ByteBuf buffer) {
-    final byte[] bytes = this.readBytes(buffer, OslpEnvelope.SEQUENCE_NUMBER_LENGTH);
+    final byte[] bytes = this.readBytes(buffer, LegacyOslpEnvelope.SEQUENCE_NUMBER_LENGTH);
     LOGGER.debug("Decoded sequence number: {}", bytes);
     this.builder.withSequenceNumber(bytes);
   }
 
   private void decodeDeviceId(final ByteBuf buffer) {
     final int deviceAndManufacturerLength =
-        OslpEnvelope.DEVICE_ID_LENGTH + OslpEnvelope.MANUFACTURER_ID_LENGTH;
+        LegacyOslpEnvelope.DEVICE_ID_LENGTH + LegacyOslpEnvelope.MANUFACTURER_ID_LENGTH;
     final byte[] bytes = this.readBytes(buffer, deviceAndManufacturerLength);
     LOGGER.debug("Decoded device id: {}", bytes);
     this.builder.withDeviceId(bytes);
   }
 
   private void decodeLengthIndicator(final ByteBuf buffer) {
-    this.length = this.readLengthIndicator(buffer, OslpEnvelope.LENGTH_INDICATOR_LENGTH);
+    this.length = this.readLengthIndicator(buffer, LegacyOslpEnvelope.LENGTH_INDICATOR_LENGTH);
     LOGGER.debug("Decoded length: {}", this.length);
   }
 

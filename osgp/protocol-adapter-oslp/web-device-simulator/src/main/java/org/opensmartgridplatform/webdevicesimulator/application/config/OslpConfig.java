@@ -21,7 +21,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.opensmartgridplatform.shared.security.CertificateHelper;
 import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler;
@@ -139,7 +139,7 @@ public class OslpConfig {
   }
 
   @Bean
-  public SimpleChannelInboundHandler<OslpEnvelope> oslpSecurityHandler() {
+  public SimpleChannelInboundHandler<LegacyOslpEnvelope> oslpSecurityHandler() {
     return new OslpSecurityHandler();
   }
 

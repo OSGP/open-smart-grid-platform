@@ -25,7 +25,7 @@ import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.DeviceType;
 import org.opensmartgridplatform.oslp.Oslp.EventNotification;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
 import org.opensmartgridplatform.webdevicesimulator.application.services.OslpLogService;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
@@ -84,7 +84,7 @@ public class RegisterDevice {
       final Integer randomDevice = device.doGenerateRandomNumber();
 
       // Create registration message.
-      final OslpEnvelope oslpRequest =
+      final LegacyOslpEnvelope oslpRequest =
           this.createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
               .withPayloadMessage(
                   Message.newBuilder()
@@ -106,7 +106,7 @@ public class RegisterDevice {
       // Write outgoing request to log.
       this.writeOslpLogItem(oslpRequest, device, false);
 
-      final OslpEnvelope response = this.sendRequest(device, oslpRequest);
+      final LegacyOslpEnvelope response = this.sendRequest(device, oslpRequest);
 
       // Write incoming response to log.
       this.writeOslpLogItem(response, device, true);
@@ -161,7 +161,7 @@ public class RegisterDevice {
     try {
       final Integer sequenceNumber = device.doGetNextSequence();
       // Create registration confirmation message.
-      final OslpEnvelope oslpRequest =
+      final LegacyOslpEnvelope oslpRequest =
           this.createEnvelopeBuilder(device.getDeviceUid(), sequenceNumber)
               .withPayloadMessage(
                   Message.newBuilder()
@@ -175,7 +175,7 @@ public class RegisterDevice {
       // Write outgoing request to log.
       this.writeOslpLogItem(oslpRequest, device, false);
 
-      final OslpEnvelope response = this.sendRequest(device, oslpRequest);
+      final LegacyOslpEnvelope response = this.sendRequest(device, oslpRequest);
 
       // Write incoming response to log.
       this.writeOslpLogItem(response, device, true);
@@ -237,7 +237,7 @@ public class RegisterDevice {
     return timestamp;
   }
 
-  private OslpEnvelope createEventNotificationRequest(
+  private LegacyOslpEnvelope createEventNotificationRequest(
       final Device device, final int sequenceNumber, final Event event) {
     final String deviceUid = device.getDeviceUid();
     final Oslp.Event oslpEvent = event.getOslpEvent();
@@ -286,11 +286,11 @@ public class RegisterDevice {
   }
 
   private void writeOslpLogItem(
-      final OslpEnvelope oslpEnvelope, final Device device, final boolean incoming) {
-    this.oslpLogService.writeOslpLogItem(oslpEnvelope, device, incoming);
+          final LegacyOslpEnvelope legacyOslpEnvelope, final Device device, final boolean incoming) {
+    this.oslpLogService.writeOslpLogItem(legacyOslpEnvelope, device, incoming);
   }
 
-  private OslpEnvelope sendRequest(final Device device, final OslpEnvelope request)
+  private LegacyOslpEnvelope sendRequest(final Device device, final LegacyOslpEnvelope request)
       throws IOException, DeviceSimulatorException {
     // Original protocol port.
     int port = this.oslpPortClient;
@@ -301,7 +301,7 @@ public class RegisterDevice {
 
     // Attempt to send the request and receive response.
     LOGGER.info("Trying to send request: {}", request.getPayloadMessage());
-    final OslpEnvelope response =
+    final LegacyOslpEnvelope response =
         this.oslpChannelHandler.send(
             new InetSocketAddress(this.oslpAddressServer, port),
             request,
@@ -338,12 +338,12 @@ public class RegisterDevice {
       // Create request and write outgoing request to log.
       final Event deviceSimulatorEvent =
           new Event(oslpEvent, description, index, timestamp, hasTimestamp);
-      final OslpEnvelope request =
+      final LegacyOslpEnvelope request =
           this.createEventNotificationRequest(device, sequenceNumber, deviceSimulatorEvent);
       this.writeOslpLogItem(request, device, false);
 
       // Send event notification message and receive response.
-      final OslpEnvelope response = this.sendRequest(device, request);
+      final LegacyOslpEnvelope response = this.sendRequest(device, request);
       // Write incoming response to log.
       this.writeOslpLogItem(response, device, true);
 
@@ -369,20 +369,20 @@ public class RegisterDevice {
   @Deprecated
   private byte[] createRandomDeviceUid() {
     // Generate random bytes for UID
-    final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];
+    final byte[] deviceUid = new byte[LegacyOslpEnvelope.DEVICE_ID_LENGTH];
     this.byteGenerator.nextBytes(deviceUid);
     // Combine manufacturer id of 2 bytes (1 is AME) and device UID of 10
     // bytes.
     return ArrayUtils.addAll(new byte[] {0, 1}, deviceUid);
   }
 
-  public OslpEnvelope.Builder createEnvelopeBuilder(
+  public LegacyOslpEnvelope.Builder createEnvelopeBuilder(
       final String deviceUid, final Integer sequenceNumber) {
     final byte[] sequenceNumberBytes = new byte[2];
     sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
     sequenceNumberBytes[1] = sequenceNumber.byteValue();
 
-    return new OslpEnvelope.Builder()
+    return new LegacyOslpEnvelope.Builder()
         .withSignature(this.oslpSignature)
         .withProvider(this.oslpSignatureProvider)
         .withPrimaryKey(this.privateKey)

@@ -16,11 +16,11 @@ public class UnsignedOslpEnvelopeDto implements Serializable {
   public static final String OSLP_RESPONSE_TYPE = "OSLP_RESPONSE";
 
   /** Buffer for sequence number bytes. */
-  private byte[] sequenceNumber = new byte[OslpEnvelope.SEQUENCE_NUMBER_LENGTH];
+  private byte[] sequenceNumber = new byte[LegacyOslpEnvelope.SEQUENCE_NUMBER_LENGTH];
 
   /** Buffer for deviceid bytes. */
   private byte[] deviceId =
-      new byte[OslpEnvelope.DEVICE_ID_LENGTH + OslpEnvelope.MANUFACTURER_ID_LENGTH];
+      new byte[LegacyOslpEnvelope.DEVICE_ID_LENGTH + LegacyOslpEnvelope.MANUFACTURER_ID_LENGTH];
 
   /** Buffer for OSLP payload. */
   private final Message payloadMessage;

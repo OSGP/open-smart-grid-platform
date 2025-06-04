@@ -65,7 +65,7 @@ public final class OslpUtils {
    *
    * @return array of bytes which can be signed
    */
-  public static byte[] createSignBytes(final OslpEnvelope envelope) {
+  public static byte[] createSignBytes(final LegacyOslpEnvelope envelope) {
     byte[] message = ArrayUtils.addAll(envelope.getSequenceNumber(), envelope.getDeviceId());
     message = ArrayUtils.addAll(message, envelope.getLengthIndicator());
     message = ArrayUtils.addAll(message, envelope.getPayloadMessage().toByteArray());
@@ -139,7 +139,7 @@ public final class OslpUtils {
     return signatureBuilder.verify(truncated);
   }
 
-  public static boolean isOslpResponse(final OslpEnvelope envelope) {
+  public static boolean isOslpResponse(final LegacyOslpEnvelope envelope) {
 
     final Message message = envelope.getPayloadMessage();
 

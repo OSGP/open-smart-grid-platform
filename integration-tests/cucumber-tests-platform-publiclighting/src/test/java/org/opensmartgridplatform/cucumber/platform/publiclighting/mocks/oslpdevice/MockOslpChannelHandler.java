@@ -35,13 +35,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Sharable
-public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
+public class MockOslpChannelHandler extends SimpleChannelInboundHandler<LegacyOslpEnvelope> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
   private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
@@ -96,7 +96,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     return (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
   }
 
-  private static String getDeviceUid(final OslpEnvelope message) {
+  private static String getDeviceUid(final LegacyOslpEnvelope message) {
     return Base64.encodeBase64String(message.getDeviceId());
   }
 
@@ -150,14 +150,14 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         && e.getMessage().contains("Connection reset by peer");
   }
 
-  private boolean isOslpResponse(final OslpEnvelope envelope) {
+  private boolean isOslpResponse(final LegacyOslpEnvelope envelope) {
     return envelope.getPayloadMessage().hasRegisterDeviceResponse()
         || envelope.getPayloadMessage().hasConfirmRegisterDeviceResponse()
         || envelope.getPayloadMessage().hasEventNotificationResponse();
   }
 
   @Override
-  public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message)
+  public void channelRead0(final ChannelHandlerContext ctx, final LegacyOslpEnvelope message)
       throws Exception {
 
     if (message.isValid()) {
@@ -193,8 +193,8 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         if (deviceState.hasMockedResponses(messageType)) {
 
           // Build the OslpEnvelope.
-          final OslpEnvelope.Builder responseBuilder =
-              new OslpEnvelope.Builder()
+          final LegacyOslpEnvelope.Builder responseBuilder =
+              new LegacyOslpEnvelope.Builder()
                   .withSignature(this.oslpSignature)
                   .withProvider(this.oslpSignatureProvider)
                   .withPrimaryKey(this.privateKey)
@@ -204,7 +204,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
           // Add the new sequence number to the OslpEnvelope.
           responseBuilder.withSequenceNumber(
               convertIntegerToByteArray(deviceState.getSequenceNumber()));
-          final OslpEnvelope response = responseBuilder.build();
+          final LegacyOslpEnvelope response = responseBuilder.build();
 
           LOGGER.debug(
               "Device {} is sending an OSLP response with sequence number {}",
@@ -261,7 +261,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
   private void sendNotifications(
       final InetSocketAddress inetAddress,
-      final OslpEnvelope message,
+      final LegacyOslpEnvelope message,
       final String deviceUid,
       final DeviceState deviceState)
       throws DeviceSimulatorException, IOException {
@@ -276,15 +276,15 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             lightValue.getOn()
                 ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
                 : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
-        final OslpEnvelope notification =
+        final LegacyOslpEnvelope notification =
             this.buildNotification(message, deviceUid, deviceState, event, lightValue.getIndex());
         this.send(inetAddress, notification, deviceUid);
       }
     }
   }
 
-  private OslpEnvelope buildNotification(
-      final OslpEnvelope message,
+  private LegacyOslpEnvelope buildNotification(
+      final LegacyOslpEnvelope message,
       final String deviceUid,
       final DeviceState deviceState,
       final Oslp.Event event,
@@ -301,8 +301,8 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             .setTimestamp(timestamp)
             .setIndex(index);
 
-    final OslpEnvelope.Builder notificationBuilder =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope.Builder notificationBuilder =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(this.oslpSignature)
             .withProvider(this.oslpSignatureProvider)
             .withPrimaryKey(this.privateKey)
@@ -318,9 +318,9 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     return notificationBuilder.build();
   }
 
-  public OslpEnvelope send(
+  public LegacyOslpEnvelope send(
       final InetSocketAddress address,
-      final OslpEnvelope request,
+      final LegacyOslpEnvelope request,
       final String deviceIdentification)
       throws IOException, DeviceSimulatorException {
     LOGGER.debug("Sending OSLP request: {}", request.getPayloadMessage());
@@ -350,7 +350,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
     // wait for response and close connection
     try {
-      final OslpEnvelope response = callback.get(deviceIdentification);
+      final LegacyOslpEnvelope response = callback.get(deviceIdentification);
       LOGGER.debug("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
       /*
@@ -385,14 +385,14 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
   // Note: This method is for other classes which are executing this method
   // WITH a sequence number
-  public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+  public Oslp.Message handleRequest(final LegacyOslpEnvelope message, final int sequenceNumber)
       throws DeviceSimulatorException, IOException, ParseException {
 
     message.setSequenceNumber(convertIntegerToByteArray(sequenceNumber));
     return this.handleRequest(message);
   }
 
-  public Oslp.Message handleRequest(final OslpEnvelope requestMessage)
+  public Oslp.Message handleRequest(final LegacyOslpEnvelope requestMessage)
       throws DeviceSimulatorException {
     final Oslp.Message request = requestMessage.getPayloadMessage();
 
@@ -497,13 +497,13 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
-    private OslpEnvelope response;
+    private LegacyOslpEnvelope response;
 
     Callback(final int connectionTimeout) {
       this.connectionTimeout = connectionTimeout;
     }
 
-    OslpEnvelope get(final String deviceIdentification)
+    LegacyOslpEnvelope get(final String deviceIdentification)
         throws IOException, DeviceSimulatorException {
       try {
         if (!this.latch.await(this.connectionTimeout, TimeUnit.MILLISECONDS)) {
@@ -522,7 +522,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
       return this.response;
     }
 
-    void handle(final OslpEnvelope response) {
+    void handle(final LegacyOslpEnvelope response) {
       this.response = response;
       this.latch.countDown();
     }

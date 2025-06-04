@@ -58,7 +58,7 @@ import org.opensmartgridplatform.oslp.Oslp.StopSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.TransitionType;
 import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareRequest;
 import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareResponse;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
@@ -77,7 +77,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 @Sharable
-public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
+public class OslpChannelHandler extends SimpleChannelInboundHandler<LegacyOslpEnvelope> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandler.class);
 
@@ -284,7 +284,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
   }
 
   @Override
-  public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message)
+  public void channelRead0(final ChannelHandlerContext ctx, final LegacyOslpEnvelope message)
       throws Exception {
 
     final String deviceUid = Base64.encodeBase64String(message.getDeviceId());
@@ -315,7 +315,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
   }
 
   private void channelRead0OslpReponse(
-      final ChannelHandlerContext ctx, final OslpEnvelope message) {
+      final ChannelHandlerContext ctx, final LegacyOslpEnvelope message) {
     LOGGER.info("Received OSLP Response (before callback): {}", message.getPayloadMessage());
 
     // Lookup correct callback and call handle method
@@ -329,7 +329,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     callback.handle(message);
   }
 
-  private void channelRead0OslpRequest(final ChannelHandlerContext ctx, final OslpEnvelope message)
+  private void channelRead0OslpRequest(final ChannelHandlerContext ctx, final LegacyOslpEnvelope message)
       throws DeviceSimulatorException {
     final String oslpRequest = message.getPayloadMessage().toString().split(" ")[0];
     LOGGER.info("Received OSLP Request: {}", oslpRequest);
@@ -364,8 +364,8 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     final byte[] deviceId = message.getDeviceId();
 
     // Build the OslpEnvelope with the incremented sequence number.
-    final OslpEnvelope.Builder responseBuilder =
-        new OslpEnvelope.Builder()
+    final LegacyOslpEnvelope.Builder responseBuilder =
+        new LegacyOslpEnvelope.Builder()
             .withSignature(this.oslpSignature)
             .withProvider(this.oslpSignatureProvider)
             .withPrimaryKey(this.privateKey)
@@ -375,7 +375,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     // Pass the incremented sequence number to the handleRequest()
     // function for checking.
     responseBuilder.withPayloadMessage(this.handleRequest(message, number));
-    final OslpEnvelope response = responseBuilder.build();
+    final LegacyOslpEnvelope response = responseBuilder.build();
 
     this.oslpLogItemRepository.save(
         new OslpLogItem(
@@ -421,9 +421,9 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         && e.getMessage().contains("Connection reset by peer");
   }
 
-  public OslpEnvelope send(
+  public LegacyOslpEnvelope send(
       final InetSocketAddress address,
-      final OslpEnvelope request,
+      final LegacyOslpEnvelope request,
       final String deviceIdentification)
       throws IOException, DeviceSimulatorException {
     LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
@@ -454,7 +454,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
     // wait for response and close connection
     try {
-      final OslpEnvelope response = callback.get(deviceIdentification);
+      final LegacyOslpEnvelope response = callback.get(deviceIdentification);
       LOGGER.info("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
       /*
@@ -472,7 +472,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
   }
 
-  private boolean isOslpResponse(final OslpEnvelope envelope) {
+  private boolean isOslpResponse(final LegacyOslpEnvelope envelope) {
     return envelope.getPayloadMessage().hasRegisterDeviceResponse()
         || envelope.getPayloadMessage().hasConfirmRegisterDeviceResponse()
         || envelope.getPayloadMessage().hasEventNotificationResponse();
@@ -490,7 +490,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
   }
 
-  private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
+  private Oslp.Message handleRequest(final LegacyOslpEnvelope message, final int sequenceNumber)
       throws DeviceSimulatorException {
     final Oslp.Message request = message.getPayloadMessage();
 
@@ -1094,13 +1094,13 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private final int connectionTimeout;
-    private OslpEnvelope response;
+    private LegacyOslpEnvelope response;
 
     Callback(final int connectionTimeout) {
       this.connectionTimeout = connectionTimeout;
     }
 
-    OslpEnvelope get(final String deviceIdentification)
+    LegacyOslpEnvelope get(final String deviceIdentification)
         throws IOException, DeviceSimulatorException {
       try {
         if (!this.latch.await(this.connectionTimeout, TimeUnit.MILLISECONDS)) {
@@ -1119,7 +1119,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
       return this.response;
     }
 
-    void handle(final OslpEnvelope response) {
+    void handle(final LegacyOslpEnvelope response) {
       this.response = response;
       this.latch.countDown();
     }

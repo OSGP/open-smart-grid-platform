@@ -4,7 +4,7 @@
 
 package org.opensmartgridplatform.webdevicesimulator.application.services;
 
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.OslpLogItem;
 import org.opensmartgridplatform.webdevicesimulator.domain.repositories.OslpLogItemRepository;
@@ -19,13 +19,13 @@ public class OslpLogService {
 
   @Transactional
   public OslpLogItem writeOslpLogItem(
-      final OslpEnvelope oslpEnvelope, final Device device, final boolean incoming) {
+          final LegacyOslpEnvelope legacyOslpEnvelope, final Device device, final boolean incoming) {
     final OslpLogItem logItem =
         new OslpLogItem(
-            oslpEnvelope.getDeviceId(),
+            legacyOslpEnvelope.getDeviceId(),
             device.getDeviceIdentification(),
             incoming,
-            oslpEnvelope.getPayloadMessage());
+            legacyOslpEnvelope.getPayloadMessage());
     return this.oslpLogItemRepository.save(logItem);
   }
 }

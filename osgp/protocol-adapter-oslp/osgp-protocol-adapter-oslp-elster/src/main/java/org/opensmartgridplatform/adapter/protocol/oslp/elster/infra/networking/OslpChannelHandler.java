@@ -13,10 +13,10 @@ import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.slf4j.Logger;
 
-public abstract class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
+public abstract class OslpChannelHandler extends SimpleChannelInboundHandler<LegacyOslpEnvelope> {
 
   private static Semaphore availableConnections;
   private static boolean limitConnections;

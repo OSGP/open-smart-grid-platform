@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.oslp.Oslp.DeviceType;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.Device;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessageStatus;
@@ -330,7 +330,7 @@ public class DeviceManagementController extends AbstractController {
 
   private byte[] createRandomDeviceUid() {
     // Generate random bytes for UID
-    final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];
+    final byte[] deviceUid = new byte[LegacyOslpEnvelope.DEVICE_ID_LENGTH];
     this.byteGenerator.nextBytes(deviceUid);
     // Combine manufacturer id of 2 bytes (1 is AME) and device UID of 10
     // bytes.

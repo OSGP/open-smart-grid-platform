@@ -12,19 +12,19 @@ public class SignedOslpEnvelopeDto implements Serializable {
   private static final long serialVersionUID = 2598572730380822536L;
 
   /** The signed envelope which can be sent to a device. */
-  private OslpEnvelope oslpEnvelope;
+  private LegacyOslpEnvelope legacyOslpEnvelope;
 
   /** The DTO which was sent to the signing server. */
   private UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto;
 
   public SignedOslpEnvelopeDto(
-      final OslpEnvelope oslpEnvelope, final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto) {
-    this.oslpEnvelope = oslpEnvelope;
+          final LegacyOslpEnvelope legacyOslpEnvelope, final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto) {
+    this.legacyOslpEnvelope = legacyOslpEnvelope;
     this.unsignedOslpEnvelopeDto = unsignedOslpEnvelopeDto;
   }
 
-  public OslpEnvelope getOslpEnvelope() {
-    return this.oslpEnvelope;
+  public LegacyOslpEnvelope getOslpEnvelope() {
+    return this.legacyOslpEnvelope;
   }
 
   public UnsignedOslpEnvelopeDto getUnsignedOslpEnvelopeDto() {

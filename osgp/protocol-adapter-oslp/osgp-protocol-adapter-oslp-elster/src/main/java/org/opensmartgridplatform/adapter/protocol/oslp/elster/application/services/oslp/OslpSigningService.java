@@ -12,7 +12,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.Os
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.SigningServerRequestMessageSender;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
 import org.opensmartgridplatform.oslp.Oslp;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -139,7 +139,7 @@ public class OslpSigningService {
   private void handleSignedOslpRequest(
       final SignedOslpEnvelopeDto signedOslpEnvelopeDto, final String deviceIdentification) {
 
-    final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
 
@@ -147,7 +147,7 @@ public class OslpSigningService {
     LOGGER.debug(LINES);
     LOGGER.info(
         "oslpEnvelope.size: {} for message type: {}",
-        oslpEnvelope.getSize(),
+        legacyOslpEnvelope.getSize(),
         unsignedOslpEnvelopeDto.getMessageType());
     LOGGER.debug(LINES);
     LOGGER.debug(
@@ -196,7 +196,7 @@ public class OslpSigningService {
 
   private void handleSignedOslpResponse(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
-    final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
 
@@ -204,7 +204,7 @@ public class OslpSigningService {
     LOGGER.debug(LINES);
     LOGGER.info(
         "oslpEnvelope.size: {} for message type: {}",
-        oslpEnvelope.getSize(),
+        legacyOslpEnvelope.getSize(),
         unsignedOslpEnvelopeDto.getMessageType());
     LOGGER.debug(LINES);
     LOGGER.debug(

@@ -12,11 +12,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OslpEncoder extends MessageToMessageEncoder<OslpEnvelope> {
+public class OslpEncoder extends MessageToMessageEncoder<LegacyOslpEnvelope> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OslpEncoder.class);
 
-  private static ByteBuf encodeMessage(final OslpEnvelope envelope) {
+  private static ByteBuf encodeMessage(final LegacyOslpEnvelope envelope) {
     final int size = envelope.getSize();
 
     final ByteBuf buffer = Unpooled.buffer(size);
@@ -32,7 +32,7 @@ public class OslpEncoder extends MessageToMessageEncoder<OslpEnvelope> {
 
   @Override
   protected void encode(
-      final ChannelHandlerContext ctx, final OslpEnvelope msg, final List<Object> out)
+          final ChannelHandlerContext ctx, final LegacyOslpEnvelope msg, final List<Object> out)
       throws Exception {
     final String channelId = ctx.channel().id().asLongText();
     LOGGER.debug("Encoding message for channel {}.", channelId);

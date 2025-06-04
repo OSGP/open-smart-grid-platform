@@ -37,7 +37,7 @@ import org.opensmartgridplatform.oslp.Oslp.GetStatusResponse.Builder;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LinkType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -112,7 +112,7 @@ class MetricsCounterTest {
     return new OslpResponseHandler() {
 
       @Override
-      public void handleResponse(final OslpEnvelope oslpResponse) {}
+      public void handleResponse(final LegacyOslpEnvelope oslpResponse) {}
 
       @Override
       public void handleException(final Throwable t) {
@@ -124,19 +124,19 @@ class MetricsCounterTest {
     };
   }
 
-  private OslpEnvelope oslpEnvelope() throws Exception {
+  private LegacyOslpEnvelope oslpEnvelope() throws Exception {
     final ECGenParameterSpec parameterSpec = new ECGenParameterSpec("secp256r1");
     final KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
     generator.initialize(parameterSpec, new SecureRandom());
     final KeyPair keyPair = generator.generateKeyPair();
 
-    final OslpEnvelope oslpEnvelope = this.envelopeBuilder(keyPair.getPrivate()).build();
-    oslpEnvelope.validate(keyPair.getPublic());
+    final LegacyOslpEnvelope legacyOslpEnvelope = this.envelopeBuilder(keyPair.getPrivate()).build();
+    legacyOslpEnvelope.validate(keyPair.getPublic());
 
-    return oslpEnvelope;
+    return legacyOslpEnvelope;
   }
 
-  public OslpEnvelope.Builder envelopeBuilder(final PrivateKey privateKey) {
+  public LegacyOslpEnvelope.Builder envelopeBuilder(final PrivateKey privateKey) {
     final Integer sequenceNumber = 1;
     final byte[] sequenceNumberBytes = new byte[2];
     sequenceNumberBytes[0] = (byte) (sequenceNumber >>> 8);
@@ -150,7 +150,7 @@ class MetricsCounterTest {
             .setEventNotificationMask(1)
             .setStatus(Oslp.Status.OK);
 
-    return new OslpEnvelope.Builder()
+    return new LegacyOslpEnvelope.Builder()
         .withSignature("SHA256withECDSA")
         .withProvider("SunEC")
         .withPrimaryKey(privateKey)

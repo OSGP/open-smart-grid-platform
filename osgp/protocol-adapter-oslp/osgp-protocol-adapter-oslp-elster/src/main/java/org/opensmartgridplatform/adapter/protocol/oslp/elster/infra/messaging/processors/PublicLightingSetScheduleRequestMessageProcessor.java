@@ -26,7 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageDataContainerDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageTypeDto;
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -127,7 +127,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
-    final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+    final LegacyOslpEnvelope legacyOslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
     final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
     final String organisationIdentification =
         unsignedOslpEnvelopeDto.getOrganisationIdentification();
@@ -176,7 +176,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
     try {
       this.deviceService.doSetSchedule(
-          oslpEnvelope,
+              legacyOslpEnvelope,
           deviceRequest,
           deviceResponseHandler,
           ipAddress,

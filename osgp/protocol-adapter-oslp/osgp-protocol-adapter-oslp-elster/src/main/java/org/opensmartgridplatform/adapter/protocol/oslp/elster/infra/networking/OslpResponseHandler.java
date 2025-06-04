@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 
 public interface OslpResponseHandler {
 
-  void handleResponse(OslpEnvelope oslpResponse);
+  void handleResponse(LegacyOslpEnvelope oslpResponse);
 
   void handleException(Throwable t);
 }

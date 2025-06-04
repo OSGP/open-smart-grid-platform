@@ -4,11 +4,11 @@
 
 package org.opensmartgridplatform.webdevicesimulator;
 
-import org.opensmartgridplatform.oslp.OslpEnvelope;
+import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 
 public class Assertions extends org.assertj.core.api.Assertions {
 
-  public static OslpEnvelopeAssert assertThat(final OslpEnvelope oslpEnvelope) {
-    return new OslpEnvelopeAssert(oslpEnvelope);
+  public static OslpEnvelopeAssert assertThat(final LegacyOslpEnvelope legacyOslpEnvelope) {
+    return new OslpEnvelopeAssert(legacyOslpEnvelope);
   }
 }
