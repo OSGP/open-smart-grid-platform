@@ -21,6 +21,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.opensmartgridplatform.oslp.Envelope;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.DeviceType;
 import org.opensmartgridplatform.oslp.Oslp.EventNotification;
@@ -33,7 +34,7 @@ import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessag
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.Event;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.ProtocolType;
 import org.opensmartgridplatform.webdevicesimulator.exceptions.DeviceSimulatorException;
-import org.opensmartgridplatform.webdevicesimulator.service.OslpChannelHandler.OutOfSequenceEvent;
+import org.opensmartgridplatform.webdevicesimulator.service.LegacyOslpChannelHandler.OutOfSequenceEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ public class RegisterDevice {
   @Autowired private DeviceManagementService deviceManagementService;
 
   @Autowired private OslpLogService oslpLogService;
+
+  @Resource private LegacyOslpChannelHandler legacyOslpChannelHandler;
 
   @Resource private OslpChannelHandler oslpChannelHandler;
 
@@ -104,32 +107,32 @@ public class RegisterDevice {
               .build();
 
       // Write outgoing request to log.
-      this.writeOslpLogItem(oslpRequest, device, false);
+//      this.writeOslpLogItem(oslpRequest, device, false);
 
-      final LegacyOslpEnvelope response = this.sendRequest(device, oslpRequest);
+      final Envelope.OslpEnvelope response = this.sendRequest(device, oslpRequest);
 
       // Write incoming response to log.
-      this.writeOslpLogItem(response, device, true);
+//      this.writeOslpLogItem(response, device, true);
 
-      this.currentTime = response.getPayloadMessage().getRegisterDeviceResponse().getCurrentTime();
+      this.currentTime = response.getPayload().getRegisterDeviceResponse().getCurrentTime();
 
       // Get the sequence number from the response envelope and check it.
-      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
+//      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
 
       // Get the two random numbers and check them both.
       this.checkRandomDeviceAndRandomPlatform(
           randomDevice,
-          response.getPayloadMessage().getRegisterDeviceResponse().getRandomDevice(),
-          response.getPayloadMessage().getRegisterDeviceResponse().getRandomPlatform());
+          response.getPayload().getRegisterDeviceResponse().getRandomDevice(),
+          response.getPayload().getRegisterDeviceResponse().getRandomPlatform());
 
       // Set the sequence number and persist it.
       device.setSequenceNumber(sequenceNumber);
 
       // Get the two random numbers and persist them both.
       device.setRandomDevice(
-          response.getPayloadMessage().getRegisterDeviceResponse().getRandomDevice());
+          response.getPayload().getRegisterDeviceResponse().getRandomDevice());
       device.setRandomPlatform(
-          response.getPayloadMessage().getRegisterDeviceResponse().getRandomPlatform());
+          response.getPayload().getRegisterDeviceResponse().getRandomPlatform());
 
       // Save the entity.
       this.deviceManagementService.updateDevice(device);
@@ -175,20 +178,20 @@ public class RegisterDevice {
       // Write outgoing request to log.
       this.writeOslpLogItem(oslpRequest, device, false);
 
-      final LegacyOslpEnvelope response = this.sendRequest(device, oslpRequest);
+      final Envelope.OslpEnvelope response = this.sendRequest(device, oslpRequest);
 
       // Write incoming response to log.
-      this.writeOslpLogItem(response, device, true);
+//      this.writeOslpLogItem(response, device, true);
 
       // Get the sequence number from the response envelope and check it.
-      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
+//      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
 
       // Get the two random numbers and check them both.
       this.checkRandomDeviceAndRandomPlatform(
           device.getRandomDevice(),
-          response.getPayloadMessage().getConfirmRegisterDeviceResponse().getRandomDevice(),
+          response.getPayload().getConfirmRegisterDeviceResponse().getRandomDevice(),
           device.getRandomPlatform(),
-          response.getPayloadMessage().getConfirmRegisterDeviceResponse().getRandomPlatform());
+          response.getPayload().getConfirmRegisterDeviceResponse().getRandomPlatform());
 
       // Successful.
       device.setSequenceNumber(sequenceNumber);
@@ -196,7 +199,7 @@ public class RegisterDevice {
 
       // Check if there has been an out of sequence security event.
       OutOfSequenceEvent outOfSequenceEvent =
-          this.oslpChannelHandler.hasOutOfSequenceEventForDevice(device.getId());
+          this.legacyOslpChannelHandler.hasOutOfSequenceEventForDevice(device.getId());
       while (outOfSequenceEvent != null) {
         // An event has occurred, send
         // SECURITY_EVENTS_OUT_OF_SEQUENCE_VALUE event notification.
@@ -211,7 +214,7 @@ public class RegisterDevice {
 
         // Check if there has been another event, this will return null
         // if no more events are present in the list.
-        outOfSequenceEvent = this.oslpChannelHandler.hasOutOfSequenceEventForDevice(device.getId());
+        outOfSequenceEvent = this.legacyOslpChannelHandler.hasOutOfSequenceEventForDevice(device.getId());
       }
 
       // Set the DeviceMessageStatus OK as the confirm registration is
@@ -290,7 +293,7 @@ public class RegisterDevice {
     this.oslpLogService.writeOslpLogItem(legacyOslpEnvelope, device, incoming);
   }
 
-  private LegacyOslpEnvelope sendRequest(final Device device, final LegacyOslpEnvelope request)
+  private Envelope.OslpEnvelope sendRequest(final Device device, final LegacyOslpEnvelope request)
       throws IOException, DeviceSimulatorException {
     // Original protocol port.
     int port = this.oslpPortClient;
@@ -301,12 +304,12 @@ public class RegisterDevice {
 
     // Attempt to send the request and receive response.
     LOGGER.info("Trying to send request: {}", request.getPayloadMessage());
-    final LegacyOslpEnvelope response =
+    final Envelope.OslpEnvelope response =
         this.oslpChannelHandler.send(
-            new InetSocketAddress(this.oslpAddressServer, port),
+            new InetSocketAddress("172.30.130.14", 12121),
             request,
             device.getDeviceIdentification());
-    LOGGER.info("Received response: {}", response.getPayloadMessage());
+    LOGGER.info("Received response: {}", response.getPayload());
     return response;
   }
 
@@ -343,12 +346,12 @@ public class RegisterDevice {
       this.writeOslpLogItem(request, device, false);
 
       // Send event notification message and receive response.
-      final LegacyOslpEnvelope response = this.sendRequest(device, request);
+      final Envelope.OslpEnvelope response = this.sendRequest(device, request);
       // Write incoming response to log.
-      this.writeOslpLogItem(response, device, true);
+//      this.writeOslpLogItem(response, device, true);
 
       // Get the sequence number from the response envelope and check it.
-      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
+//      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
       // Success, update the sequence number of the device.
       device.setSequenceNumber(sequenceNumber);
       this.deviceManagementService.updateDevice(device);

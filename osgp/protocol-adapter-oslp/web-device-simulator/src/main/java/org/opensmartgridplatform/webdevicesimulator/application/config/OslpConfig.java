@@ -211,6 +211,11 @@ public class OslpConfig {
   }
 
   @Bean
+  public org.opensmartgridplatform.webdevicesimulator.service.LegacyOslpChannelHandler legacyOslpChannelHandler() {
+    return new org.opensmartgridplatform.webdevicesimulator.service.LegacyOslpChannelHandler();
+  }
+
+  @Bean
   public OslpChannelHandler oslpChannelHandler() {
     return new OslpChannelHandler();
   }
