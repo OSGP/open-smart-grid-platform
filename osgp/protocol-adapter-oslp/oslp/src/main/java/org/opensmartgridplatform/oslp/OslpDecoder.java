@@ -10,6 +10,8 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import java.util.List;
+
+import org.opensmartgridplatform.oslp.Envelope.OslpEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,8 +133,11 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
   private void decodePayload(final ByteBuf buffer) throws InvalidProtocolBufferException {
     final byte[] bytes = this.readBytes(buffer, this.length);
+
+    final OslpEnvelope envelope = OslpEnvelope.parseFrom(bytes);
+
     LOGGER.debug("Decoded payload: {}", bytes);
-    this.builder.withPayloadMessage(Oslp.Message.parseFrom(bytes));
+    this.builder.withPayloadMessage(envelope.getPayload());
   }
 
   private byte[] readBytes(final ByteBuf buffer, final int length) {
