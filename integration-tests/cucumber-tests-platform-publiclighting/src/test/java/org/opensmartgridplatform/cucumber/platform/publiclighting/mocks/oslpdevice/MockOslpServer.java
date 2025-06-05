@@ -53,7 +53,6 @@ import org.opensmartgridplatform.oslp.Oslp.SetTransitionResponse;
 import org.opensmartgridplatform.oslp.Oslp.StartSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.StopSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareResponse;
-import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
@@ -285,7 +284,7 @@ public class MockOslpServer {
 
     pipeline.addLast("oslpEncoder", new OslpEncoder());
     pipeline.addLast(
-        "oslpDecoder", new OslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
+        "oslpDecoder", new org.opensmartgridplatform.oslp.LegacyOslpDecoder(this.oslpSignature, this.oslpSignatureProvider));
     pipeline.addLast("oslpSecurity", new OslpSecurityHandler(this.publicKey()));
     pipeline.addLast("oslpChannelHandler", this.channelHandler);
 

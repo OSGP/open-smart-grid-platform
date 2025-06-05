@@ -15,8 +15,8 @@ import org.opensmartgridplatform.oslp.Envelope.OslpEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(OslpDecoder.class);
+public class LegacyOslpDecoder extends ReplayingDecoder<LegacyOslpDecoder.DecodingState> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LegacyOslpDecoder.class);
 
   private final String signature;
   private final String provider;
@@ -32,7 +32,7 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
   private LegacyOslpEnvelope.Builder builder = new LegacyOslpEnvelope.Builder();
   private int length;
 
-  public OslpDecoder(final String signature, final String provider) {
+  public LegacyOslpDecoder(final String signature, final String provider) {
     super(DecodingState.SECURITY_KEY);
     LOGGER.debug("Created new decoder");
     this.signature = signature;
@@ -136,8 +136,11 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
     final OslpEnvelope envelope = OslpEnvelope.parseFrom(bytes);
 
-    LOGGER.debug("Decoded payload: {}", bytes);
-    this.builder.withPayloadMessage(envelope.getPayload());
+    this.builder
+            .withDeviceId(envelope.getDeviceId().toByteArray())
+            .withSecurityKey(envelope.getSecurityKey().toByteArray())
+            .withSequenceNumber(envelope.getSequenceNumber().toByteArray())
+            .withPayloadMessage(envelope.getPayload());
   }
 
   private byte[] readBytes(final ByteBuf buffer, final int length) {

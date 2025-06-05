@@ -44,7 +44,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.oslp.Oslp;
-import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
@@ -309,7 +308,7 @@ class DeviceSimulatorIT {
             pipeline.addLast("oslpEncoder", new OslpEncoder());
             pipeline.addLast(
                 "oslpDecoder",
-                new OslpDecoder(
+                new org.opensmartgridplatform.oslp.LegacyOslpDecoder(
                     DeviceSimulatorIT.this.oslpConfig.oslpSignature(),
                     DeviceSimulatorIT.this.oslpConfig.oslpSignatureProvider()));
             final OslpSecurityHandler oslpSecurityHandler = new OslpSecurityHandler();

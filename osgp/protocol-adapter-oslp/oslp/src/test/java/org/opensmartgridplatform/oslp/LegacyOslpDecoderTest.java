@@ -37,7 +37,7 @@
 //import org.opensmartgridplatform.oslp.Oslp.Message;
 //import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceRequest;
 //
-//class OslpDecoderTest {
+//class LegacyOslpDecoderTest {
 //  private static final int MAX_RANDOM_DEVICE_OR_PLATFORM = 65535;
 //  private static final String ALGORITHM_DETAILS = "SHA256withECDSA";
 //  private static final String PROVIDER_DETAILS = "SunEC";
@@ -66,47 +66,50 @@
 //    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
 //    final OslpEnvelope oslpEnvelope = this.legacyToOslpEnvelope(legacyOslpEnvelope);
 //
-//    ConnectionBehavior.ALL_BYTES_TOGETHER.writeOslpEnvelope(channel, legacyOslpEnvelope);
-//    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
+//    ConnectionBehavior.ALL_BYTES_TOGETHER.writeOslpEnvelope(channel, oslpEnvelope);
+//    final LegacyOslpEnvelope actualOslpEnvelope = channel.readInbound();
 //
 //    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
-//    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
+//    this.assertActualOslpEnvelopeEqualsExpected(legacyToOslpEnvelope(actualOslpEnvelope), oslpEnvelope, description);
 //  }
 //
 //  @Test
 //  void decodesAnOslpEnvelopeWhenAllBytesAreReceivedInChunksMatchingTheParts() {
 //    final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
 //    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
+//    final OslpEnvelope oslpEnvelope = this.legacyToOslpEnvelope(legacyOslpEnvelope);
 //
-//    ConnectionBehavior.FIELD_MATCHING_CHUNKS.writeOslpEnvelope(channel, legacyOslpEnvelope);
-//    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
+//    ConnectionBehavior.FIELD_MATCHING_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
+//    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 //
 //    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
-//    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
+//    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
 //  }
 //
 //  @Test
 //  void decodesAnOslpEnvelopeWhenAllBytesAreReceivedOneByOne() {
 //    final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
 //    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
+//    final OslpEnvelope oslpEnvelope = this.legacyToOslpEnvelope(legacyOslpEnvelope);
 //
-//    ConnectionBehavior.SINGLE_BYTE_CHUNKS.writeOslpEnvelope(channel, legacyOslpEnvelope);
-//    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
+//    ConnectionBehavior.SINGLE_BYTE_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
+//    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 //
 //    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
-//    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
+//    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
 //  }
 //
 //  @Test
 //  void decodesAnOslpEnvelopeWhenAllBytesAreReceivedInRandomChunks() {
 //    final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
 //    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
+//    final OslpEnvelope oslpEnvelope = this.legacyToOslpEnvelope(legacyOslpEnvelope);
 //
-//    ConnectionBehavior.RANDOM_CHUNKS.writeOslpEnvelope(channel, legacyOslpEnvelope);
-//    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
+//    ConnectionBehavior.RANDOM_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
+//    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 //
 //    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
-//    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
+//    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
 //  }
 //
 //  @Test
@@ -114,12 +117,13 @@
 //    final EmbeddedChannel channel =
 //        new EmbeddedChannel(new InboundOslpEncoder(), this.oslpDecoder());
 //    final LegacyOslpEnvelope legacyOslpEnvelope = this.oslpEnvelope();
+//    final OslpEnvelope oslpEnvelope = this.legacyToOslpEnvelope(legacyOslpEnvelope);
 //
-//    assertThat(channel.writeInbound(legacyOslpEnvelope)).isTrue();
-//    final LegacyOslpEnvelope actualLegacyOslpEnvelope = channel.readInbound();
+//    assertThat(channel.writeInbound(oslpEnvelope)).isTrue();
+//    final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 //
 //    final String description = this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate());
-//    this.assertActualOslpEnvelopeEqualsExpected(actualLegacyOslpEnvelope, legacyOslpEnvelope, description);
+//    this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
 //  }
 //
 //  @Test
@@ -130,7 +134,9 @@
 //
 //    for (final LegacyOslpEnvelope legacyOslpEnvelope : legacyOslpEnvelopes) {
 //      descriptions.add(this.oslpEnvelopeDetails(legacyOslpEnvelope, this.keyPair.getPrivate()));
-//      this.randomConnectionBehavior().writeOslpEnvelope(channel, legacyOslpEnvelope);
+//      final OslpEnvelope oslpEnvelope = this.legacyToOslpEnvelope(legacyOslpEnvelope);
+//
+//      this.randomConnectionBehavior().writeOslpEnvelope(channel, oslpEnvelope);
 //    }
 //
 //    final int numberOfEnvelopes = legacyOslpEnvelopes.size();
@@ -148,7 +154,7 @@
 //          String.format(
 //              "%s%nComparing OslpEnvelope %d of %d", descriptionBuilder, i + 1, numberOfEnvelopes);
 //      this.assertActualOslpEnvelopeEqualsExpected(
-//              actualLegacyOslpEnvelope, expectedLegacyOslpEnvelope, description);
+//              legacyToOslpEnvelope(actualLegacyOslpEnvelope), legacyToOslpEnvelope(expectedLegacyOslpEnvelope), description);
 //    }
 //  }
 //
@@ -208,8 +214,8 @@
 //    return envelopes;
 //  }
 //
-//  private OslpDecoder oslpDecoder() {
-//    return new OslpDecoder(ALGORITHM_DETAILS, PROVIDER_DETAILS);
+//  private LegacyOslpDecoder oslpDecoder() {
+//    return new LegacyOslpDecoder(ALGORITHM_DETAILS, PROVIDER_DETAILS);
 //  }
 //
 //  private OslpMessageType randomOslpMessageType() {
@@ -319,7 +325,7 @@
 //  }
 //
 //  private void assertActualOslpEnvelopeEqualsExpected(
-//          final LegacyOslpEnvelope actual, final LegacyOslpEnvelope expected, final String description) {
+//          final OslpEnvelope actual, final OslpEnvelope expected, final String description) {
 //
 //    assertThat(actual)
 //        .usingRecursiveComparison()
@@ -339,26 +345,26 @@
 //  enum ConnectionBehavior {
 //    ALL_BYTES_TOGETHER {
 //      @Override
-//      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
+//      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
 //        assertThat(channel.writeInbound(byteBuf(envelope))).isTrue();
 //      }
 //    },
 //    FIELD_MATCHING_CHUNKS {
 //      @Override
-//      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
-//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getSecurityKey()));
-//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getSequenceNumber()));
-//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getDeviceId()));
-//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getLengthIndicator()));
+//      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getSecurityKey().toByteArray()));
+//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getSequenceNumber().toByteArray()));
+//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getDeviceId().toByteArray()));
+//        channel.writeInbound(Unpooled.copiedBuffer(envelope.getLengthIndicator().toByteArray()));
 //        assertThat(
 //                channel.writeInbound(
-//                    Unpooled.copiedBuffer(envelope.getPayloadMessage().toByteArray())))
+//                    Unpooled.copiedBuffer(envelope.getPayload().toByteArray())))
 //            .isTrue();
 //      }
 //    },
 //    SINGLE_BYTE_CHUNKS {
 //      @Override
-//      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
+//      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
 //        final ByteBuf byteBuf = byteBuf(envelope);
 //        final int numberOfBytes = byteBuf.array().length;
 //        for (int index = 0; index < numberOfBytes - 1; index++) {
@@ -390,7 +396,7 @@
 //      }
 //
 //      @Override
-//      public void writeOslpEnvelope(final EmbeddedChannel channel, final LegacyOslpEnvelope envelope) {
+//      public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
 //        final ByteBuf byteBuf = byteBuf(envelope);
 //        final int numberOfBytes = byteBuf.array().length;
 //        final int[] chunkSizes = this.splitInRandomLengths(numberOfBytes);
@@ -406,23 +412,23 @@
 //      }
 //    };
 //
-//    public static ByteBuf byteBuf(final LegacyOslpEnvelope envelope) {
+//    public static ByteBuf byteBuf(final OslpEnvelope envelope) {
 //      return Unpooled.copiedBuffer(
-//          envelope.getSecurityKey(),
-//          envelope.getSequenceNumber(),
-//          envelope.getDeviceId(),
-//          envelope.getLengthIndicator(),
-//          envelope.getPayloadMessage().toByteArray());
+//          envelope.getSecurityKey().toByteArray(),
+//          envelope.getSequenceNumber().toByteArray(),
+//          envelope.getDeviceId().toByteArray(),
+//          envelope.getLengthIndicator().toByteArray(),
+//          envelope.getPayload().toByteArray());
 //    }
 //
 //    public abstract void writeOslpEnvelope(
-//        final EmbeddedChannel channel, final LegacyOslpEnvelope envelope);
+//        final EmbeddedChannel channel, final OslpEnvelope envelope);
 //  }
 //
 //  enum OslpMessageType {
 //    REGISTER_DEVICE_REQUEST {
 //      @Override
-//      public Message randomMessage(final OslpDecoderTest test) {
+//      public Message randomMessage(final LegacyOslpDecoderTest test) {
 //        return Message.newBuilder()
 //            .setRegisterDeviceRequest(
 //                RegisterDeviceRequest.newBuilder()
@@ -436,7 +442,7 @@
 //    },
 //    CONFIRM_REGISTER_DEVICE_REQUEST {
 //      @Override
-//      public Message randomMessage(final OslpDecoderTest test) {
+//      public Message randomMessage(final LegacyOslpDecoderTest test) {
 //        return Message.newBuilder()
 //            .setConfirmRegisterDeviceRequest(
 //                ConfirmRegisterDeviceRequest.newBuilder()
@@ -450,7 +456,7 @@
 //          DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 //
 //      @Override
-//      public Message randomMessage(final OslpDecoderTest test) {
+//      public Message randomMessage(final LegacyOslpDecoderTest test) {
 //        final Event event = test.randomEvent();
 //        final EventNotificationRequest.Builder eventNotificationRequestBuilder =
 //            EventNotificationRequest.newBuilder();
@@ -476,6 +482,6 @@
 //      }
 //    };
 //
-//    public abstract Message randomMessage(final OslpDecoderTest test);
+//    public abstract Message randomMessage(final LegacyOslpDecoderTest test);
 //  }
 //}

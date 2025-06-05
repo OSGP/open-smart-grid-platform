@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.C
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
-import org.opensmartgridplatform.oslp.OslpDecoder;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
@@ -143,7 +142,7 @@ public class OslpConfig extends AbstractConfig {
     channel
         .pipeline()
         .addLast(
-            "oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
+            "oslpDecoder", new org.opensmartgridplatform.oslp.LegacyOslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
     channel.pipeline().addLast("oslpSecurity", this.oslpSecurityHandler());
     channel.pipeline().addLast("oslpChannelHandler", handler);
   }
@@ -197,8 +196,8 @@ public class OslpConfig extends AbstractConfig {
   }
 
   @Bean
-  public OslpDecoder oslpDecoder() {
-    return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
+  public org.opensmartgridplatform.oslp.LegacyOslpDecoder oslpDecoder() {
+    return new org.opensmartgridplatform.oslp.LegacyOslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
   }
 
   @Bean

@@ -14,12 +14,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import org.opensmartgridplatform.oslp.OslpDecoder;
+
+import org.opensmartgridplatform.oslp.Envelope.OslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpEncoder;
 import org.opensmartgridplatform.oslp.LegacyOslpEnvelope;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
@@ -130,8 +132,7 @@ public class OslpConfig {
     final ChannelPipeline pipeline = channel.pipeline();
 
     pipeline.addLast("oslpEncoder", new OslpEncoder());
-    pipeline.addLast(
-        "oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
+    pipeline.addLast("oslpDecoder", new ProtobufDecoder(OslpEnvelope.getDefaultInstance()));
     pipeline.addLast("oslpSecurity", this.oslpSecurityHandler());
 
     pipeline.addLast("oslpChannelHandler", this.oslpChannelHandler());
@@ -144,8 +145,8 @@ public class OslpConfig {
   }
 
   @Bean
-  public OslpDecoder oslpDecoder() {
-    return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
+  public org.opensmartgridplatform.oslp.LegacyOslpDecoder oslpDecoder() {
+    return new org.opensmartgridplatform.oslp.LegacyOslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
   }
 
   @Bean
