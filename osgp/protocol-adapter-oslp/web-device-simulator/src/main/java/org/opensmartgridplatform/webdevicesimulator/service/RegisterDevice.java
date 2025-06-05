@@ -117,7 +117,7 @@ public class RegisterDevice {
       this.currentTime = response.getPayload().getRegisterDeviceResponse().getCurrentTime();
 
       // Get the sequence number from the response envelope and check it.
-//      this.checkSequenceNumber(response.getSequenceNumber(), sequenceNumber);
+      this.checkSequenceNumber(response.getSequenceNumber().toByteArray(), sequenceNumber);
 
       // Get the two random numbers and check them both.
       this.checkRandomDeviceAndRandomPlatform(
