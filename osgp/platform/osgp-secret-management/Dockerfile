@@ -7,4 +7,4 @@ COPY java.security .
 
 ENV SERVER_PORT=8443
 
-CMD java -Djava.security.properties=/opt/app/java.security -jar osgp-secret-management-exec.jar
+CMD java -Djava.security.properties=/opt/app/java.security -jar osgp-secret-management-exec.jar --SECRET_MANAGEMENT_PROPERTIES=/etc/osp/osgp-secret-management.properties
