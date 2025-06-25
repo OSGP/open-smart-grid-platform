@@ -78,16 +78,6 @@ SPDX-License-Identifier: Apache-2.0
     </plugins>
   </build>
 
-  <!-- This repository was added to be able to draw the snapshot jDLMS version from artifactory -->
-  <repositories>
-    <repository>
-      <snapshots />
-      <id>osgp-snapshots</id>
-      <name>osgp-snapshots</name>
-      <url>https://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
-    </repository>
-  </repositories>
-
   <dependencies>
     <!-- OpenMUC Dependencies -->
     <dependency>
