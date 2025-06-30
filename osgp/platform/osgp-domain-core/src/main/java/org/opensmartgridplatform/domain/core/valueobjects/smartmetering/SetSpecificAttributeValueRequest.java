@@ -4,6 +4,8 @@
 
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
+import java.util.List;
+
 public class SetSpecificAttributeValueRequest extends SetSpecificAttributeValueRequestData {
 
   private static final long serialVersionUID = 1;
@@ -11,11 +13,8 @@ public class SetSpecificAttributeValueRequest extends SetSpecificAttributeValueR
   private final String deviceIdentification;
 
   public SetSpecificAttributeValueRequest(
-      final String objectType,
-      final int attribute,
-      final int intValue,
-      final String deviceIdentification) {
-    super(objectType, attribute, intValue);
+      final List<ValueToSet> valuesToSet, final String deviceIdentification) {
+    super(valuesToSet);
     this.deviceIdentification = deviceIdentification;
   }
 
