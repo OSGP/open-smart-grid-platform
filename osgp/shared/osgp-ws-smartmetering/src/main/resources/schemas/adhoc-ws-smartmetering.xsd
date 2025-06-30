@@ -243,7 +243,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="valuesToSet" type="tns:ValueToSet" />
+          <xsd:element name="valuesToSet" type="tns:ValueToSet" maxOccurs="unbounded" minOccurs="0"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
