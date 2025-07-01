@@ -5,10 +5,11 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serial;
+import java.io.Serializable;
 import lombok.Getter;
 
 @Getter
-public class ValueToSetDto implements ActionRequestDto {
+public class ValueToSetDto implements Serializable {
 
   @Serial private static final long serialVersionUID = -2663395295387396979L;
 
