@@ -30,6 +30,16 @@ public class SetSpecificAttributeValueRequestFactory {
     valueToSet.setAttribute(new BigInteger(parameters.get(PlatformSmartmeteringKeys.ATTRIBUTE)));
     valueToSet.setIntValue(new BigInteger(parameters.get(PlatformSmartmeteringKeys.INT_VALUE)));
     request.getValuesToSet().add(valueToSet);
+    if (parameters.containsKey(PlatformSmartmeteringKeys.OBJECT_TYPE + "_2")) {
+      final ValueToSet valueToSet2 = new ValueToSet();
+      valueToSet2.setObjectType(
+          AllowedObjectType.valueOf(parameters.get(PlatformSmartmeteringKeys.OBJECT_TYPE + "_2")));
+      valueToSet2.setAttribute(
+          new BigInteger(parameters.get(PlatformSmartmeteringKeys.ATTRIBUTE + "_2")));
+      valueToSet2.setIntValue(
+          new BigInteger(parameters.get(PlatformSmartmeteringKeys.INT_VALUE + "_2")));
+      request.getValuesToSet().add(valueToSet2);
+    }
     return request;
   }
 
