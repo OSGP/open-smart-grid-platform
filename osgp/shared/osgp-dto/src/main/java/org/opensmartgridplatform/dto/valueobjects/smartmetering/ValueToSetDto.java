@@ -18,7 +18,6 @@ public class ValueToSetDto implements Serializable {
   private final Integer intValue;
 
   public ValueToSetDto(final String objectType, final int attribute, final Integer intValue) {
-    super();
     this.objectType = objectType;
     this.attribute = attribute;
     this.intValue = intValue;

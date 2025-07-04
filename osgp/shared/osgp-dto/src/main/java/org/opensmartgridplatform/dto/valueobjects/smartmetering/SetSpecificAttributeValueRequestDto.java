@@ -15,7 +15,6 @@ public class SetSpecificAttributeValueRequestDto implements ActionRequestDto {
   private final List<ValueToSetDto> valuesToSet;
 
   public SetSpecificAttributeValueRequestDto(final List<ValueToSetDto> valuesToSet) {
-    super();
     this.valuesToSet = new ArrayList<>(valuesToSet);
   }
 
