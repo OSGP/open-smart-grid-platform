@@ -415,7 +415,7 @@
     },
     {
       "tag": "NUMBER_OF_VOLTAGE_SWELLS_FOR_L1",
-      "description": "Number of voltage swells in phase L1",
+      "description": "Number of voltage swells in phase L1 ",
       "class-id": 1,
       "version": 0,
       "obis": "1.0.32.36.0.255",
