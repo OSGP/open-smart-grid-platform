@@ -415,7 +415,7 @@
     },
     {
       "tag": "THRESHOLD_VOLTAGE_SWELL",
-      "description": "Threshold for voltage swell",
+      "description": "Threshold for voltage swell ",
       "class-id": 3,
       "version": 0,
       "obis": "1.0.12.35.0.255",
