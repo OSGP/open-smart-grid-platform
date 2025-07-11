@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: Contributors to the GXF project
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# DLMS object config module
+# DLMS object config module TEST
 The DLMS Object Config defined by json files.
 
 # Object config json file description
