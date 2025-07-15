@@ -26,7 +26,7 @@ SPDX-License-Identifier: Apache-2.0
   <distributionManagement>
     <repository>
       <id>github</id>
-      <url>https://maven.pkg.github.com/osgp/gxf-java-utilities</url>
+      <url>https://maven.pkg.github.com/osgp/open-smart-grid-platform</url>
     </repository>
   </distributionManagement>
 
