@@ -50,7 +50,7 @@ jobs:
           name: warFiles
           path: staging
       - name: Publish Maven artifacts
-        run: ./mvnw -pl osgp/shared/osgp-dto deploy --settings .github/settings.xm
+        run: ./mvnw -pl osgp/shared/osgp-dto deploy --settings .github/settings.xml
         if: contains(github.ref, 'release') || contains(github.ref, 'development')
         env:
           GITHUB_ACTOR: ${{ github.actor }}
