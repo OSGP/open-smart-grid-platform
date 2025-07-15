@@ -23,6 +23,13 @@ SPDX-License-Identifier: Apache-2.0
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/osgp/open-smart-grid-platform</url>
+    </repository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>commons-codec</groupId>
