@@ -1,0 +1,16 @@
+#
+# List of providers and their preference orders (see above):
+#
+security.provider.1=SUN
+security.provider.2=SunRsaSign
+security.provider.3=SunEC
+security.provider.4=nCipherKM
+security.provider.5=SunJSSE
+security.provider.6=SunJCE
+security.provider.7=SunJGSS
+security.provider.8=SunSASL
+security.provider.9=XMLDSig
+security.provider.10=SunPCSC
+security.provider.11=JdkLDAP
+security.provider.12=JdkSASL
+security.provider.13=SunPKCS11
