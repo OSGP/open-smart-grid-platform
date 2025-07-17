@@ -12,16 +12,32 @@ SPDX-License-Identifier: Apache-2.0
 
   <artifactId>osgp-dto</artifactId>
   <name>osgp-dto</name>
-  <packaging>jar</packaging>
-    <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
   <description>DTO module.</description>
 
-  <parent>
-    <groupId>org.opensmartgridplatform</groupId>
-    <artifactId>parent-shared</artifactId>
-    <version>6.22.0-SNAPSHOT</version>
-    <relativePath>../parent-shared/pom.xml</relativePath>
-  </parent>
+  <groupId>org.opensmartgridplatform</groupId>
+  <version>6.22.0</version>
+  <packaging>pom</packaging>
+  <url>${maven.site.url}</url>
+  <organization>
+    <name>OSGP</name>
+    <url>http://opensmartgridplatform.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>APACHE 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <java.version>17</java.version>
+    <commons.codec.version>1.17.0</commons.codec.version>
+    <joda.version>2.12.7</joda.version>
+    <lombok.version>1.18.32</lombok.version>
+    <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+    <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+    <junit.version>5.10.1</junit.version>
+  </properties>
 
   <distributionManagement>
     <repository>
@@ -34,22 +50,18 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <version>${commons.codec.version}</version>
     </dependency>
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
+      <version>${joda.version}</version>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

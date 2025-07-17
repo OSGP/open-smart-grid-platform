@@ -5,7 +5,6 @@
 package org.opensmartgridplatform.dto.valueobjects;
 
 import java.io.Serializable;
-import org.apache.commons.lang3.StringUtils;
 
 public class FirmwareModuleData implements Serializable {
 
@@ -60,24 +59,28 @@ public class FirmwareModuleData implements Serializable {
 
   public int countNumberOfModules() {
     int count = 0;
-    if (StringUtils.isNotEmpty(this.moduleVersionComm)) {
+    if (isNotEmpty(this.moduleVersionComm)) {
       count++;
     }
-    if (StringUtils.isNotEmpty(this.moduleVersionFunc)) {
+    if (isNotEmpty(this.moduleVersionFunc)) {
       count++;
     }
-    if (StringUtils.isNotEmpty(this.moduleVersionMa)) {
+    if (isNotEmpty(this.moduleVersionMa)) {
       count++;
     }
-    if (StringUtils.isNotEmpty(this.moduleVersionMbus)) {
+    if (isNotEmpty(this.moduleVersionMbus)) {
       count++;
     }
-    if (StringUtils.isNotEmpty(this.moduleVersionSec)) {
+    if (isNotEmpty(this.moduleVersionSec)) {
       count++;
     }
-    if (StringUtils.isNotEmpty(this.moduleVersionMBusDriverActive)) {
+    if (isNotEmpty(this.moduleVersionMBusDriverActive)) {
       count++;
     }
     return count;
+  }
+
+  private boolean isNotEmpty(final String text) {
+    return text != null && !text.isEmpty();
   }
 }
