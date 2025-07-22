@@ -23,7 +23,7 @@ SPDX-License-Identifier: Apache-2.0
   </parent>
 
   <properties>
-    <spring.boot.version>3.3.11</spring.boot.version>
+    <spring.boot.version>3.3.13</spring.boot.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
