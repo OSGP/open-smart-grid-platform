@@ -113,7 +113,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Download war files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: warFiles
       - name: Show files in current context
@@ -149,7 +149,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ matrix.image }}
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -180,7 +180,7 @@ jobs:
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
       - name: Annotate cucumber report to github action
-        uses: deblockt/cucumber-report-annotations-action@v1.7
+        uses: deblockt/cucumber-report-annotations-action@v1.20
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: "/tmp/k3dvolume/**/*.json"
