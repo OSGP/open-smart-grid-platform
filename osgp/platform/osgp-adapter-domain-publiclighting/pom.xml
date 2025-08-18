@@ -212,5 +212,11 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-reporting</artifactId>
+      <version>${junit.platform.launcher.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

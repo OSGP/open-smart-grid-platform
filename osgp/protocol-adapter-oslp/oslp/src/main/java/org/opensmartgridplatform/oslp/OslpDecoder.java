@@ -48,22 +48,22 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
         LOGGER.debug("Decoding security key.");
         this.decodeSecurityKey(in);
         this.checkpoint(DecodingState.SEQUENCE_NUMBER);
-        // fall-through
+      // fall-through
       case SEQUENCE_NUMBER:
         LOGGER.debug("Decoding sequence number.");
         this.decodeSequenceNumber(in);
         this.checkpoint(DecodingState.DEVICE_ID);
-        // fall-through
+      // fall-through
       case DEVICE_ID:
         LOGGER.debug("Decoding device id.");
         this.decodeDeviceId(in);
         this.checkpoint(DecodingState.LENGTH_INDICATOR);
-        // fall-through
+      // fall-through
       case LENGTH_INDICATOR:
         LOGGER.debug("Decoding length indicator.");
         this.decodeLengthIndicator(in);
         this.checkpoint(DecodingState.PAYLOAD_MESSAGE);
-        // fall-through
+      // fall-through
       case PAYLOAD_MESSAGE:
         LOGGER.debug("Decoding payload.");
         this.decodePayload(in);

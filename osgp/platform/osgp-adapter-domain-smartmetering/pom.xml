@@ -223,7 +223,12 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-reporting</artifactId>
+      <version>${junit.platform.launcher.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

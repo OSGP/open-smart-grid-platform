@@ -311,6 +311,7 @@ class OslpDecoderTest {
 
     assertThat(actual)
         .usingRecursiveComparison()
+        .usingOverriddenEquals()
         /*
          * Fields privateKey and valid are related to creation or
          * validation of the cryptographic signature (securityKey) of
