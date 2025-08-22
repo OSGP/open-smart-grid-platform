@@ -87,7 +87,7 @@ class GetActualMeterReadsGasCommandExecutorTest {
 
   @Mock private DlmsMessageListener dlmsMessageListener;
 
-  @Captor ArgumentCaptor<AttributeAddress> attributeAddressArgumentCaptor;
+  @Captor ArgumentCaptor<AttributeAddress[]> attributeAddressArgumentCaptor;
 
   private static Stream<Arguments> generateCombinations() {
     final List<Arguments> arguments = new ArrayList<>();
@@ -138,7 +138,7 @@ class GetActualMeterReadsGasCommandExecutorTest {
 
     doReturn(this.generateMockedResult(mbusValueObject, AccessResultCode.SUCCESS))
         .when(this.dlmsHelper)
-        .getAndCheck(any(), any(), any(), any());
+        .getAndCheck(any(), any(), any(), any(AttributeAddress[].class));
 
     final GetActualMeterReadsGasCommandExecutor executor =
         new GetActualMeterReadsGasCommandExecutor(this.objectConfigService, this.dlmsHelper);
@@ -154,9 +154,9 @@ class GetActualMeterReadsGasCommandExecutorTest {
             eq(this.dlmsDevice),
             eq("retrieve actual meter reads for mbus " + ChannelDto.fromNumber(channel)),
             this.attributeAddressArgumentCaptor.capture());
-    assertThat(this.attributeAddressArgumentCaptor.getAllValues())
+    assertThat(expectedAttributeAddresses)
         .usingRecursiveFieldByFieldElementComparator()
-        .isEqualTo(expectedAttributeAddresses);
+        .isEqualTo(Arrays.asList(this.attributeAddressArgumentCaptor.getValue()));
 
     assertThat(responseDto.getCaptureTime()).isEqualTo(this.DATE_TIME.toDate());
     assertThat(responseDto.getConsumption().getValue())

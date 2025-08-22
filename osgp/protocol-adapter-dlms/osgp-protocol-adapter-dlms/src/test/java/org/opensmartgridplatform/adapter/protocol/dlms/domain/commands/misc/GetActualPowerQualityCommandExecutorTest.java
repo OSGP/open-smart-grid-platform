@@ -91,7 +91,7 @@ class GetActualPowerQualityCommandExecutorTest {
 
   @Mock private DlmsMessageListener dlmsMessageListener;
 
-  @Captor ArgumentCaptor<AttributeAddress> attributeAddressArgumentCaptor;
+  @Captor ArgumentCaptor<AttributeAddress[]> attributeAddressArgumentCaptor;
 
   private ActualPowerQualityRequestDto actualPowerQualityRequestDto;
 
@@ -178,7 +178,7 @@ class GetActualPowerQualityCommandExecutorTest {
 
     doReturn(this.generateMockedResult(allObjectsThatShouldBeRequested, AccessResultCode.SUCCESS))
         .when(this.dlmsHelper)
-        .getAndCheck(any(), any(), any(), any());
+        .getAndCheck(any(), any(), any(), any(AttributeAddress[].class));
 
     final GetActualPowerQualityCommandExecutor executor =
         new GetActualPowerQualityCommandExecutor(this.dlmsHelper, this.objectConfigService);
@@ -195,9 +195,9 @@ class GetActualPowerQualityCommandExecutorTest {
             eq(this.dlmsDevice),
             eq("retrieve actual power quality"),
             this.attributeAddressArgumentCaptor.capture());
-    assertThat(this.attributeAddressArgumentCaptor.getAllValues())
+    assertThat(expectedAttributeAddresses)
         .usingRecursiveFieldByFieldElementComparator()
-        .isEqualTo(expectedAttributeAddresses);
+        .isEqualTo(Arrays.asList(this.attributeAddressArgumentCaptor.getValue()));
 
     assertThat(responseDto.getActualPowerQualityData().getPowerQualityValues())
         .hasSize(allObjectsThatShouldBeRequested.size());

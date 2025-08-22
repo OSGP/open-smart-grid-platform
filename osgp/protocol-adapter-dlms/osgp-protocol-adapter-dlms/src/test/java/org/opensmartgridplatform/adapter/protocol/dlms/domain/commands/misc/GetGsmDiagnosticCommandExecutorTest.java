@@ -25,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -163,7 +164,10 @@ class GetGsmDiagnosticCommandExecutorTest {
     when(adjacentCellSignalQuality.getValue()).thenReturn((short) 7);
 
     when(this.dlmsHelper.getAndCheck(
-            eq(this.connectionManager), eq(testDevice), eq("Get GsmDiagnostic"), any()))
+            eq(this.connectionManager),
+            eq(testDevice),
+            eq("Get GsmDiagnostic"),
+            any(AttributeAddress[].class)))
         .thenReturn(Arrays.asList(result2, result3, result4, result5, result6, result7));
 
     // CALL
@@ -230,7 +234,10 @@ class GetGsmDiagnosticCommandExecutorTest {
     when(result.getResultCode()).thenReturn(AccessResultCode.HARDWARE_FAULT);
 
     when(this.dlmsHelper.getAndCheck(
-            eq(this.connectionManager), eq(this.device), eq("Get GsmDiagnostic"), any()))
+            eq(this.connectionManager),
+            eq(this.device),
+            eq("Get GsmDiagnostic"),
+            any(AttributeAddress[].class)))
         .thenReturn(Collections.singletonList(result));
 
     // CALL

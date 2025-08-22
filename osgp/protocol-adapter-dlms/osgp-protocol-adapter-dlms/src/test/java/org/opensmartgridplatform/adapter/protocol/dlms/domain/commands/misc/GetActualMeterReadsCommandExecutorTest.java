@@ -84,7 +84,7 @@ class GetActualMeterReadsCommandExecutorTest {
 
   @Mock private DlmsMessageListener dlmsMessageListener;
 
-  @Captor ArgumentCaptor<AttributeAddress> attributeAddressArgumentCaptor;
+  @Captor ArgumentCaptor<AttributeAddress[]> attributeAddressArgumentCaptor;
 
   @ParameterizedTest
   @CsvSource({"FIXED_IN_PROFILE", "DYNAMIC"})
@@ -116,7 +116,7 @@ class GetActualMeterReadsCommandExecutorTest {
 
     doReturn(this.generateMockedResult(allObjects, AccessResultCode.SUCCESS))
         .when(this.dlmsHelper)
-        .getAndCheck(any(), any(), any(), any());
+        .getAndCheck(any(), any(), any(), any(AttributeAddress[].class));
 
     final GetActualMeterReadsCommandExecutor executor =
         new GetActualMeterReadsCommandExecutor(this.objectConfigService, this.dlmsHelper);
@@ -132,9 +132,9 @@ class GetActualMeterReadsCommandExecutorTest {
             eq(this.dlmsDevice),
             eq("retrieve actual meter reads"),
             this.attributeAddressArgumentCaptor.capture());
-    assertThat(this.attributeAddressArgumentCaptor.getAllValues())
+    assertThat(expectedAttributeAddresses)
         .usingRecursiveFieldByFieldElementComparator()
-        .isEqualTo(expectedAttributeAddresses);
+        .isEqualTo(Arrays.asList(this.attributeAddressArgumentCaptor.getValue()));
     assertThat(responseDto.getLogTime()).isEqualTo(this.DATE_TIME.toDate());
     this.assertValue(responseDto.getActiveEnergyImport(), 1);
     this.assertValue(responseDto.getActiveEnergyImportTariffOne(), 2);

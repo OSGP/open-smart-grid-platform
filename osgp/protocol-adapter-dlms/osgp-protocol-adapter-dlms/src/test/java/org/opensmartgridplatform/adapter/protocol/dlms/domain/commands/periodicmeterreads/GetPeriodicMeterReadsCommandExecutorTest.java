@@ -373,7 +373,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
 
     // If a dynamic scalerUnit is used then expect 1 additional call
     verify(this.dlmsHelper, times(valueType == ValueType.DYNAMIC ? 1 : 0))
-        .getWithList(eq(this.connectionManager), eq(this.device), any());
+        .getWithList(eq(this.connectionManager), eq(this.device), any(AttributeAddress[].class));
 
     // ASSERT - the result should contain 2 values
     final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads =
