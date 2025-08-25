@@ -157,7 +157,7 @@ SPDX-License-Identifier: Apache-2.0
     <!-- Flyway (DB Migration) -->
     <dependency>
       <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
+      <artifactId>flyway-database-postgresql</artifactId>
     </dependency>
 
     <!-- Logging -->
