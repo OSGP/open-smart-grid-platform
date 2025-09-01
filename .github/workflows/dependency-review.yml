@@ -15,4 +15,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@v3
+        uses: advanced-security/maven-dependency-submission-action@v5

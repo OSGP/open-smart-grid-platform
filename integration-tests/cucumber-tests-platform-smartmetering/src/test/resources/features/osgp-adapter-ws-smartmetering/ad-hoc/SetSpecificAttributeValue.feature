@@ -35,3 +35,34 @@ Feature: SmartMetering AdHoc
       | TEST1028000000001    | SMR      | 5.1     | OK       |
       | TEST1029000000001    | SMR      | 5.2     | OK       |
       | TEST1030000000001    | SMR      | 5.5     | OK       |
+
+  Scenario Outline: Set sag and swell settings for a <protocol> <version> device
+    Given a dlms device
+      | DeviceIdentification | <deviceIdentification> |
+      | DeviceType           | SMART_METER_E          |
+      | Protocol             | <protocol>             |
+      | ProtocolVersion      | <version>              |
+    When the Set Specific Attribute Value request is received
+      | DeviceIdentification | <deviceIdentification>       |
+      | ObjectType           | THRESHOLD_VOLTAGE_SWELL      |
+      | Attribute            | 2                            |
+      | IntValue             | 200                          |
+      | ObjectType_2         | TIME_THRESHOLD_VOLTAGE_SWELL |
+      | Attribute_2          | 2                            |
+      | IntValue_2           | 60                           |
+    Then the Set Specific Attribute Value response should be returned
+      | DeviceIdentification | <deviceIdentification> |
+      | Result               | <response>             |
+
+    Examples:
+      | deviceIdentification | protocol | version | response |
+      | TEST1024000000001    | DSMR     | 4.2.2   | OK       |
+    @NightlyBuildOnly
+    Examples:
+      | deviceIdentification | protocol | version | response |
+      | TEST1024000000001    | DSMR     | 2.2     | OK       |
+      | TEST1031000000001    | SMR      | 4.3     | OK       |
+      | TEST1027000000001    | SMR      | 5.0.0   | OK       |
+      | TEST1028000000001    | SMR      | 5.1     | OK       |
+      | TEST1029000000001    | SMR      | 5.2     | OK       |
+      | TEST1030000000001    | SMR      | 5.5     | OK       |

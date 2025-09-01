@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.List;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
@@ -12,28 +13,15 @@ public class SetSpecificAttributeValueRequestData implements Serializable, Actio
 
   private static final long serialVersionUID = -7326169764207317011L;
 
-  private final String objectType;
-  private final int attribute;
-  private final int intValue;
+  private final List<ValueToSet> valuesToSet;
 
-  public SetSpecificAttributeValueRequestData(
-      final String objectType, final int attribute, final int intValue) {
+  public SetSpecificAttributeValueRequestData(final List<ValueToSet> valuesToSet) {
     super();
-    this.objectType = objectType;
-    this.attribute = attribute;
-    this.intValue = intValue;
+    this.valuesToSet = valuesToSet;
   }
 
-  public String getObjectType() {
-    return this.objectType;
-  }
-
-  public int getAttribute() {
-    return this.attribute;
-  }
-
-  public int getIntValue() {
-    return this.intValue;
+  public List<ValueToSet> getValuesToSet() {
+    return this.valuesToSet;
   }
 
   @Override
@@ -45,9 +33,9 @@ public class SetSpecificAttributeValueRequestData implements Serializable, Actio
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = (prime * result) + this.attribute;
-    result = (prime * result) + this.intValue;
-    result = (prime * result) + this.objectType.hashCode();
+    for (final ValueToSet valueToSet : this.valuesToSet) {
+      result = (prime * result) + valueToSet.hashCode();
+    }
     return result;
   }
 
@@ -63,18 +51,10 @@ public class SetSpecificAttributeValueRequestData implements Serializable, Actio
       return false;
     }
     final SetSpecificAttributeValueRequestData other = (SetSpecificAttributeValueRequestData) obj;
-    if (this.attribute != other.attribute) {
-      return false;
-    }
-    if (this.intValue != other.intValue) {
-      return false;
-    }
-    if (this.objectType == null) {
-      if (other.objectType != null) {
+    for (int i = 0; i < this.valuesToSet.size(); i++) {
+      if (!this.valuesToSet.get(i).equals(other.valuesToSet.get(i))) {
         return false;
       }
-    } else if (!this.objectType.equals(other.objectType)) {
-      return false;
     }
     return true;
   }

@@ -94,7 +94,11 @@ public class ThrottlingClient {
                */
               return;
             }
-            super.handleError(response, response.getStatusCode());
+            super.handleError(
+                response,
+                response.getStatusCode(),
+                response.getHeaders().getLocation(),
+                response.getHeaders().getAccessControlRequestMethod());
           }
         });
 
@@ -398,7 +402,7 @@ public class ThrottlingClient {
               Void.class,
               this.throttlingConfig.getId(),
               this.clientId);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.warn(
           "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected exception: {}",
           this.throttlingConfig.getId(),
@@ -455,7 +459,7 @@ public class ThrottlingClient {
               this.clientId,
               baseTransceiverStationId,
               cellId);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.warn(
           "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected exception: {}",
           this.throttlingConfig.getId(),

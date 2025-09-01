@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import java.io.Serializable;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -27,6 +28,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetSpecificAttri
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TestAlarmSchedulerRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ValueToSetDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -264,9 +266,18 @@ public class AdhocService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
+    final List<ValueToSetDto> valuesToSet =
+        request.getValuesToSet().stream()
+            .map(
+                valueToSet ->
+                    new ValueToSetDto(
+                        valueToSet.getObjectType(),
+                        valueToSet.getAttribute(),
+                        valueToSet.getIntValue()))
+            .toList();
+
     final SetSpecificAttributeValueRequestDto requestDto =
-        new SetSpecificAttributeValueRequestDto(
-            request.getObjectType(), request.getAttribute(), request.getIntValue());
+        new SetSpecificAttributeValueRequestDto(valuesToSet);
 
     this.osgpCoreRequestMessageSender.send(
         requestDto,

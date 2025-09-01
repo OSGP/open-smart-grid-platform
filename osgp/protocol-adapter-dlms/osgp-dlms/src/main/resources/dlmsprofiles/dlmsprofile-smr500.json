@@ -1846,6 +1846,66 @@
       ]
     },
     {
+      "tag": "THRESHOLD_VOLTAGE_SAG",
+      "description": "Threshold for voltage sag",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.12.31.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": 207,
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "TIME_THRESHOLD_VOLTAGE_SAG",
+      "description": "Time threshold for voltage sag ",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.12.43.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": 60,
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, s",
+          "access": "R"
+        }
+      ]
+    },
+    {
       "tag": "NUMBER_OF_VOLTAGE_SAGS_FOR_L1",
       "description": "Number of voltage sags in phase L1",
       "class-id": 1,
@@ -1907,6 +1967,66 @@
           "description": "value",
           "datatype": "long-unsigned",
           "valuetype": "DYNAMIC",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "THRESHOLD_VOLTAGE_SWELL",
+      "description": "Threshold for voltage swell",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.12.35.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": 253,
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, V",
+          "access": "R"
+        }
+      ]
+    },
+    {
+      "tag": "TIME_THRESHOLD_VOLTAGE_SWELL",
+      "description": "Time threshold for voltage swell",
+      "class-id": 3,
+      "version": 0,
+      "obis": "1.0.12.44.0.255",
+      "group": "ELECTRICITY",
+      "meterTypes": [
+        "SP",
+        "PP"
+      ],
+      "attributes": [
+        {
+          "id": 2,
+          "description": "value",
+          "datatype": "long-unsigned",
+          "valuetype": "SET_BY_CLIENT",
+          "value": 60,
+          "access": "RW"
+        },
+        {
+          "id": 3,
+          "description": "scaler_unit",
+          "datatype": "scal_unit_type",
+          "valuetype": "FIXED_IN_PROFILE",
+          "value": "0, s",
           "access": "R"
         }
       ]

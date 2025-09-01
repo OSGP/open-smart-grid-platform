@@ -5,22 +5,20 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serial;
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.List;
 
-@Getter
 public class SetSpecificAttributeValueRequestDto implements ActionRequestDto {
 
   @Serial private static final long serialVersionUID = 6091630820323702494L;
 
-  private final String objectType;
-  private final int attribute;
-  private final Integer intValue;
+  private final List<ValueToSetDto> valuesToSet;
 
-  public SetSpecificAttributeValueRequestDto(
-      final String objectType, final int attribute, final Integer intValue) {
-    super();
-    this.objectType = objectType;
-    this.attribute = attribute;
-    this.intValue = intValue;
+  public SetSpecificAttributeValueRequestDto(final List<ValueToSetDto> valuesToSet) {
+    this.valuesToSet = new ArrayList<>(valuesToSet);
+  }
+
+  public List<ValueToSetDto> getValuesToSet() {
+    return new ArrayList<>(this.valuesToSet);
   }
 }
