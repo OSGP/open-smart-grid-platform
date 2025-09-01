@@ -34,7 +34,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
       - name: Set maven options for cucumber containers
         id: maven_options
-        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
+        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
         run: echo 'maven_options=-DskipTestJarWithDependenciesAssembly=false' >> $GITHUB_OUTPUT
       - name: Build and analyse
         env:
@@ -43,9 +43,9 @@ jobs:
         run: ./mvnw -T1C -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
       - name: Staging war and jar files
         run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
-        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
+        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
       - uses: actions/upload-artifact@v4
-        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
+        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
         with:
           name: warFiles
           path: staging
@@ -53,7 +53,7 @@ jobs:
   docker:
     name: Building docker images
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
+    if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
     needs: build
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
@@ -113,7 +113,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Download war files
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: warFiles
       - name: Show files in current context
@@ -149,7 +149,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ matrix.image }}
           subject-digest: ${{ steps.push.outputs.digest }}
@@ -157,7 +157,7 @@ jobs:
   cucumber:
     name: Running cucumber gxf containers
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing')
+    if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
     needs: docker
     permissions:
       checks: write
@@ -180,7 +180,7 @@ jobs:
       - name: Run maven cucumber reporting
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
       - name: Annotate cucumber report to github action
-        uses: deblockt/cucumber-report-annotations-action@v1.7
+        uses: deblockt/cucumber-report-annotations-action@v1.20
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: "/tmp/k3dvolume/**/*.json"
