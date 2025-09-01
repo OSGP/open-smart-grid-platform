@@ -4,12 +4,16 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -18,6 +22,7 @@ import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
  * Defaults specific for the dlms related data. Note: Keep in mind that generic defaults should be
  * specified in the cucumber-tests-platform project.
  */
+@Slf4j
 public class PlatformSmartmeteringDefaults
     extends org.opensmartgridplatform.cucumber.platform.PlatformDefaults {
 
@@ -106,12 +111,32 @@ public class PlatformSmartmeteringDefaults
   public static final Byte DEVIATION = -60;
 
   static {
-    InetAddress localhost;
+    InetAddress inetAddress;
     try {
-      localhost = InetAddress.getByName(PlatformDefaults.LOCALHOST);
-    } catch (final UnknownHostException e) {
-      localhost = null;
+      inetAddress = InetAddress.getByName(getSimulatorNetworkAddress());
+    } catch (final IOException e) {
+      log.error(
+          "Network address for simulator (simulator.network.inet.address) is not a valid Inet address.");
+      inetAddress = null;
     }
-    NETWORK_ADDRESS = localhost;
+    NETWORK_ADDRESS = inetAddress;
+  }
+
+  public static String getSimulatorNetworkAddress() throws IOException {
+    final Properties properties = new Properties();
+    final InputStream inputStream =
+        ClassLoader.getSystemResourceAsStream("cucumber-tests-platform-smartmetering.properties");
+    properties.load(inputStream);
+    if (inputStream != null) {
+      inputStream.close();
+    }
+    final String configuredAddress = properties.getProperty("simulator.network.inet.address");
+    final String simulatorNetworkAddress =
+        Objects.requireNonNullElse(configuredAddress, PlatformDefaults.LOCALHOST);
+    log.info(
+        "Using {} network address for simulator (simulator.network.inet.address): {}",
+        configuredAddress != null ? "configured" : "default",
+        simulatorNetworkAddress);
+    return simulatorNetworkAddress;
   }
 }
