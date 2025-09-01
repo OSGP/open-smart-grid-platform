@@ -18,12 +18,12 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>6.21.0-SNAPSHOT</version>
+    <version>6.23.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
   <properties>
-    <spring.boot.version>3.3.11</spring.boot.version>
+    <spring.boot.version>3.3.13</spring.boot.version>
     <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
@@ -154,6 +154,12 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.skyscreamer</groupId>
+                    <artifactId>jsonassert</artifactId>
+                </exclusion>
+            </exclusions>
       <scope>test</scope>
     </dependency>
     <dependency>

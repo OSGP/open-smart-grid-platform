@@ -243,9 +243,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="ObjectType" type="tns:AllowedObjectType" />
-          <xsd:element name="Attribute" type="xsd:integer" />
-          <xsd:element name="IntValue" type="xsd:integer" />
+          <xsd:element name="valuesToSet" type="tns:ValueToSet" maxOccurs="unbounded" minOccurs="0"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -259,9 +257,20 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  <xsd:complexType name="ValueToSet">
+    <xsd:sequence>
+      <xsd:element name="ObjectType" type="tns:AllowedObjectType" />
+      <xsd:element name="Attribute" type="xsd:integer" />
+      <xsd:element name="IntValue" type="xsd:integer" />
+    </xsd:sequence>
+  </xsd:complexType>
   <xsd:simpleType name="AllowedObjectType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="WATCHDOG_TIMER" />
+      <xsd:enumeration value="THRESHOLD_VOLTAGE_SWELL" />
+      <xsd:enumeration value="TIME_THRESHOLD_VOLTAGE_SWELL" />
+      <xsd:enumeration value="THRESHOLD_VOLTAGE_SAG" />
+      <xsd:enumeration value="TIME_THRESHOLD_VOLTAGE_SAG" />
     </xsd:restriction>
   </xsd:simpleType>
 

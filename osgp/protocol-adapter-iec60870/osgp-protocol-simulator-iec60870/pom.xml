@@ -22,7 +22,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-  <version>6.21.0-SNAPSHOT</version>
+  <version>6.23.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-iec60870</name>
   <description>Simulator for IEC60870-5-104 protocol</description>
@@ -84,12 +84,19 @@ SPDX-License-Identifier: Apache-2.0
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
       <exclusions>
+        <exclusion>
+          <groupId>org.skyscreamer</groupId>
+          <artifactId>jsonassert</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
@@ -99,6 +106,7 @@ SPDX-License-Identifier: Apache-2.0
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
       </exclusions>
+      <scope>test</scope>
     </dependency>
 
     <dependency>

@@ -1198,6 +1198,26 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
+  public LongUnsignedRegister thresholdVoltageSwellValue() {
+    return new LongUnsignedRegister("1.0.12.35.0.255", 253, 0, UnitType.VOLT);
+  }
+
+  @Bean
+  public LongUnsignedRegister timeThresholdVoltageSwellValue() {
+    return new LongUnsignedRegister("1.0.12.44.0.255", 30, 0, UnitType.SECONDS);
+  }
+
+  @Bean
+  public LongUnsignedRegister thresholdVoltageSagValue() {
+    return new LongUnsignedRegister("1.0.12.31.0.255", 207, 0, UnitType.VOLT);
+  }
+
+  @Bean
+  public LongUnsignedRegister timeThresholdVoltageSagValue() {
+    return new LongUnsignedRegister("1.0.12.43.0.255", 30, 0, UnitType.SECONDS);
+  }
+
+  @Bean
   public LongUnsignedRegister instantaneousCurrentSumOfAllPhases() {
     return new LongUnsignedRegister("1.0.90.7.0.255", 1, 0, UnitType.AMPERE);
   }
