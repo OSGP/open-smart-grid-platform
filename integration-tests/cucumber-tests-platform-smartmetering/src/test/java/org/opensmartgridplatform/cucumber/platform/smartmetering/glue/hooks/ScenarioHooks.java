@@ -13,7 +13,6 @@ import static org.opensmartgridplatform.cucumber.platform.smartmetering.Platform
 
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +53,7 @@ public class ScenarioHooks {
    * <p>Order 1000 ensures this will be run as one of the first hooks before the scenario.
    */
   @Before(order = 1000)
-  public void beforeScenario() throws IOException {
+  public void beforeScenario() {
     this.loadConfiguration();
     this.deviceSimulatorSteps.clearDlmsAttributeValues();
     this.dlmsDatabase.prepareDatabaseForScenario();
