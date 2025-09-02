@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
@@ -17,7 +16,6 @@ import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
  * Defaults specific for the dlms related data. Note: Keep in mind that generic defaults should be
  * specified in the cucumber-tests-platform project.
  */
-@Slf4j
 public class PlatformSmartmeteringDefaults
     extends org.opensmartgridplatform.cucumber.platform.PlatformDefaults {
 
