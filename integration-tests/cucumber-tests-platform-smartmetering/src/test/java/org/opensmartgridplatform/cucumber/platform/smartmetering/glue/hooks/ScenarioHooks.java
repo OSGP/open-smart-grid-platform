@@ -62,7 +62,7 @@ public class ScenarioHooks {
     this.prepareServiceEndpoint();
   }
 
-  private void loadConfiguration() throws IOException {
+  private void loadConfiguration() {
     final CucumberTestsPlatformSmartmeteringProperties properties =
         new CucumberTestsPlatformSmartmeteringProperties();
     this.alarmNotificationsPort = properties.getAlarmNotificationsPort();
