@@ -17,14 +17,14 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 @Slf4j
 public class CucumberTestsPlatformSmartmeteringProperties {
 
-  static Properties properties;
+  private final Properties properties;
 
   public CucumberTestsPlatformSmartmeteringProperties() {
-    properties = new Properties();
+    this.properties = new Properties();
     try {
       final InputStream inputStream =
           ClassLoader.getSystemResourceAsStream("cucumber-tests-platform-smartmetering.properties");
-      properties.load(inputStream);
+      this.properties.load(inputStream);
       if (inputStream != null) {
         inputStream.close();
       }
@@ -36,7 +36,8 @@ public class CucumberTestsPlatformSmartmeteringProperties {
   public InetAddress getNetworkAddress() {
     InetAddress inetAddress;
     try {
-      final String configuredAddress = properties.getProperty("simulator.network.inet.address");
+      final String configuredAddress =
+          this.properties.getProperty("simulator.network.inet.address");
       final String simulatorNetworkAddress =
           Objects.requireNonNullElse(configuredAddress, PlatformDefaults.LOCALHOST);
       log.info(
@@ -53,14 +54,14 @@ public class CucumberTestsPlatformSmartmeteringProperties {
   }
 
   public int getAlarmNotificationsPort() {
-    return Integer.parseInt(properties.getProperty("alarm.notifications.port"));
+    return Integer.parseInt(this.properties.getProperty("alarm.notifications.port"));
   }
 
   public String getAlarmNotificationsHost() {
-    return properties.getProperty("alarm.notifications.host");
+    return this.properties.getProperty("alarm.notifications.host");
   }
 
   public String getServiceEndpointHost() {
-    return properties.getProperty("service.endpoint.host");
+    return this.properties.getProperty("service.endpoint.host");
   }
 }
