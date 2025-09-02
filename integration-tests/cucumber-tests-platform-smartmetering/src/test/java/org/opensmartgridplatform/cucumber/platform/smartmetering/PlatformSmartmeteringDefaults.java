@@ -5,12 +5,10 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
@@ -106,12 +104,8 @@ public class PlatformSmartmeteringDefaults
   public static final Byte DEVIATION = -60;
 
   static {
-    InetAddress localhost;
-    try {
-      localhost = InetAddress.getByName(PlatformDefaults.LOCALHOST);
-    } catch (final UnknownHostException e) {
-      localhost = null;
-    }
-    NETWORK_ADDRESS = localhost;
+    final CucumberTestsPlatformSmartmeteringProperties properties =
+        new CucumberTestsPlatformSmartmeteringProperties();
+    NETWORK_ADDRESS = properties.getNetworkAddress();
   }
 }

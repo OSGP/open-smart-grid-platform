@@ -15,7 +15,9 @@ import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.CucumberTestsPlatformSmartmeteringProperties;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.WsSmartMeteringNotificationDatabase;
@@ -23,18 +25,17 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simu
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.ReplaceKeysSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ServiceEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 /** Class with all the scenario hooks when each scenario runs. */
+@Slf4j
 public class ScenarioHooks {
 
-  @Value("${alarm.notifications.host}")
   private String alarmNotificationsHost;
-
-  @Value("${alarm.notifications.port}")
   private int alarmNotificationsPort;
+  private String serviceEndpointHost;
 
   @Autowired private DlmsDatabase dlmsDatabase;
+
   @Autowired private WsSmartMeteringNotificationDatabase wsSmartMeteringNotificationDatabase;
 
   @Autowired private ReplaceKeysSteps replaceKeysSteps;
@@ -42,9 +43,6 @@ public class ScenarioHooks {
   @Autowired private DeviceSimulatorSteps deviceSimulatorSteps;
 
   @Autowired private ServiceEndpoint serviceEndpoint;
-
-  @Value("${service.endpoint.host}")
-  private String serviceEndpointHost;
 
   /**
    * Executed before each scenario.
@@ -56,10 +54,19 @@ public class ScenarioHooks {
    */
   @Before(order = 1000)
   public void beforeScenario() {
+    this.loadConfiguration();
     this.deviceSimulatorSteps.clearDlmsAttributeValues();
     this.dlmsDatabase.prepareDatabaseForScenario();
     this.wsSmartMeteringNotificationDatabase.prepareDatabaseForScenario();
     this.prepareServiceEndpoint();
+  }
+
+  private void loadConfiguration() {
+    final CucumberTestsPlatformSmartmeteringProperties properties =
+        new CucumberTestsPlatformSmartmeteringProperties();
+    this.alarmNotificationsPort = properties.getAlarmNotificationsPort();
+    this.alarmNotificationsHost = properties.getAlarmNotificationsHost();
+    this.serviceEndpointHost = properties.getServiceEndpointHost();
   }
 
   /**
