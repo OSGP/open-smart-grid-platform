@@ -14,12 +14,11 @@ import static org.opensmartgridplatform.cucumber.platform.smartmetering.Platform
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.CucumberTestsPlatformSmartmeteringProperties;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.SecurityKey;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.DlmsDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.database.WsSmartMeteringNotificationDatabase;
@@ -64,18 +63,11 @@ public class ScenarioHooks {
   }
 
   private void loadConfiguration() throws IOException {
-
-    final Properties properties = new Properties();
-    final InputStream inputStream =
-        ClassLoader.getSystemResourceAsStream("cucumber-tests-platform-smartmetering.properties");
-    properties.load(inputStream);
-    if (inputStream != null) {
-      inputStream.close();
-    }
-    this.alarmNotificationsPort =
-        Integer.parseInt(properties.getProperty("alarm.notifications.port"));
-    this.alarmNotificationsHost = properties.getProperty("alarm.notifications.host");
-    this.serviceEndpointHost = properties.getProperty("service.endpoint.host");
+    final CucumberTestsPlatformSmartmeteringProperties properties =
+        new CucumberTestsPlatformSmartmeteringProperties();
+    this.alarmNotificationsPort = properties.getAlarmNotificationsPort();
+    this.alarmNotificationsHost = properties.getAlarmNotificationsHost();
+    this.serviceEndpointHost = properties.getServiceEndpointHost();
   }
 
   /**

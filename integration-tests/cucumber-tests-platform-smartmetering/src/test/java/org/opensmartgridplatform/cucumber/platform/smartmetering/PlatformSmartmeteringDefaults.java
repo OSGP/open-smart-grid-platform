@@ -4,17 +4,12 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
@@ -111,32 +106,8 @@ public class PlatformSmartmeteringDefaults
   public static final Byte DEVIATION = -60;
 
   static {
-    InetAddress inetAddress;
-    try {
-      inetAddress = InetAddress.getByName(getSimulatorNetworkAddress());
-    } catch (final IOException e) {
-      log.error(
-          "Network address for simulator (simulator.network.inet.address) is not a valid Inet address.");
-      inetAddress = null;
-    }
-    NETWORK_ADDRESS = inetAddress;
-  }
-
-  public static String getSimulatorNetworkAddress() throws IOException {
-    final Properties properties = new Properties();
-    final InputStream inputStream =
-        ClassLoader.getSystemResourceAsStream("cucumber-tests-platform-smartmetering.properties");
-    properties.load(inputStream);
-    if (inputStream != null) {
-      inputStream.close();
-    }
-    final String configuredAddress = properties.getProperty("simulator.network.inet.address");
-    final String simulatorNetworkAddress =
-        Objects.requireNonNullElse(configuredAddress, PlatformDefaults.LOCALHOST);
-    log.info(
-        "Using {} network address for simulator (simulator.network.inet.address): {}",
-        configuredAddress != null ? "configured" : "default",
-        simulatorNetworkAddress);
-    return simulatorNetworkAddress;
+    final CucumberTestsPlatformSmartmeteringProperties properties =
+        new CucumberTestsPlatformSmartmeteringProperties();
+    NETWORK_ADDRESS = properties.getNetworkAddress();
   }
 }
