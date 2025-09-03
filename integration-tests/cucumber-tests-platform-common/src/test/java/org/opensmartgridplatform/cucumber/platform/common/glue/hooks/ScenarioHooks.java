@@ -11,6 +11,8 @@ import org.opensmartgridplatform.cucumber.platform.common.glue.database.WsCoreNo
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Class with all the scenario hooks when each scenario runs. */
+// @CucumberContextConfiguration
+// @ContextConfiguration(classes = {WsCoreNotificationDatabase.class})
 public class ScenarioHooks {
 
   @Autowired private WsCoreNotificationDatabase wsCoreNotificationDatabase;
