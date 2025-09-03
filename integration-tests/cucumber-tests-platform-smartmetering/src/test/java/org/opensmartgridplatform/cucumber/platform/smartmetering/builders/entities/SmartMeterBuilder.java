@@ -14,9 +14,13 @@ import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.springframework.beans.factory.annotation.Value;
 
 public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     implements CucumberBuilder<SmartMeter> {
+
+  @Value("simulator.network.inet.address")
+  private String simulatorNetworkAddress;
 
   private String supplier;
   private Short channel;
@@ -77,11 +81,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
             new GpsCoordinates(this.gpsLatitude, this.gpsLongitude));
 
     device.setActivated(this.isActivated);
-    if (this.networkAddress != null) {
-      device.updateRegistrationData(this.networkAddress.getHostAddress(), this.deviceType);
-    } else {
-      device.updateRegistrationData(null, this.deviceType);
-    }
+    device.updateRegistrationData(this.simulatorNetworkAddress, this.deviceType);
     device.setBtsId(this.baseTransceiverStationId);
     device.setCellId(this.cellId);
 

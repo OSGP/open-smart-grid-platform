@@ -10,9 +10,13 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+import org.springframework.beans.factory.annotation.Value;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
     implements CucumberBuilder<Device> {
+
+  @Value("simulator.network.inet.address")
+  private String simulatorNetworkAddress;
 
   private final DeviceRepository deviceRepository;
 
@@ -53,7 +57,7 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
     device.setTechnicalInstallationDate(this.technicalInstallationDate);
     // updateRegistrationData sets the status to IN_USE, so setting of any
     // other status has to be done after that.
-    device.updateRegistrationData(this.networkAddress.getHostAddress(), this.deviceType);
+    device.updateRegistrationData(this.simulatorNetworkAddress, this.deviceType);
     device.setDeviceLifecycleStatus(this.deviceLifeCycleStatus);
 
     return device;

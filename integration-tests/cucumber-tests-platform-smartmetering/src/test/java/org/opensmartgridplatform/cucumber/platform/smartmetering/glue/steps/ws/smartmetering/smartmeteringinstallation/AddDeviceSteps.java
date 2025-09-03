@@ -34,9 +34,13 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 public class AddDeviceSteps extends AbstractSmartMeteringSteps {
+
+  @Value("simulator.network.inet.address")
+  private String simulatorNetworkAddress;
 
   @Autowired private DeviceRepository deviceRepository;
 
@@ -165,8 +169,7 @@ public class AddDeviceSteps extends AbstractSmartMeteringSteps {
     /*
      * This call also sets the device to be IN_USE and activated.
      */
-    device.updateRegistrationData(
-        PlatformSmartmeteringDefaults.NETWORK_ADDRESS.getHostAddress(), device.getDeviceType());
+    device.updateRegistrationData(this.simulatorNetworkAddress, device.getDeviceType());
 
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(device.getDeviceIdentification());

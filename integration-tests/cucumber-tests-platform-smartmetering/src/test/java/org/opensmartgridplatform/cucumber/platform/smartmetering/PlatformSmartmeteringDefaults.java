@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering;
 
-import java.net.InetAddress;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,7 +53,6 @@ public class PlatformSmartmeteringDefaults
   public static final boolean CLOSE_OPTICAL_PORT = false;
 
   public static final Long LOGICAL_ID = 1L;
-  public static final InetAddress NETWORK_ADDRESS;
   public static final Long PORT = 1024L;
   public static final String PROTOCOL = "DSMR";
   public static final String PROTOCOL_VERSION = "4.2.2";
@@ -102,10 +100,4 @@ public class PlatformSmartmeteringDefaults
   public static final short TIME_ZONE_OFFSET = -60;
   public static final Boolean DAYLIGHT_SAVINGS_ACTIVE = false;
   public static final Byte DEVIATION = -60;
-
-  static {
-    final CucumberTestsPlatformSmartmeteringProperties properties =
-        new CucumberTestsPlatformSmartmeteringProperties();
-    NETWORK_ADDRESS = properties.getNetworkAddress();
-  }
 }
