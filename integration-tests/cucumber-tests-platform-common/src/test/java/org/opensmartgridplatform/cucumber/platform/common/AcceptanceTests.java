@@ -12,7 +12,7 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("org.opensmartgridplatform/cucumber/platform/common/glue/steps")
+@SelectClasspathResource("org/opensmartgridplatform/cucumber/platform/common/glue/steps")
 @ConfigurationParameter(key = Constants.FEATURES_PROPERTY_NAME, value = "classpath:features/common")
 @ConfigurationParameter(
     key = Constants.FILTER_TAGS_PROPERTY_NAME,

@@ -74,6 +74,11 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>cucumber-spring</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit-platform-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Spring Framework -->
     <dependency>
