@@ -49,6 +49,11 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>cucumber-spring</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-suite-api</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- Cucumber tests depend on JUnit 4, add the vintage engine -->
     <dependency>
       <groupId>org.junit.vintage</groupId>
