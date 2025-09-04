@@ -10,17 +10,16 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
-import org.springframework.beans.factory.annotation.Value;
 
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
     implements CucumberBuilder<Device> {
 
-  @Value("simulator.network.inet.address")
-  private String simulatorNetworkAddress;
-
+  private final String simulatorNetworkAddress;
   private final DeviceRepository deviceRepository;
 
-  public DeviceBuilder(final DeviceRepository deviceRepository) {
+  public DeviceBuilder(
+      final String simulatorNetworkAddress, final DeviceRepository deviceRepository) {
+    this.simulatorNetworkAddress = simulatorNetworkAddress;
     this.deviceRepository = deviceRepository;
   }
 
