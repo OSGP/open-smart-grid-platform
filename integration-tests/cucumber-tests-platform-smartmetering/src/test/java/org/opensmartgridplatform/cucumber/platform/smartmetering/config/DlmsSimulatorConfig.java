@@ -17,9 +17,16 @@ public class DlmsSimulatorConfig extends AbstractConfig {
   @Value("${dynamic.properties.base.url}")
   private String dynamicPropertiesBaseUrl;
 
+  @Value("${simulator.network.address:localhost}")
+  private String simulatorNetworkAddress;
+
   @Bean
   public SimulatorTriggerClient simulatorTriggerClient() throws SimulatorTriggerClientException {
-
     return new SimulatorTriggerClient(this.dynamicPropertiesBaseUrl);
+  }
+
+  @Bean
+  public String simulatorNetworkAddress() {
+    return this.simulatorNetworkAddress;
   }
 }

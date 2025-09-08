@@ -5,7 +5,7 @@
 @SmartMetering @Platform @NightlyBuildOnly
 Feature: SmartMetering functional exceptions regarding connections
 
-  Scenario: Get administrative status on a non-responsive device
+  Scenario: Get administrative status on a device that will refuse connection
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -16,7 +16,8 @@ Feature: SmartMetering functional exceptions regarding connections
       | Code    |                225 |
       | Message | CONNECTION_REFUSED |
 
-  Scenario: Connect to a smart meter with an invalid ip address
+  @InvalidIpAddress
+  Scenario: Connect to an assumed smart meter that will refuse connection
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -24,9 +25,10 @@ Feature: SmartMetering functional exceptions regarding connections
     When the get administrative status request generating an error is received
       | DeviceIdentification | TEST1024000000001 |
     Then a SOAP fault should have been returned
-      | Code    |                  227 |
-      | Message | CONNECTION_TIMED_OUT |
+      | Code    |                225 |
+      | Message | CONNECTION_REFUSED |
 
+  @WithoutIpAddress
   Scenario: Connect to a smart meter without an ip address
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |

@@ -4,11 +4,8 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -37,7 +34,6 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
   ProtocolInfo protocolInfo = null;
   Integer baseTransceiverStationId = null;
   Integer cellId = null;
-  InetAddress networkAddress = PlatformSmartmeteringDefaults.NETWORK_ADDRESS;
   String containerMunicipality = PlatformSmartmeteringDefaults.CONTAINER_MUNICIPALITY;
   String alias = PlatformSmartmeteringDefaults.ALIAS;
   boolean inMaintenance = PlatformSmartmeteringDefaults.IN_MAINTENANCE;
@@ -115,11 +111,6 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
 
   public T setCellId(final Integer cellId) {
     this.cellId = cellId;
-    return (T) this;
-  }
-
-  public T setNetworkAddress(final InetAddress networkAddress) {
-    this.networkAddress = networkAddress;
     return (T) this;
   }
 
@@ -227,19 +218,6 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
             inputSettings, PlatformSmartmeteringKeys.KEY_BASE_TRANSCEIVER_STATION_ID, null));
     this.setCellId(
         ReadSettingsHelper.getInteger(inputSettings, PlatformSmartmeteringKeys.KEY_CELL_ID, null));
-
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
-      if (StringUtils.isBlank(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS))) {
-        this.setNetworkAddress(null);
-      } else {
-        try {
-          this.setNetworkAddress(
-              InetAddress.getByName(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS)));
-        } catch (final UnknownHostException e) {
-          LOGGER.error("Exception occured while setting InetAddress for device.", e);
-        }
-      }
-    }
 
     return (T) this;
   }
