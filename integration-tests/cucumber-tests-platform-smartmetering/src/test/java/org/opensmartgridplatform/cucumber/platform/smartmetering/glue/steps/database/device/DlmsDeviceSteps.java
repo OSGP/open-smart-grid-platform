@@ -97,6 +97,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "txMgrCore")
 public class DlmsDeviceSteps {
 
+  @Autowired private String simulatorNetworkAddress;
+
   @Autowired private SmartMeterRepository smartMeterRepository;
 
   @Autowired private DeviceRepository deviceRepository;
@@ -697,7 +699,7 @@ public class DlmsDeviceSteps {
 
     if (isSmartMeter) {
       final SmartMeter smartMeter =
-          new SmartMeterBuilder()
+          new SmartMeterBuilder(this.simulatorNetworkAddress)
               .withSettings(inputSettings)
               .setProtocolInfo(protocolInfo)
               .setDeviceModel(deviceModel)
@@ -706,7 +708,7 @@ public class DlmsDeviceSteps {
 
     } else {
       device =
-          new DeviceBuilder(this.deviceRepository)
+          new DeviceBuilder(this.simulatorNetworkAddress, this.deviceRepository)
               .withSettings(inputSettings)
               .setProtocolInfo(protocolInfo)
               .setDeviceModel(deviceModel)

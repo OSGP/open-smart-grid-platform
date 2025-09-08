@@ -18,6 +18,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     implements CucumberBuilder<SmartMeter> {
 
+  private final String simulatorNetworkAddress;
+
   private String supplier;
   private Short channel;
   private String mbusIdentificationNumber;
@@ -25,6 +27,11 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
   private Short mbusVersion;
   private Short mbusDeviceTypeIdentification;
   private Short mbusPrimaryAddress;
+
+  public SmartMeterBuilder(final String simulatorNetworkAddress) {
+    super();
+    this.simulatorNetworkAddress = simulatorNetworkAddress;
+  }
 
   public SmartMeterBuilder setSupplier(final String supplier) {
     this.supplier = supplier;
@@ -77,11 +84,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
             new GpsCoordinates(this.gpsLatitude, this.gpsLongitude));
 
     device.setActivated(this.isActivated);
-    if (this.networkAddress != null) {
-      device.updateRegistrationData(this.networkAddress.getHostAddress(), this.deviceType);
-    } else {
-      device.updateRegistrationData(null, this.deviceType);
-    }
+    device.updateRegistrationData(this.simulatorNetworkAddress, this.deviceType);
     device.setBtsId(this.baseTransceiverStationId);
     device.setCellId(this.cellId);
 
