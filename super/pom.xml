@@ -76,9 +76,8 @@ SPDX-License-Identifier: Apache-2.0
     <slf4j.version>2.0.17</slf4j.version>
     <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
     <apache.commons.text.version>1.12.0</apache.commons.text.version>
-    <apache.httpcomponents.version>5.5</apache.httpcomponents.version>
-    <apache.httpcomponents..mime.version>4.5.14</apache.httpcomponents..mime.version>
-    <apache.httpcomponents.httpcore.version>4.4.16</apache.httpcomponents.httpcore.version>
+    <apache.httpcomponents.client5.version>5.5</apache.httpcomponents.client5.version>
+    <apache.httpcomponents.core5.version>5.3.5</apache.httpcomponents.core5.version>
     <apache.httpcomponents.httpasyncclient.version>4.1.5</apache.httpcomponents.httpasyncclient.version>
     <commons.codec.version>1.17.0</commons.codec.version>
     <orika.version>1.5.4</orika.version>
@@ -821,12 +820,12 @@ SPDX-License-Identifier: Apache-2.0
       <dependency>
         <groupId>org.apache.httpcomponents.client5</groupId>
         <artifactId>httpclient5</artifactId>
-        <version>${apache.httpcomponents.version}</version>
+        <version>${apache.httpcomponents.client5.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore</artifactId>
-        <version>${apache.httpcomponents.httpcore.version}</version>
+        <groupId>org.apache.httpcomponents.core5</groupId>
+        <artifactId>httpcore5</artifactId>
+        <version>${apache.httpcomponents.core5.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
