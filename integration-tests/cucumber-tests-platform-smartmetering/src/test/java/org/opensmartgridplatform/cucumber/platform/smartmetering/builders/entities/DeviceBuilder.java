@@ -14,9 +14,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
     implements CucumberBuilder<Device> {
 
+  private final String simulatorNetworkAddress;
   private final DeviceRepository deviceRepository;
 
-  public DeviceBuilder(final DeviceRepository deviceRepository) {
+  public DeviceBuilder(
+      final String simulatorNetworkAddress, final DeviceRepository deviceRepository) {
+    this.simulatorNetworkAddress = simulatorNetworkAddress;
     this.deviceRepository = deviceRepository;
   }
 
@@ -53,7 +56,7 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
     device.setTechnicalInstallationDate(this.technicalInstallationDate);
     // updateRegistrationData sets the status to IN_USE, so setting of any
     // other status has to be done after that.
-    device.updateRegistrationData(this.networkAddress.getHostAddress(), this.deviceType);
+    device.updateRegistrationData(this.simulatorNetworkAddress, this.deviceType);
     device.setDeviceLifecycleStatus(this.deviceLifeCycleStatus);
 
     return device;
