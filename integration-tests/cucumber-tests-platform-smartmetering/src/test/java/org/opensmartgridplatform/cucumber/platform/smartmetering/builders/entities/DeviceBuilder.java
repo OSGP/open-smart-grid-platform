@@ -16,8 +16,7 @@ public class DeviceBuilder extends BaseDeviceBuilder<DeviceBuilder>
 
   private final DeviceRepository deviceRepository;
 
-  public DeviceBuilder(
-      final String networkAddress, final DeviceRepository deviceRepository) {
+  public DeviceBuilder(final String networkAddress, final DeviceRepository deviceRepository) {
     this.networkAddress = networkAddress;
     this.deviceRepository = deviceRepository;
   }

@@ -226,8 +226,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
         ReadSettingsHelper.getInteger(inputSettings, PlatformSmartmeteringKeys.KEY_CELL_ID, null));
 
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
-      this.setNetworkAddress(
-          inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS));
+      this.setNetworkAddress(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS));
     }
     return (T) this;
   }
