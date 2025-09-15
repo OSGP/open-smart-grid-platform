@@ -34,6 +34,7 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
   ProtocolInfo protocolInfo = null;
   Integer baseTransceiverStationId = null;
   Integer cellId = null;
+  String networkAddress;
   String containerMunicipality = PlatformSmartmeteringDefaults.CONTAINER_MUNICIPALITY;
   String alias = PlatformSmartmeteringDefaults.ALIAS;
   boolean inMaintenance = PlatformSmartmeteringDefaults.IN_MAINTENANCE;
@@ -111,6 +112,11 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
 
   public T setCellId(final Integer cellId) {
     this.cellId = cellId;
+    return (T) this;
+  }
+
+  public T setNetworkAddress(final String networkAddress) {
+    this.networkAddress = networkAddress;
     return (T) this;
   }
 
@@ -219,6 +225,9 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
     this.setCellId(
         ReadSettingsHelper.getInteger(inputSettings, PlatformSmartmeteringKeys.KEY_CELL_ID, null));
 
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
+      this.setNetworkAddress(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS));
+    }
     return (T) this;
   }
 }
