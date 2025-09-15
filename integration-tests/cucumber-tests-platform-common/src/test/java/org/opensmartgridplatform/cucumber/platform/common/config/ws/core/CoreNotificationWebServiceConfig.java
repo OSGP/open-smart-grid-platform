@@ -56,6 +56,21 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Value("${web.service.core.notification.address}")
   private String notificationAddress;
 
+  @Value("${web.service.core.notification.target.uri}")
+  private String notificationTargetUri;
+
+  @Value("${web.service.core.notification.keystore.location}")
+  private String notificationKeystoreLocation;
+
+  @Value("${web.service.core.notification.keystore.password}")
+  private String notificationKeystorePassword;
+
+  @Value("${web.service.core.notification.truststore.location}")
+  private String notificationTruststoreLocation;
+
+  @Value("${web.service.core.notification.truststore.password}")
+  private String notificationTruststorePassword;
+
   @Bean("wsCoreNotificationApplicationName")
   public String notificationApplicationName() {
     return this.notificationApplicationName;
@@ -64,6 +79,26 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Bean("wsCoreNotificationMarshallerContextPath")
   public String notificationMarshallerContextPath() {
     return this.notificationMarshallerContextPath;
+  }
+
+  @Bean("wsCoreNotificationKeystoreLocation")
+  public String notificationKeystoreLocation() {
+    return this.notificationKeystoreLocation;
+  }
+
+  @Bean("wsCoreNotificationKeystorePassword")
+  public String notificationKeystorePassword() {
+    return this.notificationKeystorePassword;
+  }
+
+  @Bean("wsCoreNotificationTruststoreLocation")
+  public String notificationTruststoreLocation() {
+    return this.notificationTruststoreLocation;
+  }
+
+  @Bean("wsCoreNotificationTruststorePassword")
+  public String notificationTruststorePassword() {
+    return this.notificationTruststorePassword;
   }
 
   @Bean("wsCoreNotificationTargetUri")
