@@ -67,29 +67,29 @@ SPDX-License-Identifier: Apache-2.0
     <jakarta.persistence.api.version>3.1.0</jakarta.persistence.api.version>
     <jakarta.validation.api.version>3.0.2</jakarta.validation.api.version>
     <jakarta.jms.api.version>3.1.0</jakarta.jms.api.version>
-    <artemis.jakarta.client.version>2.33.0</artemis.jakarta.client.version>
-    <junit.version>5.11.0</junit.version>
-    <junit.platform.launcher.version>1.11.0</junit.platform.launcher.version>
+    <artemis.jakarta.client.version>2.42.0</artemis.jakarta.client.version>
+    <junit.version>5.12.1</junit.version>
+    <junit.platform.launcher.version>1.12.1</junit.platform.launcher.version>
     <byte.buddy.version>1.17.2</byte.buddy.version>
     <joda.version>2.12.7</joda.version>
     <flyway.version>9.22.3</flyway.version>
     <slf4j.version>2.0.17</slf4j.version>
     <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
-    <apache.commons.text.version>1.12.0</apache.commons.text.version>
+    <apache.commons.text.version>1.14.0</apache.commons.text.version>
     <apache.httpcomponents.client5.version>5.5</apache.httpcomponents.client5.version>
     <apache.httpcomponents.core5.version>5.3.5</apache.httpcomponents.core5.version>
     <apache.httpcomponents.httpasyncclient.version>4.1.5</apache.httpcomponents.httpasyncclient.version>
-    <commons.codec.version>1.17.0</commons.codec.version>
+    <commons.codec.version>1.19.0</commons.codec.version>
     <orika.version>1.5.4</orika.version>
     <msal.version>1.20.1</msal.version>
     <jxr.version>3.3.2</jxr.version>
     <maven.project.info.reports.plugin.version>3.5.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.21.0</maven.site.plugin>
-    <maven.javadoc.version>3.6.3</maven.javadoc.version>
+    <maven.javadoc.version>3.11.3</maven.javadoc.version>
     <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
     <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
     <maven.dependency.plugin.version>3.7.1</maven.dependency.plugin.version>
-    <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.5.3</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
@@ -101,7 +101,7 @@ SPDX-License-Identifier: Apache-2.0
     <jaxb.core.version>4.0.4</jaxb.core.version>
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.23.0</pmd.maven.plugin.version>
-    <checkstyle.maven.plugin.version>3.3.1</checkstyle.maven.plugin.version>
+    <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
