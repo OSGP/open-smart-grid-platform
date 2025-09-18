@@ -19,6 +19,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
 import org.redisson.config.SingleServerConfig;
+import org.redisson.config.SslVerificationMode;
 import org.redisson.connection.ConnectionManager;
 import org.redisson.liveobject.core.RedissonObjectBuilder;
 import org.redisson.liveobject.core.RedissonObjectBuilder.ReferenceType;
@@ -78,7 +79,7 @@ public class RedisConfig {
     final SingleServerConfig singleServerConfig = config.useSingleServer();
 
     singleServerConfig.setPassword(this.password.isEmpty() ? null : this.password);
-    singleServerConfig.setSslEnableEndpointIdentification(false);
+    singleServerConfig.setSslVerificationMode(SslVerificationMode.NONE);
     singleServerConfig.setConnectionPoolSize(this.redisConnectionPoolSize);
     singleServerConfig.setSubscriptionConnectionPoolSize(this.redisSubscriptionConnectionPoolSize);
     singleServerConfig.setSubscriptionsPerConnection(this.redisSubscriptionsPerConnection);
