@@ -81,7 +81,7 @@ SPDX-License-Identifier: Apache-2.0
     <apache.httpcomponents.httpasyncclient.version>4.1.5</apache.httpcomponents.httpasyncclient.version>
     <commons.codec.version>1.19.0</commons.codec.version>
     <orika.version>1.5.4</orika.version>
-    <msal.version>1.20.1</msal.version>
+    <msal.version>1.23.1</msal.version>
     <jxr.version>3.3.2</jxr.version>
     <maven.project.info.reports.plugin.version>3.9.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.21.0</maven.site.plugin>
