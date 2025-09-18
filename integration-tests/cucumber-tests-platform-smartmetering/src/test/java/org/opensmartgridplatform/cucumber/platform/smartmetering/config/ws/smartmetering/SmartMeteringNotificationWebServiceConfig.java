@@ -56,6 +56,33 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   @Value("${web.service.smartmetering.notification.address}")
   private String notificationAddress;
 
+  @Value("${web.service.smartmetering.notification.target.uri}")
+  private String notificationTargetUri;
+
+  @Value("${web.service.smartmetering.notification.keystore.use}")
+  private boolean notificationKeystoreUse;
+
+  @Value("${web.service.smartmetering.notification.keystore.type}")
+  private String notificationKeystoreType;
+
+  @Value("${web.service.smartmetering.notification.keystore.location}")
+  private String notificationKeystoreLocation;
+
+  @Value("${web.service.smartmetering.notification.keystore.password}")
+  private String notificationKeystorePassword;
+
+  @Value("${web.service.smartmetering.notification.truststore.use}")
+  private boolean notificationTruststoreUse;
+
+  @Value("${web.service.smartmetering.notification.truststore.type}")
+  private String notificationTruststoreType;
+
+  @Value("${web.service.smartmetering.notification.truststore.location}")
+  private String notificationTruststoreLocation;
+
+  @Value("${web.service.smartmetering.notification.truststore.password}")
+  private String notificationTruststorePassword;
+
   @Bean("wsSmartMeteringNotificationApplicationName")
   public String notificationApplicationName() {
     return this.notificationApplicationName;
@@ -64,6 +91,46 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   @Bean("wsSmartMeteringNotificationMarshallerContextPath")
   public String notificationMarshallerContextPath() {
     return this.notificationMarshallerContextPath;
+  }
+
+  @Bean("wsSmartMeteringNotificationKeystoreUse")
+  public boolean notificationKeystoreUse() {
+    return this.notificationKeystoreUse;
+  }
+
+  @Bean("wsSmartMeteringNotificationKeystoreType")
+  public String notificationKeystoreType() {
+    return this.notificationKeystoreType;
+  }
+
+  @Bean("wsSmartMeteringNotificationKeystoreLocation")
+  public String notificationKeystoreLocation() {
+    return this.notificationKeystoreLocation;
+  }
+
+  @Bean("wsSmartMeteringNotificationKeystorePassword")
+  public String notificationKeystorePassword() {
+    return this.notificationKeystorePassword;
+  }
+
+  @Bean("wsSmartMeteringNotificationTruststoreUse")
+  public boolean notificationTruststoreUse() {
+    return this.notificationTruststoreUse;
+  }
+
+  @Bean("wsSmartMeteringNotificationTruststoreType")
+  public String notificationTruststoreType() {
+    return this.notificationTruststoreType;
+  }
+
+  @Bean("wsSmartMeteringNotificationTruststoreLocation")
+  public String notificationTruststoreLocation() {
+    return this.notificationTruststoreLocation;
+  }
+
+  @Bean("wsSmartMeteringNotificationTruststorePassword")
+  public String notificationTruststorePassword() {
+    return this.notificationTruststorePassword;
   }
 
   @Bean("wsSmartMeteringNotificationTargetUri")

@@ -27,11 +27,32 @@ public class WsSmartMeteringNotificationDatabase extends WsNotificationDatabase 
           final String notificationApplicationName,
       @Qualifier("wsSmartMeteringNotificationMarshallerContextPath")
           final String notificationMarshallerContextPath,
-      @Qualifier("wsSmartMeteringNotificationTargetUri") final String notificationTargetUri) {
+      @Qualifier("wsSmartMeteringNotificationTargetUri") final String notificationTargetUri,
+      @Qualifier("wsSmartMeteringNotificationKeystoreUse") final boolean notificationKeystoreUse,
+      @Qualifier("wsSmartMeteringNotificationKeystoreType") final String notificationKeystoreType,
+      @Qualifier("wsSmartMeteringNotificationKeystoreLocation")
+          final String notificationKeystoreLocation,
+      @Qualifier("wsSmartMeteringNotificationKeystorePassword")
+          final String notificationKeystorePassword,
+      @Qualifier("wsSmartMeteringNotificationTruststoreUse")
+          final boolean notificationTruststoreUse,
+      @Qualifier("wsSmartMeteringNotificationTruststoreType")
+          final String notificationTruststoreType,
+      @Qualifier("wsSmartMeteringNotificationTruststoreLocation")
+          final String notificationTruststoreLocation,
+      @Qualifier("wsSmartMeteringNotificationTruststorePassword")
+          final String notificationTruststorePassword) {
     super(
         notificationApplicationName,
         notificationTargetUri,
-        false,
+        notificationKeystoreUse,
+        notificationKeystoreType,
+        notificationKeystoreLocation,
+        notificationKeystorePassword,
+        notificationTruststoreUse,
+        notificationTruststoreType,
+        notificationTruststoreLocation,
+        notificationTruststorePassword,
         notificationMarshallerContextPath,
         responseDataRepository,
         responseUrlDataRepository,

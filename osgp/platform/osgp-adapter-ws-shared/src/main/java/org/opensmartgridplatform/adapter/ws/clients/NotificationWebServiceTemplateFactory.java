@@ -170,6 +170,28 @@ public class NotificationWebServiceTemplateFactory {
       throws WebServiceSecurityException {
 
     final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+    LOGGER.info(
+        """
+    NotificationWebServiceConfiguration
+    targetUri: {},
+    keystore:   {},
+                {},
+                {},
+                {},
+    truststore: {},
+                {},
+                {},
+                {}
+    """,
+        config.getTargetUri(),
+        config.isUseKeyStore(),
+        config.getKeyStoreType(),
+        config.getKeyStoreLocation(),
+        config.getKeyStorePassword(),
+        config.isUseTrustStore(),
+        config.getTrustStoreType(),
+        config.getTrustStoreLocation(),
+        config.getTrustStorePassword());
     if (config.isUseKeyStore() || config.isUseTrustStore()) {
       clientBuilder.setSSLSocketFactory(this.createSslConnectionSocketFactory(config));
     }
