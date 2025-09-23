@@ -47,25 +47,6 @@ SPDX-License-Identifier: Apache-2.0
 
   <dependencyManagement>
     <dependencies>
-      <!-- Put any dependencies where the version with Spring Boot should
-        be overridden here before spring-boot-dependencies. -->
-      <!-- artemis version (2.40.0) is out sync with spring-boot-dependencies version (3.5.5)
-           Check on upgrade of spring.boot.version and remove these 3 explicit versioned dependencies-->
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>artemis-core-client</artifactId>
-        <version>${artemis.jakarta.client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>artemis-commons</artifactId>
-        <version>${artemis.jakarta.client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.activemq</groupId>
-        <artifactId>artemis-selector</artifactId>
-        <version>${artemis.jakarta.client.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>

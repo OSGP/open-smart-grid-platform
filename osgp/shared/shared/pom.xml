@@ -255,13 +255,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>micrometer-registry-prometheus</artifactId>
     </dependency>
 
-    <!-- Netty -->
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>

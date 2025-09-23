@@ -198,12 +198,6 @@ SPDX-License-Identifier: Apache-2.0
       <artifactId>orika-core</artifactId>
     </dependency>
 
-    <!-- Netty -->
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-    </dependency>
-
     <!-- Apache ActiveMQ -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
