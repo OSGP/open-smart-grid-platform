@@ -102,7 +102,7 @@ SPDX-License-Identifier: Apache-2.0
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.27.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
-    <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
+    <dependency-check.maven.plugin.version>12.1.5</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
     <apache.activemq.version>6.1.6</apache.activemq.version>
