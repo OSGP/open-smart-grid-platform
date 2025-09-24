@@ -24,11 +24,28 @@ public class WsCoreNotificationDatabase extends WsNotificationDatabase {
       @Qualifier("wsCoreNotificationApplicationName") final String notificationApplicationName,
       @Qualifier("wsCoreNotificationTargetUri") final String notificationTargetUri,
       @Qualifier("wsCoreNotificationMarshallerContextPath")
-          final String notificationMarshallerContextPath) {
+          final String notificationMarshallerContextPath,
+      @Qualifier("wsCoreNotificationKeystoreUse") final boolean notificationKeystoreUse,
+      @Qualifier("wsCoreNotificationKeystoreType") final String notificationKeystoreType,
+      @Qualifier("wsCoreNotificationKeystoreLocation") final String notificationKeystoreLocation,
+      @Qualifier("wsCoreNotificationKeystorePassword") final String notificationKeystorePassword,
+      @Qualifier("wsCoreNotificationTruststoreUse") final boolean notificationTruststoreUse,
+      @Qualifier("wsCoreNotificationTruststoreType") final String notificationTruststoreType,
+      @Qualifier("wsCoreNotificationTruststoreLocation")
+          final String notificationTruststoreLocation,
+      @Qualifier("wsCoreNotificationTruststorePassword")
+          final String notificationTruststorePassword) {
     super(
         notificationApplicationName,
         notificationTargetUri,
-        false,
+        notificationKeystoreUse,
+        notificationKeystoreType,
+        notificationKeystoreLocation,
+        notificationKeystorePassword,
+        notificationTruststoreUse,
+        notificationTruststoreType,
+        notificationTruststoreLocation,
+        notificationTruststorePassword,
         notificationMarshallerContextPath,
         responseDataRepository,
         responseUrlDataRepository,

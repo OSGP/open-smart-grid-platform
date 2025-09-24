@@ -110,7 +110,6 @@ SPDX-License-Identifier: Apache-2.0
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.5.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
-    <netty.version>4.1.124.Final</netty.version>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
@@ -798,15 +797,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
         <version>${flyway.version}</version>
-      </dependency>
-
-      <!-- Netty (TCP server) -->
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <version>${netty.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
 
       <!-- Jakarta commons codec -->

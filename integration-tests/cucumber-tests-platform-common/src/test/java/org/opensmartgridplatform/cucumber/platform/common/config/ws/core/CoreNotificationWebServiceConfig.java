@@ -59,11 +59,23 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Value("${web.service.core.notification.target.uri}")
   private String notificationTargetUri;
 
+  @Value("${web.service.core.notification.keystore.use}")
+  private boolean notificationKeystoreUse;
+
+  @Value("${web.service.core.notification.keystore.type}")
+  private String notificationKeystoreType;
+
   @Value("${web.service.core.notification.keystore.location}")
   private String notificationKeystoreLocation;
 
   @Value("${web.service.core.notification.keystore.password}")
   private String notificationKeystorePassword;
+
+  @Value("${web.service.core.notification.truststore.use}")
+  private boolean notificationTruststoreUse;
+
+  @Value("${web.service.core.notification.truststore.type}")
+  private String notificationTruststoreType;
 
   @Value("${web.service.core.notification.truststore.location}")
   private String notificationTruststoreLocation;
@@ -81,6 +93,16 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     return this.notificationMarshallerContextPath;
   }
 
+  @Bean("wsCoreNotificationKeystoreUse")
+  public boolean notificationKeystoreUse() {
+    return this.notificationKeystoreUse;
+  }
+
+  @Bean("wsCoreNotificationKeystoreType")
+  public String notificationKeystoreType() {
+    return this.notificationKeystoreType;
+  }
+
   @Bean("wsCoreNotificationKeystoreLocation")
   public String notificationKeystoreLocation() {
     return this.notificationKeystoreLocation;
@@ -89,6 +111,16 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Bean("wsCoreNotificationKeystorePassword")
   public String notificationKeystorePassword() {
     return this.notificationKeystorePassword;
+  }
+
+  @Bean("wsCoreNotificationTruststoreUse")
+  public boolean notificationTruststoreUse() {
+    return this.notificationTruststoreUse;
+  }
+
+  @Bean("wsCoreNotificationTruststoreType")
+  public String notificationTruststoreType() {
+    return this.notificationTruststoreType;
   }
 
   @Bean("wsCoreNotificationTruststoreLocation")
