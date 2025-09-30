@@ -50,13 +50,13 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   @Value("${web.service.smartmetering.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.smartmetering.notification.port}")
+  @Value("${web.service.smartmetering.notification.port:0}")
   private int notificationPort;
 
   @Value("${web.service.smartmetering.notification.address}")
   private String notificationAddress;
 
-  @Value("${web.service.smartmetering.notification.target.uri}")
+  @Value("${web.service.smartmetering.notification.target.uri:}")
   private String notificationTargetUri;
 
   @Value("${web.service.smartmetering.notification.keystore.use}")
@@ -140,8 +140,7 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
       uri =
           (this.notificationKeystoreUse ? "https://" : "http://")
               + this.notificationAddress
-              + ":"
-              + this.notificationPort
+              + (this.notificationPort == 0 ? "" : ":" + this.notificationPort)
               + this.notificationContextPath;
     }
     return uri;

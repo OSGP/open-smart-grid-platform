@@ -50,13 +50,13 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Value("${web.service.core.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.core.notification.port}")
+  @Value("${web.service.core.notification.port:0}")
   private int notificationPort;
 
   @Value("${web.service.core.notification.address}")
   private String notificationAddress;
 
-  @Value("${web.service.core.notification.target.uri}")
+  @Value("${web.service.core.notification.target.uri:}")
   private String notificationTargetUri;
 
   @Value("${web.service.core.notification.keystore.use}")
@@ -140,8 +140,7 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
       uri =
           (this.notificationKeystoreUse ? "https://" : "http://")
               + this.notificationAddress
-              + ":"
-              + this.notificationPort
+              + (this.notificationPort == 0 ? "" : ":" + this.notificationPort)
               + this.notificationContextPath;
     }
     return uri;
