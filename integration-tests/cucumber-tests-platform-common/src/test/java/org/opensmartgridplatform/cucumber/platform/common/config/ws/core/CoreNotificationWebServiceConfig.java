@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,48 +94,21 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
     return this.notificationMarshallerContextPath;
   }
 
-  @Bean("wsCoreNotificationKeystoreUse")
-  public boolean notificationKeystoreUse() {
-    return this.notificationKeystoreUse;
+  @Bean("wsCoreNotificationConnectionConfig")
+  public NotificationWebServiceConnectionConfig notificationWebServiceConnectionConfig() {
+    return new NotificationWebServiceConnectionConfig(
+        this.notificationTargetUri,
+        this.notificationKeystoreUse,
+        this.notificationKeystoreType,
+        this.notificationKeystoreLocation,
+        this.notificationKeystorePassword,
+        this.notificationTruststoreUse,
+        this.notificationTruststoreType,
+        this.notificationTruststoreLocation,
+        this.notificationTruststorePassword);
   }
 
-  @Bean("wsCoreNotificationKeystoreType")
-  public String notificationKeystoreType() {
-    return this.notificationKeystoreType;
-  }
-
-  @Bean("wsCoreNotificationKeystoreLocation")
-  public String notificationKeystoreLocation() {
-    return this.notificationKeystoreLocation;
-  }
-
-  @Bean("wsCoreNotificationKeystorePassword")
-  public String notificationKeystorePassword() {
-    return this.notificationKeystorePassword;
-  }
-
-  @Bean("wsCoreNotificationTruststoreUse")
-  public boolean notificationTruststoreUse() {
-    return this.notificationTruststoreUse;
-  }
-
-  @Bean("wsCoreNotificationTruststoreType")
-  public String notificationTruststoreType() {
-    return this.notificationTruststoreType;
-  }
-
-  @Bean("wsCoreNotificationTruststoreLocation")
-  public String notificationTruststoreLocation() {
-    return this.notificationTruststoreLocation;
-  }
-
-  @Bean("wsCoreNotificationTruststorePassword")
-  public String notificationTruststorePassword() {
-    return this.notificationTruststorePassword;
-  }
-
-  @Bean("wsCoreNotificationTargetUri")
-  public String notificationTargetUri() {
+  private String notificationTargetUri() {
     String uri = this.notificationTargetUri;
     if (uri.isBlank()) {
       uri =
