@@ -97,7 +97,7 @@ public class CoreNotificationWebServiceConfig extends WsConfigurerAdapter {
   @Bean("wsCoreNotificationConnectionConfig")
   public NotificationWebServiceConnectionConfig notificationWebServiceConnectionConfig() {
     return new NotificationWebServiceConnectionConfig(
-        this.notificationTargetUri,
+        this.notificationTargetUri(),
         this.notificationKeystoreUse,
         this.notificationKeystoreType,
         this.notificationKeystoreLocation,
