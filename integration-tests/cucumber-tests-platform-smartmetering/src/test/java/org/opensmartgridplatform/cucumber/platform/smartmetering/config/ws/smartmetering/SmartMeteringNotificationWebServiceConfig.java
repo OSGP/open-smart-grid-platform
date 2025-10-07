@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,13 +51,13 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   @Value("${web.service.smartmetering.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.smartmetering.notification.port}")
+  @Value("${web.service.smartmetering.notification.port:0}")
   private int notificationPort;
 
   @Value("${web.service.smartmetering.notification.address}")
   private String notificationAddress;
 
-  @Value("${web.service.smartmetering.notification.target.uri}")
+  @Value("${web.service.smartmetering.notification.target.uri:}")
   private String notificationTargetUri;
 
   @Value("${web.service.smartmetering.notification.keystore.use}")
@@ -93,53 +94,30 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
     return this.notificationMarshallerContextPath;
   }
 
-  @Bean("wsSmartMeteringNotificationKeystoreUse")
-  public boolean notificationKeystoreUse() {
-    return this.notificationKeystoreUse;
+  @Bean("wsSmartMeteringNotificationConnectionConfig")
+  public NotificationWebServiceConnectionConfig notificationWebServiceConnectionConfig() {
+    return new NotificationWebServiceConnectionConfig(
+        this.createNotificationTargetUri(),
+        this.notificationKeystoreUse,
+        this.notificationKeystoreType,
+        this.notificationKeystoreLocation,
+        this.notificationKeystorePassword,
+        this.notificationTruststoreUse,
+        this.notificationTruststoreType,
+        this.notificationTruststoreLocation,
+        this.notificationTruststorePassword);
   }
 
-  @Bean("wsSmartMeteringNotificationKeystoreType")
-  public String notificationKeystoreType() {
-    return this.notificationKeystoreType;
-  }
-
-  @Bean("wsSmartMeteringNotificationKeystoreLocation")
-  public String notificationKeystoreLocation() {
-    return this.notificationKeystoreLocation;
-  }
-
-  @Bean("wsSmartMeteringNotificationKeystorePassword")
-  public String notificationKeystorePassword() {
-    return this.notificationKeystorePassword;
-  }
-
-  @Bean("wsSmartMeteringNotificationTruststoreUse")
-  public boolean notificationTruststoreUse() {
-    return this.notificationTruststoreUse;
-  }
-
-  @Bean("wsSmartMeteringNotificationTruststoreType")
-  public String notificationTruststoreType() {
-    return this.notificationTruststoreType;
-  }
-
-  @Bean("wsSmartMeteringNotificationTruststoreLocation")
-  public String notificationTruststoreLocation() {
-    return this.notificationTruststoreLocation;
-  }
-
-  @Bean("wsSmartMeteringNotificationTruststorePassword")
-  public String notificationTruststorePassword() {
-    return this.notificationTruststorePassword;
-  }
-
-  @Bean("wsSmartMeteringNotificationTargetUri")
-  public String notificationTargetUri() {
-    return "http://"
-        + this.notificationAddress
-        + ":"
-        + this.notificationPort
-        + this.notificationContextPath;
+  private String createNotificationTargetUri() {
+    String uri = this.notificationTargetUri;
+    if (uri.isBlank()) {
+      uri =
+          (this.notificationKeystoreUse ? "https://" : "http://")
+              + this.notificationAddress
+              + (this.notificationPort == 0 ? "" : ":" + this.notificationPort)
+              + this.notificationContextPath;
+    }
+    return uri;
   }
 
   @Override
@@ -156,7 +134,8 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
       throws IOException {
 
     LOGGER.info(
-        "Initializing core notifications HTTP server with uri: '{}'", this.notificationTargetUri());
+        "Initializing core notifications HTTP server with uri: '{}'",
+        this.createNotificationTargetUri());
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));

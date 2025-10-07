@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.common.glue.database;
 
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreNotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreResponseDataRepository;
@@ -22,31 +23,13 @@ public class WsCoreNotificationDatabase extends WsNotificationDatabase {
           notificationWebServiceConfigurationRepository,
       final WsCoreApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
       @Qualifier("wsCoreNotificationApplicationName") final String notificationApplicationName,
-      @Qualifier("wsCoreNotificationTargetUri") final String notificationTargetUri,
       @Qualifier("wsCoreNotificationMarshallerContextPath")
           final String notificationMarshallerContextPath,
-      @Qualifier("wsCoreNotificationKeystoreUse") final boolean notificationKeystoreUse,
-      @Qualifier("wsCoreNotificationKeystoreType") final String notificationKeystoreType,
-      @Qualifier("wsCoreNotificationKeystoreLocation") final String notificationKeystoreLocation,
-      @Qualifier("wsCoreNotificationKeystorePassword") final String notificationKeystorePassword,
-      @Qualifier("wsCoreNotificationTruststoreUse") final boolean notificationTruststoreUse,
-      @Qualifier("wsCoreNotificationTruststoreType") final String notificationTruststoreType,
-      @Qualifier("wsCoreNotificationTruststoreLocation")
-          final String notificationTruststoreLocation,
-      @Qualifier("wsCoreNotificationTruststorePassword")
-          final String notificationTruststorePassword) {
+      final NotificationWebServiceConnectionConfig wsCoreNotificationConnectionConfig) {
     super(
         notificationApplicationName,
-        notificationTargetUri,
-        notificationKeystoreUse,
-        notificationKeystoreType,
-        notificationKeystoreLocation,
-        notificationKeystorePassword,
-        notificationTruststoreUse,
-        notificationTruststoreType,
-        notificationTruststoreLocation,
-        notificationTruststorePassword,
         notificationMarshallerContextPath,
+        wsCoreNotificationConnectionConfig,
         responseDataRepository,
         responseUrlDataRepository,
         notificationWebServiceConfigurationRepository,
