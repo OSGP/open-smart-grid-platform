@@ -13,7 +13,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>6.24.0-SNAPSHOT</version>
+  <version>6.26.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -45,10 +45,10 @@ SPDX-License-Identifier: Apache-2.0
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>6.24.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>6.24.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>6.24.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>6.24.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>6.26.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>6.26.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>6.26.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>6.26.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>6.2.11</spring.version>
     <spring.data.version>3.5.3</spring.data.version>
     <spring.data.commons.version>3.5.3</spring.data.commons.version>
@@ -110,7 +110,6 @@ SPDX-License-Identifier: Apache-2.0
     <apache.commons.schema>2.3.1</apache.commons.schema>
     <maven.clean.plugin.version>3.5.0</maven.clean.plugin.version>
     <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
-    <netty.version>4.1.124.Final</netty.version>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
@@ -798,15 +797,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
         <version>${flyway.version}</version>
-      </dependency>
-
-      <!-- Netty (TCP server) -->
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <version>${netty.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
 
       <!-- Jakarta commons codec -->

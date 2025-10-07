@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.common.glue.database;
 
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreNotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.WsCoreResponseDataRepository;
@@ -22,14 +23,13 @@ public class WsCoreNotificationDatabase extends WsNotificationDatabase {
           notificationWebServiceConfigurationRepository,
       final WsCoreApplicationKeyConfigurationRepository applicationKeyConfigurationRepository,
       @Qualifier("wsCoreNotificationApplicationName") final String notificationApplicationName,
-      @Qualifier("wsCoreNotificationTargetUri") final String notificationTargetUri,
       @Qualifier("wsCoreNotificationMarshallerContextPath")
-          final String notificationMarshallerContextPath) {
+          final String notificationMarshallerContextPath,
+      final NotificationWebServiceConnectionConfig wsCoreNotificationConnectionConfig) {
     super(
         notificationApplicationName,
-        notificationTargetUri,
-        false,
         notificationMarshallerContextPath,
+        wsCoreNotificationConnectionConfig,
         responseDataRepository,
         responseUrlDataRepository,
         notificationWebServiceConfigurationRepository,

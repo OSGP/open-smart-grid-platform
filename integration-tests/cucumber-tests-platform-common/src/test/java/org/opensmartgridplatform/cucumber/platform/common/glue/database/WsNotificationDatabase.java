@@ -12,13 +12,18 @@ import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyCo
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WsNotificationDatabase {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(WsNotificationDatabase.class);
+
   private final String applicationName;
-  private final String targetUri;
-  private final boolean useKeyStore;
   private final String marshallerContextPath;
+  private final NotificationWebServiceConnectionConfig connectionConfig;
   private final ResponseDataRepository responseDataRepository;
   private final ResponseUrlDataRepository responseUrlDataRepository;
   private final NotificationWebServiceConfigurationRepository
@@ -27,18 +32,16 @@ public class WsNotificationDatabase {
 
   public WsNotificationDatabase(
       final String applicationName,
-      final String targetUri,
-      final boolean useKeyStore,
       final String marshallerContextPath,
+      final NotificationWebServiceConnectionConfig connectionConfig,
       final ResponseDataRepository responseDataRepository,
       final ResponseUrlDataRepository responseUrlDataRepository,
       final NotificationWebServiceConfigurationRepository
           notificationWebServiceConfigurationRepository,
       final ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository) {
     this.applicationName = applicationName;
-    this.targetUri = targetUri;
-    this.useKeyStore = useKeyStore;
     this.marshallerContextPath = marshallerContextPath;
+    this.connectionConfig = connectionConfig;
     this.responseDataRepository = responseDataRepository;
     this.responseUrlDataRepository = responseUrlDataRepository;
     this.notificationWebServiceConfigurationRepository =
@@ -46,7 +49,7 @@ public class WsNotificationDatabase {
     this.applicationKeyConfigurationRepository = applicationKeyConfigurationRepository;
   }
 
-  public void prepareDatabaseForScenario() {
+  protected void prepareDatabaseForScenario() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     this.responseDataRepository.deleteAllInBatch();
@@ -67,14 +70,42 @@ public class WsNotificationDatabase {
         new NotificationWebServiceConfigurationBuilder()
             .withApplicationName(this.applicationName)
             .withMarshallerContextPath(this.marshallerContextPath)
-            .withTargetUri(this.targetUri)
+            .withTargetUri(this.connectionConfig.notificationTargetUri())
             .withoutCircuitBreakerConfig();
-    if (!this.useKeyStore) {
-      builder.withoutKeyStoreConfig().withoutTrustStoreConfig();
-    }
+    this.configureNotificationKeystore(builder);
     final NotificationWebServiceConfiguration testOrgConfig = builder.build();
     final NotificationWebServiceConfiguration noOrganisationConfig =
         builder.withOrganisationIdentification("no-organisation").build();
     return Arrays.asList(testOrgConfig, noOrganisationConfig);
+  }
+
+  protected void configureNotificationKeystore(
+      final NotificationWebServiceConfigurationBuilder builder) {
+    if (this.connectionConfig.notificationKeystoreUse()) {
+      LOGGER.info(
+          "Setting up notification keystore using type {} and location: {}",
+          this.connectionConfig.notificationKeystoreType(),
+          this.connectionConfig.notificationKeystoreLocation());
+      builder.withKeyStoreConfig(
+          this.connectionConfig.notificationKeystoreType(),
+          this.connectionConfig.notificationKeystoreLocation(),
+          this.connectionConfig.notificationKeystorePassword());
+    } else {
+      LOGGER.info("Setting up notification without keystore");
+      builder.withoutKeyStoreConfig();
+    }
+    if (this.connectionConfig.notificationTruststoreUse()) {
+      LOGGER.info(
+          "Setting up notification truststore using type {} and location: {}",
+          this.connectionConfig.notificationTruststoreType(),
+          this.connectionConfig.notificationTruststoreLocation());
+      builder.withTrustStoreConfig(
+          this.connectionConfig.notificationTruststoreType(),
+          this.connectionConfig.notificationTruststoreLocation(),
+          this.connectionConfig.notificationTruststorePassword());
+    } else {
+      LOGGER.info("Setting up notification without truststore");
+      builder.withoutTrustStoreConfig();
+    }
   }
 }
