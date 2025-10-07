@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,11 +51,38 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
   @Value("${web.service.smartmetering.notification.context}")
   private String notificationContextPath;
 
-  @Value("${web.service.smartmetering.notification.port}")
+  @Value("${web.service.smartmetering.notification.port:0}")
   private int notificationPort;
 
   @Value("${web.service.smartmetering.notification.address}")
   private String notificationAddress;
+
+  @Value("${web.service.smartmetering.notification.target.uri:}")
+  private String notificationTargetUri;
+
+  @Value("${web.service.smartmetering.notification.keystore.use}")
+  private boolean notificationKeystoreUse;
+
+  @Value("${web.service.smartmetering.notification.keystore.type}")
+  private String notificationKeystoreType;
+
+  @Value("${web.service.smartmetering.notification.keystore.location}")
+  private String notificationKeystoreLocation;
+
+  @Value("${web.service.smartmetering.notification.keystore.password}")
+  private String notificationKeystorePassword;
+
+  @Value("${web.service.smartmetering.notification.truststore.use}")
+  private boolean notificationTruststoreUse;
+
+  @Value("${web.service.smartmetering.notification.truststore.type}")
+  private String notificationTruststoreType;
+
+  @Value("${web.service.smartmetering.notification.truststore.location}")
+  private String notificationTruststoreLocation;
+
+  @Value("${web.service.smartmetering.notification.truststore.password}")
+  private String notificationTruststorePassword;
 
   @Bean("wsSmartMeteringNotificationApplicationName")
   public String notificationApplicationName() {
@@ -66,13 +94,30 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
     return this.notificationMarshallerContextPath;
   }
 
-  @Bean("wsSmartMeteringNotificationTargetUri")
-  public String notificationTargetUri() {
-    return "http://"
-        + this.notificationAddress
-        + ":"
-        + this.notificationPort
-        + this.notificationContextPath;
+  @Bean("wsSmartMeteringNotificationConnectionConfig")
+  public NotificationWebServiceConnectionConfig notificationWebServiceConnectionConfig() {
+    return new NotificationWebServiceConnectionConfig(
+        this.createNotificationTargetUri(),
+        this.notificationKeystoreUse,
+        this.notificationKeystoreType,
+        this.notificationKeystoreLocation,
+        this.notificationKeystorePassword,
+        this.notificationTruststoreUse,
+        this.notificationTruststoreType,
+        this.notificationTruststoreLocation,
+        this.notificationTruststorePassword);
+  }
+
+  private String createNotificationTargetUri() {
+    String uri = this.notificationTargetUri;
+    if (uri.isBlank()) {
+      uri =
+          (this.notificationKeystoreUse ? "https://" : "http://")
+              + this.notificationAddress
+              + (this.notificationPort == 0 ? "" : ":" + this.notificationPort)
+              + this.notificationContextPath;
+    }
+    return uri;
   }
 
   @Override
@@ -89,7 +134,8 @@ public class SmartMeteringNotificationWebServiceConfig extends WsConfigurerAdapt
       throws IOException {
 
     LOGGER.info(
-        "Initializing core notifications HTTP server with uri: '{}'", this.notificationTargetUri());
+        "Initializing core notifications HTTP server with uri: '{}'",
+        this.createNotificationTargetUri());
 
     final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
     soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
