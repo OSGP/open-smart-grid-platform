@@ -18,8 +18,8 @@ import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.command.CommandAsyncExecutor;
 import org.redisson.config.Config;
-import org.redisson.config.ConfigSupport;
 import org.redisson.config.SingleServerConfig;
+import org.redisson.config.SslVerificationMode;
 import org.redisson.connection.ConnectionManager;
 import org.redisson.liveobject.core.RedissonObjectBuilder;
 import org.redisson.liveobject.core.RedissonObjectBuilder.ReferenceType;
@@ -79,7 +79,7 @@ public class RedisConfig {
     final SingleServerConfig singleServerConfig = config.useSingleServer();
 
     singleServerConfig.setPassword(this.password.isEmpty() ? null : this.password);
-    singleServerConfig.setSslEnableEndpointIdentification(false);
+    singleServerConfig.setSslVerificationMode(SslVerificationMode.NONE);
     singleServerConfig.setConnectionPoolSize(this.redisConnectionPoolSize);
     singleServerConfig.setSubscriptionConnectionPoolSize(this.redisSubscriptionConnectionPoolSize);
     singleServerConfig.setSubscriptionsPerConnection(this.redisSubscriptionsPerConnection);
@@ -101,8 +101,7 @@ public class RedisConfig {
   @Bean
   public ProxyManager<String> redissonBasedProxyManager(
       final RedissonClient redissonClient, final Config redissonConfig) {
-    final ConnectionManager connectionManager =
-        ConfigSupport.createConnectionManager(redissonConfig);
+    final ConnectionManager connectionManager = ConnectionManager.create(redissonConfig);
     RedissonObjectBuilder objectBuilder = null;
     if (redissonConfig.isReferenceEnabled()) {
       objectBuilder = new RedissonObjectBuilder(redissonClient);
