@@ -54,8 +54,8 @@ SPDX-License-Identifier: Apache-2.0
     <spring.data.commons.version>3.5.3</spring.data.commons.version>
     <spring.security.version>6.5.3</spring.security.version>
     <spring.ws.version>4.1.1</spring.ws.version>
-    <spring.integration.version>6.5.1</spring.integration.version>
-    <reactor.version>2024.0.3</reactor.version>
+    <spring.integration.version>6.5.2</spring.integration.version>
+    <reactor.version>2024.0.10</reactor.version>
     <assertj.version>3.27.6</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.8.0</mockito.core.version>
@@ -65,7 +65,7 @@ SPDX-License-Identifier: Apache-2.0
     <hibernate.version>6.3.1.Final</hibernate.version>
     <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
     <jakarta.persistence.api.version>3.1.0</jakarta.persistence.api.version>
-    <jakarta.validation.api.version>3.0.2</jakarta.validation.api.version>
+    <jakarta.validation.api.version>3.1.1</jakarta.validation.api.version>
     <jakarta.jms.api.version>3.1.0</jakarta.jms.api.version>
     <artemis.jakarta.client.version>2.42.0</artemis.jakarta.client.version>
     <junit.version>5.12.1</junit.version>
@@ -88,7 +88,7 @@ SPDX-License-Identifier: Apache-2.0
     <maven.javadoc.version>3.11.3</maven.javadoc.version>
     <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
     <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
-    <maven.dependency.plugin.version>3.8.1</maven.dependency.plugin.version>
+    <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
     <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.5.4</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
@@ -102,7 +102,7 @@ SPDX-License-Identifier: Apache-2.0
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.27.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
-    <dependency-check.maven.plugin.version>7.0.2</dependency-check.maven.plugin.version>
+    <dependency-check.maven.plugin.version>12.1.6</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.23</fmt-maven-plugin.version>
     <apache.activemq.version>6.1.6</apache.activemq.version>
@@ -122,7 +122,7 @@ SPDX-License-Identifier: Apache-2.0
     <cxf.core.version>4.1.1</cxf.core.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
-    <micrometer.version>1.15.3</micrometer.version>
+    <micrometer.version>1.15.4</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>32.1.2-jre</guava.version>
     <spotbugs.version>4.6.0</spotbugs.version>
