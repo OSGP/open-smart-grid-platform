@@ -118,7 +118,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     assertThat(replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
-            """
+"""
 [ {
   "description" : "Active energy import (+A)",
   "dlmsClass" : "REGISTER",
@@ -187,7 +187,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     assertThat(replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
-            """
+"""
 [ {
   "dlmsClass" : "DATA",
   "version" : -1,
@@ -216,7 +216,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     assertThat(this.replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
-            """
+"""
 [ {
   "description" : "Active energy import (+A)",
   "dlmsClass" : "REGISTER",
@@ -266,7 +266,7 @@ class GetAllAttributeValuesCommandExecutorTest {
 
     assertThat(this.replaceNewLinesWithSystemNewLines(result))
         .isEqualToIgnoringNewLines(
-            """
+"""
 [ {
   "description" : "Active energy import (+A)",
   "dlmsClass" : "REGISTER",
