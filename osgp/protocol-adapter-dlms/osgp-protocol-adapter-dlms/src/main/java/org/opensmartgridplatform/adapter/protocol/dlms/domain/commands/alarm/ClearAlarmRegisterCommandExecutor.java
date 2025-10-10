@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Component;
@@ -31,13 +32,16 @@ import org.springframework.stereotype.Component;
 public class ClearAlarmRegisterCommandExecutor
     extends AbstractCommandExecutor<ClearAlarmRegisterRequestDto, AccessResultCode> {
 
+  private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
   final ObjectConfigServiceHelper objectConfigServiceHelper;
 
   private static final int ALARM_CODE = 0;
 
   public ClearAlarmRegisterCommandExecutor(
+      final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
       final ObjectConfigServiceHelper objectConfigServiceHelper) {
     super(ClearAlarmRegisterRequestDto.class);
+    this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
     this.objectConfigServiceHelper = objectConfigServiceHelper;
   }
 
@@ -67,6 +71,9 @@ public class ClearAlarmRegisterCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
+    if (!this.alarmsArePresent(conn, device)) {
+      return AccessResultCode.SUCCESS;
+    }
     // Clear alarm 1
     final Optional<AccessResultCode> optionalResultCodeAlarm1 =
         this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_1);
@@ -93,6 +100,17 @@ public class ClearAlarmRegisterCommandExecutor
     final Optional<AccessResultCode> optionalResultCodeAlarm3 =
         this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_3);
     return optionalResultCodeAlarm3.orElse(resultCodeAlarmRegister2);
+  }
+
+  private boolean alarmsArePresent(final DlmsConnectionManager conn, final DlmsDevice device) {
+    try {
+      final AlarmRegisterResponseDto alarmRegisterResponse =
+          this.readAlarmRegisterCommandExecutor.execute(conn, device, null, null);
+
+      return !alarmRegisterResponse.getAlarmTypes().isEmpty();
+    } catch (final ProtocolAdapterException e) {
+      return false;
+    }
   }
 
   private Optional<AccessResultCode> clearAlarmRegister(

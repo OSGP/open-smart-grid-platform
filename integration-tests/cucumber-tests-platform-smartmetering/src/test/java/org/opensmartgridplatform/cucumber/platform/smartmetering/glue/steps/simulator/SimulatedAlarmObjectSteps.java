@@ -24,7 +24,9 @@ public class SimulatedAlarmObjectSteps {
   private static final ObisCode OBIS_CODE_ALARM_OBJECT_2 = new ObisCode(0, 0, 97, 98, 1, 255);
   private static final ObisCode OBIS_CODE_ALARM_OBJECT_3 = new ObisCode(0, 0, 97, 98, 2, 255);
 
-  private static final String ALARM_VALUE = "33693956";
+  private static final String ALARM_VALUE_1 = "33693956";
+  private static final String ALARM_VALUE_2 = "3";
+  private static final String ALARM_VALUE_3 = "3";
 
   @Autowired private DeviceSimulatorSteps deviceSimulatorSteps;
 
@@ -37,7 +39,8 @@ public class SimulatedAlarmObjectSteps {
 
     final ObisCode alarmRegisterObisCode = this.getAlarmRegisterObisCode(alarmRegisterNr);
     final ObjectNode attributeValue =
-        this.jsonObjectCreator.createAttributeValue("double-long-unsigned", ALARM_VALUE);
+        this.jsonObjectCreator.createAttributeValue(
+            "double-long-unsigned", this.getAlarmRegisterValue(alarmRegisterNr));
     this.deviceSimulatorSteps.setDlmsAttributeValue(
         CLASS_ID, alarmRegisterObisCode, ATTRIBUTE_ID_VALUE, attributeValue, OBJECT_DESCRIPTION);
   }
@@ -74,6 +77,19 @@ public class SimulatedAlarmObjectSteps {
         return OBIS_CODE_ALARM_OBJECT_2;
       case 3:
         return OBIS_CODE_ALARM_OBJECT_3;
+      default:
+        throw new IllegalArgumentException("There is no alarmRegister: " + alarmRegisterNr);
+    }
+  }
+
+  private String getAlarmRegisterValue(final int alarmRegisterNr) {
+    switch (alarmRegisterNr) {
+      case 1:
+        return ALARM_VALUE_1;
+      case 2:
+        return ALARM_VALUE_2;
+      case 3:
+        return ALARM_VALUE_3;
       default:
         throw new IllegalArgumentException("There is no alarmRegister: " + alarmRegisterNr);
     }
