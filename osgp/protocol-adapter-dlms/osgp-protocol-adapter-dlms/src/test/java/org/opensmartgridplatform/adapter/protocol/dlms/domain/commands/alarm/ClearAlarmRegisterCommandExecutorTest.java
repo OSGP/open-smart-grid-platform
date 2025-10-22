@@ -325,10 +325,6 @@ class ClearAlarmRegisterCommandExecutorTest {
     this.mockAlarmCosemObject(
         dlmsDevice, OBIS_CODE_ALARM_REGISTER_2, DlmsObjectType.ALARM_REGISTER_2.name());
 
-    when(this.getResult.getResultCode())
-        .thenReturn(AccessResultCode.SUCCESS)
-        .thenReturn(AccessResultCode.TEMPORARY_FAILURE);
-
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
@@ -392,23 +388,6 @@ class ClearAlarmRegisterCommandExecutorTest {
       this.mockAlarmCosemObject(
           dlmsDevice, OBIS_CODE_ALARM_REGISTER_3, DlmsObjectType.ALARM_REGISTER_3.name());
     }
-
-    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
-    when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
-        .thenReturn(this.getResult);
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(0L));
-  }
-
-  void setupAlarmRegisterWithNoAlarmPresent2(
-      final DlmsDevice dlmsDevice, final DlmsObjectType alarmType)
-      throws ProtocolAdapterException, IOException {
-
-    this.mockAlarmCosemObject(
-        dlmsDevice, OBIS_CODE_ALARM_REGISTER_1, DlmsObjectType.ALARM_REGISTER_1.name());
-    this.mockAlarmCosemObject(
-        dlmsDevice, OBIS_CODE_ALARM_REGISTER_2, DlmsObjectType.ALARM_REGISTER_2.name());
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
