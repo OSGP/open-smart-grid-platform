@@ -171,9 +171,12 @@ class ClearAlarmRegisterCommandExecutorTest {
 
     final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
     this.setupAlarmRegister2(dlmsDevice);
-    final AccessResultCode accessResultCode =
-        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-    assertThat(accessResultCode).isEqualTo(AccessResultCode.SUCCESS);
+    final Throwable actual =
+        ThrowableAssert.catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+    assertThat(actual).isInstanceOf(ProtocolAdapterException.class);
   }
 
   @Test
@@ -242,9 +245,12 @@ class ClearAlarmRegisterCommandExecutorTest {
 
     final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.5 device");
     this.setupAlarmRegister3(dlmsDevice);
-    final AccessResultCode accessResultCode =
-        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-    assertThat(accessResultCode).isEqualTo(AccessResultCode.SUCCESS);
+    final Throwable actual =
+        ThrowableAssert.catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+    assertThat(actual).isInstanceOf(ProtocolAdapterException.class);
   }
 
   @Test

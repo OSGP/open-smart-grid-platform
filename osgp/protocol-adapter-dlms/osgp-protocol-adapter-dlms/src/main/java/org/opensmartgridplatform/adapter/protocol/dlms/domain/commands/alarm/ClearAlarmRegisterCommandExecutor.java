@@ -89,7 +89,8 @@ public class ClearAlarmRegisterCommandExecutor
   }
 
   private Optional<AccessResultCode> clearSingleAlarmRegister(
-      final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType alarmType) {
+      final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType alarmType)
+      throws ProtocolAdapterException {
 
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
         this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
@@ -105,7 +106,13 @@ public class ClearAlarmRegisterCommandExecutor
 
     final AccessResultCode result =
         this.executeClearForAlarmRegister(conn, optAlarmRegisterAttributeAddress.get());
-    return Optional.ofNullable(result);
+
+    if (result != null) {
+      return Optional.of(result);
+    } else {
+      throw new ProtocolAdapterException(
+          "Error occurred for clear alarm register: ." + alarmType.name());
+    }
   }
 
   private AccessResultCode executeClearForAlarmRegister(
