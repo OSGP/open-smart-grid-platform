@@ -74,7 +74,9 @@ class ClearAlarmRegisterCommandExecutorTest {
 
   @BeforeEach
   void setup() {
-    
+
+
+
     this.executor = new ClearAlarmRegisterCommandExecutor(this.objectConfigServiceHelper);
     this.dlmsMessageListener = new LoggingDlmsMessageListener(null, null);
   }
