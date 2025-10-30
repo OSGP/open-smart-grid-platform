@@ -14,6 +14,9 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -22,8 +25,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.DlmsConnection;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ObjectConfigServiceHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -60,6 +65,8 @@ class ClearAlarmRegisterCommandExecutorTest {
   @Mock private ClearAlarmRegisterRequestDto dto;
 
   @Mock private MessageMetadata messageMetadata;
+
+  @Mock private GetResult getResult;
 
   @Captor private ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
@@ -111,7 +118,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void connectionProblemAlarmRegister1() throws IOException, ProtocolAdapterException {
+  void connectionProblemAlarmRegister1() throws IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenThrow(new IOException());
 
@@ -126,7 +133,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void nullResultAlarmRegister1() throws IOException, ProtocolAdapterException {
+  void nullResultAlarmRegister1() throws IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture())).thenReturn(null);
 
     final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
@@ -140,7 +147,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void connectionProblemAlarmRegister2() throws IOException, ProtocolAdapterException {
+  void connectionProblemAlarmRegister2() throws IOException {
     when(this.dlmsConnection.set(any(SetParameter.class)))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenThrow(new IOException());
@@ -156,7 +163,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void nullResultAlarmRegister2() throws IOException, ProtocolAdapterException {
+  void successRegister1AndNullResultAlarmRegister2() throws IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(null);
@@ -211,7 +218,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void connectionProblemAlarmRegister3() throws IOException, ProtocolAdapterException {
+  void connectionProblemAlarmRegister3() throws IOException {
     when(this.dlmsConnection.set(any(SetParameter.class)))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.SUCCESS)
@@ -228,7 +235,7 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void nullResultAlarmRegister3() throws IOException, ProtocolAdapterException {
+  void successRegister1And2AndNullResultAlarmRegister3() throws IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS)
         .thenReturn(AccessResultCode.SUCCESS)
@@ -286,16 +293,33 @@ class ClearAlarmRegisterCommandExecutorTest {
     assertThat(accessResultCode).isEqualTo(AccessResultCode.SUCCESS);
   }
 
-  void setupAlarmRegister1(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
+  @ParameterizedTest
+  @EnumSource(
+      value = DlmsObjectType.class,
+      names = {"ALARM_REGISTER_1", "ALARM_REGISTER_2", "ALARM_REGISTER_3"},
+      mode = Mode.INCLUDE)
+  void noAlarmPresentInRegister(final DlmsObjectType alarmType)
+      throws IOException, ProtocolAdapterException {
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
+    this.setupAlarmRegisterWithNoAlarmPresent(dlmsDevice, alarmType);
+    final AccessResultCode accessResultCode =
+        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.SUCCESS);
+  }
+
+  void setupAlarmRegister1(final DlmsDevice dlmsDevice) throws IOException {
 
     this.mockAlarmCosemObject(
         dlmsDevice, OBIS_CODE_ALARM_REGISTER_1, DlmsObjectType.ALARM_REGISTER_1.name());
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(1L));
   }
 
-  void setupAlarmRegister2(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
+  void setupAlarmRegister2(final DlmsDevice dlmsDevice) throws IOException {
 
     this.mockAlarmCosemObject(
         dlmsDevice, OBIS_CODE_ALARM_REGISTER_1, DlmsObjectType.ALARM_REGISTER_1.name());
@@ -304,6 +328,9 @@ class ClearAlarmRegisterCommandExecutorTest {
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(1L));
   }
 
   private void mockAlarmCosemObject(
@@ -321,24 +348,43 @@ class ClearAlarmRegisterCommandExecutorTest {
         .thenReturn(Optional.of(attributeAddress));
   }
 
-  void setupAlarmRegister3(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
+  void setupAlarmRegister3(final DlmsDevice dlmsDevice) throws IOException {
     dlmsDevice.setProtocol("SMR", "5.5");
 
     this.mockAlarmCosemObject(
-        dlmsDevice,
-        OBIS_CODE_ALARM_REGISTER_1,
-        org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ALARM_REGISTER_1.name());
+        dlmsDevice, OBIS_CODE_ALARM_REGISTER_1, DlmsObjectType.ALARM_REGISTER_1.name());
     this.mockAlarmCosemObject(
-        dlmsDevice,
-        OBIS_CODE_ALARM_REGISTER_2,
-        org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ALARM_REGISTER_2.name());
+        dlmsDevice, OBIS_CODE_ALARM_REGISTER_2, DlmsObjectType.ALARM_REGISTER_2.name());
     this.mockAlarmCosemObject(
-        dlmsDevice,
-        OBIS_CODE_ALARM_REGISTER_3,
-        org.opensmartgridplatform.dlms.objectconfig.DlmsObjectType.ALARM_REGISTER_3.name());
+        dlmsDevice, OBIS_CODE_ALARM_REGISTER_3, DlmsObjectType.ALARM_REGISTER_3.name());
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(1L));
+  }
+
+  void setupAlarmRegisterWithNoAlarmPresent(
+      final DlmsDevice dlmsDevice, final DlmsObjectType alarmType) throws IOException {
+
+    this.mockAlarmCosemObject(
+        dlmsDevice, OBIS_CODE_ALARM_REGISTER_1, DlmsObjectType.ALARM_REGISTER_1.name());
+    if (alarmType == DlmsObjectType.ALARM_REGISTER_2
+        || alarmType == DlmsObjectType.ALARM_REGISTER_3) {
+      this.mockAlarmCosemObject(
+          dlmsDevice, OBIS_CODE_ALARM_REGISTER_2, DlmsObjectType.ALARM_REGISTER_2.name());
+    }
+    if (alarmType == DlmsObjectType.ALARM_REGISTER_3) {
+      this.mockAlarmCosemObject(
+          dlmsDevice, OBIS_CODE_ALARM_REGISTER_3, DlmsObjectType.ALARM_REGISTER_3.name());
+    }
+
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(0L));
   }
 
   void assertForOneRegister(final String protocol, final String protocolVersion)
@@ -353,6 +399,9 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(1L));
 
     this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
 
@@ -380,6 +429,9 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(1L));
 
     this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
 
@@ -417,6 +469,9 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS);
+    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(1L));
 
     this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
 
