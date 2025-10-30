@@ -5,10 +5,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -31,9 +33,13 @@ import org.springframework.stereotype.Component;
 public class ClearAlarmRegisterCommandExecutor
     extends AbstractCommandExecutor<ClearAlarmRegisterRequestDto, AccessResultCode> {
 
-  final ObjectConfigServiceHelper objectConfigServiceHelper;
-
-  private static final int ALARM_CODE = 0;
+  private final ObjectConfigServiceHelper objectConfigServiceHelper;
+  private static final int ALARM_CODE_NO_ALARM = 0;
+  private static final List<DlmsObjectType> ALARM_REGISTERS =
+      List.of(
+          DlmsObjectType.ALARM_REGISTER_1,
+          DlmsObjectType.ALARM_REGISTER_2,
+          DlmsObjectType.ALARM_REGISTER_3);
 
   public ClearAlarmRegisterCommandExecutor(
       final ObjectConfigServiceHelper objectConfigServiceHelper) {
@@ -44,18 +50,14 @@ public class ClearAlarmRegisterCommandExecutor
   @Override
   public ActionResponseDto asBundleResponse(final AccessResultCode executionResult)
       throws ProtocolAdapterException {
-
     this.checkAccessResultCode(executionResult);
-
     return new ActionResponseDto("Clear alarm register was successful");
   }
 
   @Override
   public ClearAlarmRegisterRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
       throws ProtocolAdapterException {
-
     this.checkActionRequestType(bundleInput);
-
     return (ClearAlarmRegisterRequestDto) bundleInput;
   }
 
@@ -67,75 +69,89 @@ public class ClearAlarmRegisterCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    // Clear alarm 1
-    final Optional<AccessResultCode> optionalResultCodeAlarm1 =
-        this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_1);
-    if (optionalResultCodeAlarm1.isEmpty()) {
-      throw new ProtocolAdapterException("Unable to find alarm register 1.");
-    }
-    final AccessResultCode resultCodeAlarmRegister1 = optionalResultCodeAlarm1.get();
-    if (resultCodeAlarmRegister1 != AccessResultCode.SUCCESS) {
-      return resultCodeAlarmRegister1;
-    }
+    AccessResultCode previousResult = null;
+    for (final DlmsObjectType alarmType : ALARM_REGISTERS) {
+      final Optional<AccessResultCode> result =
+          this.clearSingleAlarmRegister(conn, device, alarmType);
 
-    // Clear alarm 2
-    final Optional<AccessResultCode> optionalResultCodeAlarm2 =
-        this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_2);
-    if (optionalResultCodeAlarm2.isEmpty()) {
-      return resultCodeAlarmRegister1;
+      if (result.isEmpty()) {
+        if (alarmType == DlmsObjectType.ALARM_REGISTER_1) {
+          throw new ProtocolAdapterException("Unable to find alarm register 1.");
+        }
+        return previousResult;
+      }
+      previousResult = result.get();
+      if (result.get() != AccessResultCode.SUCCESS) {
+        return result.get();
+      }
     }
-    final AccessResultCode resultCodeAlarmRegister2 = optionalResultCodeAlarm2.get();
-    if (resultCodeAlarmRegister2 != AccessResultCode.SUCCESS) {
-      return resultCodeAlarmRegister2;
-    }
-
-    // Clear alarm 3
-    final Optional<AccessResultCode> optionalResultCodeAlarm3 =
-        this.clearAlarmRegister(conn, device, DlmsObjectType.ALARM_REGISTER_3);
-    return optionalResultCodeAlarm3.orElse(resultCodeAlarmRegister2);
+    return AccessResultCode.SUCCESS;
   }
 
-  private Optional<AccessResultCode> clearAlarmRegister(
-      final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType objectType)
+  private Optional<AccessResultCode> clearSingleAlarmRegister(
+      final DlmsConnectionManager conn, final DlmsDevice device, final DlmsObjectType alarmType)
       throws ProtocolAdapterException {
-    log.debug("clearAlarmRegister {}", objectType);
+
     final Optional<AttributeAddress> optAlarmRegisterAttributeAddress =
         this.objectConfigServiceHelper.findOptionalDefaultAttributeAddress(
-            Protocol.forDevice(device), objectType);
+            Protocol.forDevice(device), alarmType);
 
     if (optAlarmRegisterAttributeAddress.isEmpty()) {
       return Optional.empty();
-    } else {
-      final AccessResultCode resultCodeAlarmRegister =
-          this.executeForAlarmRegister(conn, optAlarmRegisterAttributeAddress.get());
+    }
 
-      if (resultCodeAlarmRegister != null) {
-        return Optional.of(resultCodeAlarmRegister);
-      } else {
-        throw new ProtocolAdapterException(
-            "Error occurred for clear alarm register: ." + objectType.name());
-      }
+    if (!this.alarmIsPresent(conn, optAlarmRegisterAttributeAddress.get())) {
+      return Optional.of(AccessResultCode.SUCCESS);
+    }
+
+    final AccessResultCode result =
+        this.executeClearForAlarmRegister(conn, optAlarmRegisterAttributeAddress.get());
+
+    if (result != null) {
+      return Optional.of(result);
+    } else {
+      throw new ProtocolAdapterException(
+          "Error occurred for clear alarm register: " + alarmType.name());
     }
   }
 
-  public AccessResultCode executeForAlarmRegister(
+  private AccessResultCode executeClearForAlarmRegister(
       final DlmsConnectionManager conn, final AttributeAddress alarmRegisterAttributeAddress) {
 
     log.info(
         "Clear alarm register {}",
         JdlmsObjectToStringUtil.describeAttributes(alarmRegisterAttributeAddress));
 
-    final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
+    final DataObject data = DataObject.newUInteger32Data(ALARM_CODE_NO_ALARM);
     final SetParameter setParameter = new SetParameter(alarmRegisterAttributeAddress, data);
 
     conn.getDlmsMessageListener()
         .setDescription(
             "ClearAlarmRegister, with alarm code = "
-                + ALARM_CODE
+                + ALARM_CODE_NO_ALARM
                 + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterAttributeAddress));
 
     try {
       return conn.getConnection().set(setParameter);
+    } catch (final IOException e) {
+      throw new ConnectionException(e);
+    }
+  }
+
+  private boolean alarmIsPresent(
+      final DlmsConnectionManager conn, final AttributeAddress alarmRegisterAttributeAddress) {
+
+    conn.getDlmsMessageListener()
+        .setDescription(
+            "ReadAlarmRegister, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterAttributeAddress));
+
+    try {
+      final GetResult getResult = conn.getConnection().get(alarmRegisterAttributeAddress);
+      return getResult != null
+          && getResult.getResultCode() == AccessResultCode.SUCCESS
+          && ((Number) getResult.getResultData().getValue()).intValue() != ALARM_CODE_NO_ALARM;
+
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }

@@ -20,7 +20,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>6.24.0-SNAPSHOT</version>
+    <version>6.27.0-SNAPSHOT</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -234,12 +234,6 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-    </dependency>
-
-    <!-- Netty -->
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
     </dependency>
 
     <!-- Servlet API -->

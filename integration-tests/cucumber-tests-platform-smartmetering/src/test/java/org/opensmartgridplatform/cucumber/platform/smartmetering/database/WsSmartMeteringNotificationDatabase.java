@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
+import org.opensmartgridplatform.cucumber.platform.common.config.ws.NotificationWebServiceConnectionConfig;
 import org.opensmartgridplatform.cucumber.platform.common.glue.database.WsNotificationDatabase;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.ws.WsSmartMeteringNotificationWebServiceConfigurationRepository;
@@ -27,12 +28,11 @@ public class WsSmartMeteringNotificationDatabase extends WsNotificationDatabase 
           final String notificationApplicationName,
       @Qualifier("wsSmartMeteringNotificationMarshallerContextPath")
           final String notificationMarshallerContextPath,
-      @Qualifier("wsSmartMeteringNotificationTargetUri") final String notificationTargetUri) {
+      final NotificationWebServiceConnectionConfig wsSmartMeteringNotificationConnectionConfig) {
     super(
         notificationApplicationName,
-        notificationTargetUri,
-        false,
         notificationMarshallerContextPath,
+        wsSmartMeteringNotificationConnectionConfig,
         responseDataRepository,
         responseUrlDataRepository,
         notificationWebServiceConfigurationRepository,
