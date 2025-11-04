@@ -207,7 +207,7 @@ class ScheduledTaskExecutorServiceTest {
     final String deviceIdentification = "device-1";
     final String deviceModelCode = "E,M1,M2,M3,M4";
     final MessageMetadata messageMetadata =
-        this.createMessageMetadata(deviceIdentification, deviceModelCode);
+        this.createMessageMetadata(deviceIdentification, deviceModelCode, null);
     final ScheduledTask scheduledTask =
         new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, INITIAL_SCHEDULED_TIME);
     final Device device = new Device();
@@ -239,6 +239,50 @@ class ScheduledTaskExecutorServiceTest {
     assertThat(protocolRequestMessage).isNotNull();
     assertThat(protocolRequestMessage.getDeviceIdentification()).isEqualTo(deviceIdentification);
     assertThat(protocolRequestMessage.getDeviceModelCode()).isEqualTo(deviceModelCode);
+  }
+
+  @Test
+  void testRequestFromScheduledTaskIsCreatedWithLatestDeviceNetworkAddress()
+      throws FunctionalException {
+    final String deviceIdentification = "device-1";
+    final String deviceModelCode = "E,M1,M2,M3,M4";
+    final String oldNetworkAddress = "oldNetworkAddress";
+    final String newNetworkAddress = "newNetworkAddress";
+    final MessageMetadata messageMetadata =
+        this.createMessageMetadata(deviceIdentification, deviceModelCode, oldNetworkAddress);
+
+    final ScheduledTask scheduledTask =
+        new ScheduledTask(messageMetadata, DOMAIN, DOMAIN, DATA_OBJECT, INITIAL_SCHEDULED_TIME);
+    final Device device = new Device();
+    device.setNetworkAddress(newNetworkAddress);
+
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPendingDurationMaxSeconds())
+        .thenReturn(-1L);
+    when(this.scheduledTaskExecutorJobConfig.scheduledTaskPageSize()).thenReturn(30);
+    when(this.scheduledTaskRepository.updateStatus(
+            scheduledTask.getId(), ScheduledTaskStatusType.PENDING))
+        .thenReturn(1);
+    when(this.deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(device);
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.PENDING), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.NEW), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(List.of(scheduledTask), Collections.emptyList());
+    when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
+            eq(ScheduledTaskStatusType.RETRY), any(Timestamp.class), any(Pageable.class)))
+        .thenReturn(new ArrayList<>());
+    when(this.scheduledTaskExecutorJobConfig.getScheduledTaskThreadPoolSize()).thenReturn(1);
+
+    this.scheduledTaskExecutorService.processScheduledTasks();
+
+    verify(this.deviceRequestMessageService)
+        .processMessage(this.protocolRequestMessageCaptor.capture());
+    final ProtocolRequestMessage protocolRequestMessage =
+        this.protocolRequestMessageCaptor.getValue();
+    assertThat(protocolRequestMessage).isNotNull();
+
+    assertThat(protocolRequestMessage.getIpAddress()).isEqualTo(newNetworkAddress);
   }
 
   private void whenFindByStatusAndScheduledTime(
@@ -295,14 +339,17 @@ class ScheduledTaskExecutorServiceTest {
   }
 
   private MessageMetadata createMessageMetadata() {
-    return this.createMessageMetadata("retryable", null);
+    return this.createMessageMetadata("retryable", null, null);
   }
 
   private MessageMetadata createMessageMetadata(
-      final String deviceIdentification, final String deviceModelCode) {
+      final String deviceIdentification,
+      final String deviceModelCode,
+      final String networkAddress) {
     return this.createMessageMetadataBuilder()
         .withDeviceIdentification(deviceIdentification)
         .withDeviceModelCode(deviceModelCode)
+        .withNetworkAddress(networkAddress)
         .build();
   }
 
