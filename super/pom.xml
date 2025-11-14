@@ -55,7 +55,7 @@ SPDX-License-Identifier: Apache-2.0
     <spring.security.version>6.5.3</spring.security.version>
     <spring.ws.version>4.1.1</spring.ws.version>
     <spring.integration.version>6.5.2</spring.integration.version>
-    <reactor.version>2024.0.10</reactor.version>
+    <reactor.version>2024.0.11</reactor.version>
     <assertj.version>3.27.6</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.8.0</mockito.core.version>
