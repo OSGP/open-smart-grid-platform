@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
     features = {"classpath:features/common"},
-    tags = {"not @Skip or not @NightlyBuildOnly"},
+    tags = "not @Skip or not @NightlyBuildOnly",
     glue = {
       "classpath:org.opensmartgridplatform.cucumber.platform.glue",
       "classpath:org.opensmartgridplatform.cucumber.platform.common.glue"
@@ -21,9 +21,9 @@ import org.junit.runner.RunWith;
       "pretty",
       "html:target/output/osgp-cucumber-tests-platform-common/Cucumber-report",
       "html:target/output/osgp-cucumber-tests-platform-common/Cucumber-html-report.html",
-      "json:target/output/osgp-cucumber-tests-platform-common/cucumber.json"
+      "json:target/output/osgp-cucumber-tests-platform-common/cucumber.json",
+      "fail-fast"
     },
     snippets = SnippetType.CAMELCASE,
-    strict = true,
     dryRun = false)
 public class AcceptanceTests {}

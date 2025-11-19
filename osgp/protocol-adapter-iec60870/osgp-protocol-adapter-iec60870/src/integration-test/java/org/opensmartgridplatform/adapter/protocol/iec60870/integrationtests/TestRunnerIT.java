@@ -11,9 +11,8 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-    plugin = {"pretty"},
-    tags = {"not @Skip"},
-    strict = true,
+    plugin = {"pretty", "fail-fast"},
+    tags = "not @Skip",
     features = "src/integration-test/resources/features/",
     snippets = SnippetType.CAMELCASE)
 public class TestRunnerIT {}
