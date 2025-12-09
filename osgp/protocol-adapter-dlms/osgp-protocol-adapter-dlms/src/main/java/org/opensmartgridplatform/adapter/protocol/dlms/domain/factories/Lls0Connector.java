@@ -103,7 +103,7 @@ public class Lls0Connector extends DlmsConnector {
 
       return dlmsConnection;
     } catch (final IOException e) {
-      throw getExceptionWithExceptionType(device, e);
+      throw getAndLogExceptionWithExceptionType(device, e);
     }
   }
 

@@ -7,7 +7,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnector.getExceptionWithExceptionType;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnector.getAndLogExceptionWithExceptionType;
 
 import java.io.IOException;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,12 +29,12 @@ class DlmsConnectorTest {
     "REJECTED_PERMANENT,REJECTED_PERMANENT",
     "REJECTED_TRANSIENT,REJECTED_TRANSIENT"
   })
-  void testGetExceptionWithExceptionType(
+  void testGetAndLogExceptionWithExceptionType(
       final String message, final FunctionalExceptionType expectedType) {
     final IOException exception = new IOException(message);
 
     final ConnectionException connectionException =
-        getExceptionWithExceptionType(device, exception);
+        getAndLogExceptionWithExceptionType(device, exception);
 
     assertThat(connectionException.getType()).isEqualTo(expectedType);
     assertThat(connectionException.getMessage()).contains("Message:" + message);
