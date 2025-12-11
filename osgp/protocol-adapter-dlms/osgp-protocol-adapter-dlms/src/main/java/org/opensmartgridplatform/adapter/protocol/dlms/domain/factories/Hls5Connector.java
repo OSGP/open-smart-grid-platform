@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -75,12 +76,14 @@ public class Hls5Connector extends SecureDlmsConnector {
       throw new TechnicalException(
           ComponentType.PROTOCOL_DLMS, "The IP address is not found: " + device.getIpAddress());
     } catch (final IOException e) { // Queue key recovery process
+      final ConnectionException exception = getAndLogExceptionWithExceptionType(device, e);
+
       if (this.secretManagementService.hasNewSecret(
           messageMetadata, device.getDeviceIdentification())) {
         this.recoverKeyProcessInitiator.initiate(messageMetadata, device.getDeviceIdentification());
       }
 
-      throw getExceptionWithExceptionType(device, e);
+      throw exception;
     } catch (final EncrypterException e) {
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
