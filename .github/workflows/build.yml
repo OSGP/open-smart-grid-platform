@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK 17
@@ -111,7 +111,7 @@ jobs:
             context: ./integration-tests/cucumber-tests-platform-smartmetering
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Download war files
         uses: actions/download-artifact@v6
         with:
@@ -166,7 +166,7 @@ jobs:
           values_file: [ci/common-values.yaml, ci/publiclighting-values.yaml]
     steps:
       - name: Checkout gxf-gitops
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: 'OSGP/gxf-gitops'
       - name: Setup k3d cluster
