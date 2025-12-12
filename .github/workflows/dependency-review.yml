@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Submit Dependency Snapshot
         uses: advanced-security/maven-dependency-submission-action@v5
