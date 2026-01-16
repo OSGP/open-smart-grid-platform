@@ -65,3 +65,4 @@ When implementing automated tests, follow these guidelines:
 * use ```mvn versions:display-plugin-updates```
 * use ```mvn dependency:tree -DignoreNonCompile```
 
+test
