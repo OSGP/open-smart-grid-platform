@@ -259,4 +259,36 @@ SPDX-License-Identifier: Apache-2.0
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>k3d-properties</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-resources</id>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.basedir}/../../data</directory>
+                      <includes>
+                        <include>cucumber-tests-platform-smartmetering.properties</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
