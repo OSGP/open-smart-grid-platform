@@ -8,6 +8,7 @@
 .metadata
 .gradle
 bin/
+data/
 tmp/
 target/
 *.tmp
