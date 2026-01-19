@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Cache SonarCloud packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -44,7 +44,7 @@ jobs:
       - name: Staging war and jar files
         run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
         with:
           name: warFiles
@@ -113,7 +113,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Download war files
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: warFiles
       - name: Show files in current context
