@@ -1,5 +1,7 @@
 package org.opensmartgridplatform.core.infra.jms.protocol.outbound.serialization;
 
+import static java.util.Arrays.asList;
+
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
@@ -11,8 +13,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.*;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-
-import static java.util.Arrays.asList;
 
 public class CreateSerializedObjectsTest {
 
@@ -49,12 +49,12 @@ public class CreateSerializedObjectsTest {
   @Test
   void testConfigurationRequest() {
     final ConfigurationDto configurationDto =
-            new ConfigurationDto.Builder()
-                    .withLightType(LightTypeDto.RELAY)
-                    .withDaliConfiguration(createDaliConfigurationDto())
-                    .withRelayConfiguration(createRelayConfigurationDto())
-                    .withPreferredLinkType(LinkTypeDto.CDMA)
-                    .build();
+        new ConfigurationDto.Builder()
+            .withLightType(LightTypeDto.RELAY)
+            .withDaliConfiguration(createDaliConfigurationDto())
+            .withRelayConfiguration(createRelayConfigurationDto())
+            .withPreferredLinkType(LinkTypeDto.CDMA)
+            .build();
     configurationDto.setTimeSyncFrequency(133);
     configurationDto.setDeviceFixedIp(new DeviceFixedIpDto("ipAddress1", "netMask1", "gateWay1"));
     configurationDto.setDhcpEnabled(true);
@@ -77,11 +77,11 @@ public class CreateSerializedObjectsTest {
     configurationDto.setRelayLinking(createRelayMatrixDto());
     configurationDto.setRelayRefreshing(true);
     configurationDto.setSummerTimeDetails(
-            ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(146L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
+        ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(146L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
     configurationDto.setWinterTimeDetails(
-            ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(147L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
+        ZonedDateTime.ofInstant(
+            Instant.ofEpochMilli(147L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
 
     var request = new RequestMessage("corr_id", "org_id", "dvc_id", configurationDto);
     createOutputFile(request, "configuration-request.ser");
@@ -109,13 +109,12 @@ public class CreateSerializedObjectsTest {
 
   private RelayConfigurationDto createRelayConfigurationDto() {
     return new RelayConfigurationDto(
-            asList(
-                    new RelayMapDto(127, 128, RelayTypeDto.LIGHT, "alias1"),
-                    new RelayMapDto(129, 130, RelayTypeDto.TARIFF, "alias2")));
+        asList(
+            new RelayMapDto(127, 128, RelayTypeDto.LIGHT, "alias1"),
+            new RelayMapDto(129, 130, RelayTypeDto.TARIFF, "alias2")));
   }
 
   private List<RelayMatrixDto> createRelayMatrixDto() {
-    return asList(new RelayMatrixDto(144, true),
-            new RelayMatrixDto(145, false));
+    return asList(new RelayMatrixDto(144, true), new RelayMatrixDto(145, false));
   }
 }
