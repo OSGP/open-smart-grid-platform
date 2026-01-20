@@ -3,11 +3,16 @@ package org.opensmartgridplatform.core.infra.jms.protocol.outbound.serialization
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.dto.valueobjects.*;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+
+import static java.util.Arrays.asList;
 
 public class CreateSerializedObjectsTest {
 
@@ -42,16 +47,44 @@ public class CreateSerializedObjectsTest {
   }
 
   @Test
-  void testEventNotificationRequest() {
-    final String deviceUid = "testUid";
-    final ZonedDateTime dateTime = ZonedDateTime.parse("2026-01-01T12:00:00+00:00");
-    final EventTypeDto eventTypeDto = EventTypeDto.LIGHT_SENSOR_REPORTS_LIGHT;
-    final String description = "Sensor reports light";
-    final Integer index = 0;
-    final EventNotificationDto eventNotificationDto =
-        new EventNotificationDto(deviceUid, dateTime, eventTypeDto, description, index);
-    var request = new RequestMessage("corr_id", "org_id", "dvc_id", eventNotificationDto);
-    createOutputFile(request, "event-notification-request.ser");
+  void testConfigurationRequest() {
+    final ConfigurationDto configurationDto =
+            new ConfigurationDto.Builder()
+                    .withLightType(LightTypeDto.RELAY)
+                    .withDaliConfiguration(createDaliConfigurationDto())
+                    .withRelayConfiguration(createRelayConfigurationDto())
+                    .withPreferredLinkType(LinkTypeDto.CDMA)
+                    .build();
+    configurationDto.setTimeSyncFrequency(133);
+    configurationDto.setDeviceFixedIp(new DeviceFixedIpDto("ipAddress1", "netMask1", "gateWay1"));
+    configurationDto.setDhcpEnabled(true);
+    configurationDto.setTlsEnabled(true);
+    configurationDto.setTlsPortNumber(134);
+    configurationDto.setCommonNameString("commonNameString1");
+    configurationDto.setCommunicationTimeout(135);
+    configurationDto.setCommunicationNumberOfRetries(136);
+    configurationDto.setCommunicationPauseTimeBetweenConnectionTrials(137);
+    configurationDto.setOsgpIpAddress("osgpIpAddress1");
+    configurationDto.setOsgpPortNumber(138);
+    configurationDto.setNtpHost("ntpHost1");
+    configurationDto.setNtpEnabled(true);
+    configurationDto.setNtpSyncInterval(139);
+    configurationDto.setTestButtonEnabled(true);
+    configurationDto.setAutomaticSummerTimingEnabled(true);
+    configurationDto.setAstroGateSunRiseOffset(140);
+    configurationDto.setAstroGateSunSetOffset(141);
+    configurationDto.setSwitchingDelays(asList(142, 143));
+    configurationDto.setRelayLinking(createRelayMatrixDto());
+    configurationDto.setRelayRefreshing(true);
+    configurationDto.setSummerTimeDetails(
+            ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(146L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
+    configurationDto.setWinterTimeDetails(
+            ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(147L * 24 * 60 * 60 * 1000), ZoneId.systemDefault()));
+
+    var request = new RequestMessage("corr_id", "org_id", "dvc_id", configurationDto);
+    createOutputFile(request, "configuration-request.ser");
   }
 
   private void createOutputFile(RequestMessage request, String filename) {
@@ -61,5 +94,28 @@ public class CreateSerializedObjectsTest {
     } catch (Exception ex) {
       System.out.println("exception occurred:" + ex.getMessage());
     }
+  }
+
+  private DaliConfigurationDto createDaliConfigurationDto() {
+    return new DaliConfigurationDto(123, this.createIndexAddressMap());
+  }
+
+  private HashMap<Integer, Integer> createIndexAddressMap() {
+    final HashMap<Integer, Integer> map = new HashMap<>();
+    map.put(124, 125);
+    map.put(125, 126);
+    return map;
+  }
+
+  private RelayConfigurationDto createRelayConfigurationDto() {
+    return new RelayConfigurationDto(
+            asList(
+                    new RelayMapDto(127, 128, RelayTypeDto.LIGHT, "alias1"),
+                    new RelayMapDto(129, 130, RelayTypeDto.TARIFF, "alias2")));
+  }
+
+  private List<RelayMatrixDto> createRelayMatrixDto() {
+    return asList(new RelayMatrixDto(144, true),
+            new RelayMatrixDto(145, false));
   }
 }
