@@ -74,6 +74,8 @@ public class PlatformSmartmeteringDefaults
     PORT_MAPPING.put(
         new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.2").build(), 1029L);
     PORT_MAPPING.put(
+        new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.2c").build(), 1032L);
+    PORT_MAPPING.put(
         new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("5.5").build(), 1030L);
     PORT_MAPPING.put(
         new ProtocolInfo.Builder().withProtocol("SMR").withProtocolVersion("4.3").build(), 1031L);

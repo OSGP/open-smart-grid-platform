@@ -43,6 +43,8 @@ public class ProtocolTest {
     assertThat(Protocol.withNameAndVersion("SMR", "5.0.0")).isEqualTo(Protocol.SMR_5_0_0);
     assertThat(Protocol.withNameAndVersion("SMR", "5.1")).isEqualTo(Protocol.SMR_5_1);
     assertThat(Protocol.withNameAndVersion("SMR", "5.2")).isEqualTo(Protocol.SMR_5_2);
+    assertThat(Protocol.withNameAndVersion("SMR", "5.2c")).isEqualTo(Protocol.SMR_5_2c);
+    assertThat(Protocol.withNameAndVersion("SMR", "5.5")).isEqualTo(Protocol.SMR_5_5);
     assertThat(Protocol.withNameAndVersion("other", "0.1")).isEqualTo(Protocol.OTHER_PROTOCOL);
   }
 
@@ -52,6 +54,8 @@ public class ProtocolTest {
     assertThat(Protocol.SMR_5_0_0.isSmr5()).isEqualTo(true);
     assertThat(Protocol.SMR_5_1.isSmr5()).isEqualTo(true);
     assertThat(Protocol.SMR_5_2.isSmr5()).isEqualTo(true);
+    assertThat(Protocol.SMR_5_2c.isSmr5()).isEqualTo(true);
+    assertThat(Protocol.SMR_5_5.isSmr5()).isEqualTo(true);
     assertThat(Protocol.OTHER_PROTOCOL.isSmr5()).isEqualTo(false);
   }
 }

@@ -100,6 +100,11 @@ class ReadAlarmRegisterCommandExecutorTest {
   }
 
   @Test
+  void shouldExecuteForProtocolSmr52c() throws ProtocolAdapterException, IOException {
+    this.assertForTwoRegisters("SMR", "5.2c");
+  }
+
+  @Test
   void shouldExecuteForProtocolSmr55() throws ProtocolAdapterException, IOException {
     this.assertForTwoRegisters("SMR", "5.5");
   }
