@@ -271,7 +271,7 @@ class ObjectConfigServiceTest {
         this.objectConfigService.getCosemObjects("SMR", "5.2c");
 
     assertNotNull(cosemObjects);
-    assertThat(cosemObjects).hasSize(Protocol.SMR_5_2c.getNrOfCosemObjects());
+    assertThat(cosemObjects).hasSize(Protocol.SMR_5_2C.getNrOfCosemObjects());
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
     assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_2));
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));

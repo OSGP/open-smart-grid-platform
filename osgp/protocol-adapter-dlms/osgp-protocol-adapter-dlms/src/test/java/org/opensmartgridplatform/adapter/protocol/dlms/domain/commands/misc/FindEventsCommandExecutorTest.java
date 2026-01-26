@@ -63,7 +63,7 @@ class FindEventsCommandExecutorTest {
   private static final String SMR_5_0_0 = "SMR_5_0_0";
   private static final String SMR_5_1 = "SMR_5_1";
   private static final String SMR_5_2 = "SMR_5_2";
-  private static final String SMR_5_2C = "SMR_5_2c";
+  private static final String SMR_5_2C = "SMR_5_2C";
   private static final String SMR_5_5 = "SMR_5_5";
 
   static {

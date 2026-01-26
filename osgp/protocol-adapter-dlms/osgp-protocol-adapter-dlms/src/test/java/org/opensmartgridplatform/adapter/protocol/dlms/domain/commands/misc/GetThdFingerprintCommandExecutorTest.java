@@ -66,7 +66,7 @@ class GetThdFingerprintCommandExecutorTest {
   @ValueSource(booleans = {true, false})
   void testExecute(final boolean polyphase) throws Exception {
     final DlmsDevice testDevice = new DlmsDevice();
-    testDevice.setProtocol(Protocol.SMR_5_2c);
+    testDevice.setProtocol(Protocol.SMR_5_2C);
     testDevice.setPolyphase(polyphase);
     testDevice.setWithListMax(10);
 
@@ -157,7 +157,7 @@ class GetThdFingerprintCommandExecutorTest {
   @ParameterizedTest
   @EnumSource(
       value = Protocol.class,
-      names = {"SMR_5_2c", "SMR_5_5", "OTHER_PROTOCOL"},
+      names = {"SMR_5_2C", "SMR_5_5", "OTHER_PROTOCOL"},
       mode = EnumSource.Mode.EXCLUDE)
   void testExecuteNoObject(final Protocol protocol) {
 
