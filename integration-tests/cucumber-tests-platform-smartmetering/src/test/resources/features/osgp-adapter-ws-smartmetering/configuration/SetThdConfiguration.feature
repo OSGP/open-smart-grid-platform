@@ -26,7 +26,7 @@ Feature: SmartMetering Configuration - Set THD Configuration
 
     Examples:
       | deviceIdentification  | protocol | version | shouldBeSetOrNot  |
-      | TEST1029000000002     | SMR      | 5.2c    | should be set     |
+      | TEST1032000000002     | SMR      | 5.2c    | should be set     |
       | TEST1030000000002     | SMR      | 5.5     | should be set     |
       | TEST1024000000002     | DSMR     | 2.2     | should not be set |
       | TEST1024000000002     | DSMR     | 4.2.2   | should not be set |

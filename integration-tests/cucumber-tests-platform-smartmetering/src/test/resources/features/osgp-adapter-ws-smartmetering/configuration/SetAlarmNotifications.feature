@@ -201,14 +201,14 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | DeviceIdentification | TEST1029000000001                   |
 
   @NightlyBuildOnly
-  Scenario: Set all alarm notifications disabled on a SMR 5.2 device
+  Scenario: Set all alarm notifications disabled on a SMR 5.2c device
     Given a dlms device
-      | DeviceIdentification | TEST1029000000001 |
+      | DeviceIdentification | TEST1032000000001 |
       | DeviceType           | SMART_METER_E     |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2c              |
     When the set alarm notifications request is received
-      | DeviceIdentification | TEST1029000000001                   |
+      | DeviceIdentification | TEST1032000000001                   |
       | AlarmType_1          | THD_OVERLIMIT_IN_PHASE_L1           |
       | AlarmTypeEnabled1    | false                               |
       | AlarmType_2          | THD_OVERLIMIT_IN_PHASE_L2           |
@@ -222,7 +222,7 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | AlarmType_6          | THD_LONG_OVERLIMIT_IN_PHASE_L3      |
       | AlarmTypeEnabled6    | false                               |
     Then the specified alarm notifications should be set on the device
-      | DeviceIdentification | TEST1029000000001                   |
+      | DeviceIdentification | TEST1032000000001                   |
 
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a SMR 5.5 device

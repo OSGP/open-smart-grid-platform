@@ -29,7 +29,7 @@ Feature: SmartMetering Monitoring - Get Thd Fingerprint
 
     Examples:
       | DeviceId             | Protocol | ProtocolVersion |
-      | TEST1029000000001    | SMR      | 5.2c            |
+      | TEST1032000000001    | SMR      | 5.2c            |
       | TEST1030000000001    | SMR      | 5.5             |
 
   Scenario Outline: Get the THD fingerprint from a single phase <Protocol> <ProtocolVersion> E-meter
@@ -48,7 +48,7 @@ Feature: SmartMetering Monitoring - Get Thd Fingerprint
 
     Examples:
       | DeviceId             | Protocol | ProtocolVersion |
-      | TEST1029000000001    | SMR      | 5.2c            |
+      | TEST1032000000001    | SMR      | 5.2c            |
       | TEST1030000000001    | SMR      | 5.5             |
 
   Scenario Outline: Get THD fingerprint is not supported on a <Protocol> <ProtocolVersion> E-meter
@@ -69,4 +69,4 @@ Feature: SmartMetering Monitoring - Get Thd Fingerprint
       | TEST1031000000002     | SMR      | 4.3     |
       | TEST1027000000002     | SMR      | 5.0.0   |
       | TEST1028000000002     | SMR      | 5.1     |
-      | TEST1028000000002     | SMR      | 5.2     |
+      | TEST1029000000002     | SMR      | 5.2     |

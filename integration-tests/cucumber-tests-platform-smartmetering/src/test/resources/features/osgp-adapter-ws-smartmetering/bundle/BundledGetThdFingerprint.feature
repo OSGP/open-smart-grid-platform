@@ -31,7 +31,7 @@ Feature: SmartMetering Bundle - GetThdFingerprint
 
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1029000000001    | SMR      | 5.2c    |
+      | TEST1032000000001    | SMR      | 5.2c    |
       | TEST1030000000001    | SMR      | 5.5     |
 
   Scenario Outline: Get THD fingerprint on a single phase <protocol> <version> device
@@ -52,5 +52,5 @@ Feature: SmartMetering Bundle - GetThdFingerprint
 
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1029000000001    | SMR      | 5.2c    |
+      | TEST1032000000001    | SMR      | 5.2c    |
       | TEST1030000000001    | SMR      | 5.5     |

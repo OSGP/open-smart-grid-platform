@@ -54,13 +54,13 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
 
   Scenario: Set alarm notifications on a device in a bundle request (register 2)
     Given a dlms device
-      | DeviceIdentification | TEST1029000000001 |
+      | DeviceIdentification | TEST1032000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Port                 | 1029              |
+      | Port                 | 1032              |
       | Protocol             | SMR               |
       | ProtocolVersion      | 5.2c              |
     And a bundle request
-      | DeviceIdentification | TEST1029000000001 |
+      | DeviceIdentification | TEST1032000000001 |
     And the bundle request contains a set alarm notifications action with parameters
       | AlarmNotificationCount |                                  6 |
       | AlarmType_1            | THD_OVERLIMIT_IN_PHASE_L1          |
