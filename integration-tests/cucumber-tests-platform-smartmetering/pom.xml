@@ -14,7 +14,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>6.30.1</version>
+    <version>6.30.1-EC2</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -160,6 +160,7 @@ SPDX-License-Identifier: Apache-2.0
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-secret-management</artifactId>
+      <classifier>classes</classifier>
     </dependency>
 
     <!-- Automatic tests platform -->

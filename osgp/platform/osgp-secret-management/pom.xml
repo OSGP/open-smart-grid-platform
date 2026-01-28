@@ -10,12 +10,13 @@ SPDX-License-Identifier: Apache-2.0
 
   <artifactId>osgp-secret-management</artifactId>
   <name>osgp-secret-management</name>
+  <packaging>war</packaging>
   <description>Secret management module.</description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>6.30.1</version>
+    <version>6.30.1-EC2</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -36,19 +37,15 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring.boot.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-            <configuration>
-              <classifier>exec</classifier>
-              <executable>true</executable>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>${maven.war.plugin.version}</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
