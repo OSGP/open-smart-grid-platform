@@ -33,7 +33,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1024000011100    | 1024 | DSMR     |   4.2.2 |
+      | TEST1024000000090    | 1024 | DSMR     |   4.2.2 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - single phase - (D)SMR - (<protocol> - <version>)
     Given a dlms device
@@ -62,7 +62,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1031000011101    | 1031 | SMR      |     4.3 |
+      | TEST1031000000091    | 1031 | SMR      |     4.3 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - poly phase - (D)SMR - (<protocol> - <version>)
     Given a dlms device
@@ -91,7 +91,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1024000011100    | 1024 | DSMR     |   4.2.2 |
+      | TEST1024000000090    | 1024 | DSMR     |   4.2.2 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - poly phase - (D)SMR - (<protocol> - <version>)
     Given a dlms device
@@ -121,7 +121,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1031000011101    | 1031 | SMR      |     4.3 |
+      | TEST1031000000091    | 1031 | SMR      |     4.3 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - private - (D)SMR - single phase (<protocol> - <version>)
     Given a dlms device
@@ -150,8 +150,8 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1024000011100    | 1024 | DSMR     |   4.2.2 |
-      | TEST1031000011101    | 1031 |  SMR     |     4.3 |
+      | TEST1024000000090    | 1024 | DSMR     |   4.2.2 |
+      | TEST1031000000091    | 1031 |  SMR     |     4.3 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - private - (D)SMR - poly phase (<protocol> - <version>)
     Given a dlms device
@@ -187,8 +187,8 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1024000011100    | 1024 | DSMR     |   4.2.2 |
-      | TEST1031000011101    | 1031 |  SMR     |     4.3 |
+      | TEST1024000000090    | 1024 | DSMR     |   4.2.2 |
+      | TEST1031000000091    | 1031 |  SMR     |     4.3 |
 
   #
   # SMR
@@ -233,10 +233,10 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1027000011101    | 1027 | SMR      |   5.0.0 |
-      | TEST1028000011102    | 1028 | SMR      |     5.1 |
-      | TEST1029000011103    | 1029 | SMR      |     5.2 |
-      | TEST1030000011104    | 1030 | SMR      |     5.5 |
+      | TEST1027000000091    | 1027 | SMR      |   5.0.0 |
+      | TEST1028000000092    | 1028 | SMR      |     5.1 |
+      | TEST1029000000093    | 1029 | SMR      |     5.2 |
+      | TEST1030000000094    | 1030 | SMR      |     5.5 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - public - poly phase - SMR - (<protocol> - <version>)
     Given a dlms device
@@ -282,10 +282,10 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1027000011101    | 1027 | SMR      |   5.0.0 |
-      | TEST1028000011102    | 1028 | SMR      |     5.1 |
-      | TEST1029000011103    | 1029 | SMR      |     5.2 |
-      | TEST1030000011104    | 1030 | SMR      |     5.5 |
+      | TEST1027000000091    | 1027 | SMR      |   5.0.0 |
+      | TEST1028000000092    | 1028 | SMR      |     5.1 |
+      | TEST1029000000093    | 1029 | SMR      |     5.2 |
+      | TEST1030000000094    | 1030 | SMR      |     5.5 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - private - SMR - single phase (<protocol> - <version>)
     Given a dlms device
@@ -317,10 +317,10 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1027000011101    | 1027 | SMR      |   5.0.0 |
-      | TEST1028000011102    | 1028 | SMR      |     5.1 |
-      | TEST1029000011103    | 1029 | SMR      |     5.2 |
-      | TEST1030000011104    | 1030 | SMR      |     5.5 |
+      | TEST1027000000091    | 1027 | SMR      |   5.0.0 |
+      | TEST1028000000092    | 1028 | SMR      |     5.1 |
+      | TEST1029000000093    | 1029 | SMR      |     5.2 |
+      | TEST1030000000094    | 1030 | SMR      |     5.5 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - private - SMR - poly phase (<protocol> - <version>)
     Given a dlms device
@@ -361,10 +361,10 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | protocol | version |
-      | TEST1027000011101    | 1027 | SMR      |   5.0.0 |
-      | TEST1028000011102    | 1028 | SMR      |     5.1 |
-      | TEST1029000011103    | 1029 | SMR      |     5.2 |
-      | TEST1030000011104    | 1030 | SMR      |     5.5 |
+      | TEST1027000000091    | 1027 | SMR      |   5.0.0 |
+      | TEST1028000000092    | 1028 | SMR      |     5.1 |
+      | TEST1029000000093    | 1029 | SMR      |     5.2 |
+      | TEST1030000000094    | 1030 | SMR      |     5.5 |
 
   Scenario Outline: Retrieve power quality profile data as part of a bundled request for - [profileType: <profileType> - polyphase: <polyphase>] (DSMR - 2.2)
     Given a dlms device
@@ -388,7 +388,7 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
 
     Examples:
       | deviceIdentification | port | polyphase | profileType |
-      | TEST1026000011100    | 1026 | false      |     PUBLIC |
-      | TEST1026000011101    | 1026 | true       |     PUBLIC |
-      | TEST1026000011100    | 1026 | false      |    PRIVATE |
-      | TEST1026000011101    | 1026 | true       |    PRIVATE |
+      | TEST1026000000090    | 1026 | false      |     PUBLIC |
+      | TEST1026000000091    | 1026 | true       |     PUBLIC |
+      | TEST1026000000090    | 1026 | false      |    PRIVATE |
+      | TEST1026000000091    | 1026 | true       |    PRIVATE |
