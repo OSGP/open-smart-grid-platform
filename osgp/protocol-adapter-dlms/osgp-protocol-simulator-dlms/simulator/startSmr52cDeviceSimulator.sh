@@ -32,4 +32,4 @@ do
   esac
 done
 
-java -jar ${JARTOSTART} --deviceidentification.kemacode=TEST${PORT} --deviceidentification.productionyear=00 --deviceidentification.serialnumber=000000 --spring.profiles.active=default,minimumMemory,smr5,smr51,smr52,smr5c --port=${PORT} --logicalDeviceIds=1
+java -jar ${JARTOSTART} --deviceidentification.kemacode=TEST${PORT} --deviceidentification.productionyear=00 --deviceidentification.serialnumber=000000 --spring.profiles.active=default,minimumMemory,smr5,smr51,smr52,smr52c --port=${PORT} --logicalDeviceIds=1
