@@ -6,6 +6,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil.describeGetResults;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.ADJACENT_CELLS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CAPTURE_TIME;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CELL_INFO;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CIRCUIT_SWITCHED_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.MODEM_REGISTRATION_STATUS;
@@ -168,10 +169,8 @@ public class GetGsmDiagnosticCommandExecutor
         new AttributeAddress(classId, obisCode, CIRCUIT_SWITCHED_STATUS.attributeId()),
         new AttributeAddress(classId, obisCode, PACKET_SWITCHED_STATUS.attributeId()),
         new AttributeAddress(classId, obisCode, CELL_INFO.attributeId()),
-        new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()));
-    // Reading of capture_time is disabled for now, because the jDLMS library appears to handle
-    // the COSEM date-time in the response incorrectly. Also see comment in getCaptureTime.
-    // new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
+        new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()),
+        new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId()));
   }
 
   private GetGsmDiagnosticResponseDto createGetGsmDiagnosticResponse(
@@ -282,12 +281,6 @@ public class GetGsmDiagnosticCommandExecutor
   }
 
   private Date getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
-    // Reading of capture_time is disabled, so return null here. Also see comment in
-    // createAttributeAddresses.
-    if (RESULT_CAPTURE_TIME_INDEX >= getResultList.size()) {
-      return null;
-    }
-
     final GetResult result = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
     if (this.isResultSuccess(result)) {
       final CosemDateTimeDto cosemDateTime =

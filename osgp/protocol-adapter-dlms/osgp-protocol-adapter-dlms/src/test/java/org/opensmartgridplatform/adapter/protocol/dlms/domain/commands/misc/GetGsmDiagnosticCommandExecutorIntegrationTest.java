@@ -8,8 +8,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,7 +81,7 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
   }
 
   @BeforeEach
-  public void setUp() throws IOException, ObjectConfigException {
+  void setUp() throws IOException, ObjectConfigException {
     this.objectConfigService = new ObjectConfigService();
 
     final DlmsHelper dlmsHelper = new DlmsHelper();
@@ -117,8 +119,7 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     final AttributeAddress expectedAddressCellInfo = this.createAttributeAddress(method, 6);
     final AttributeAddress expectedAddressAdjacentCells = this.createAttributeAddress(method, 7);
     final AttributeAddress expectedAddressCaptureTime = this.createAttributeAddress(method, 8);
-    // Reading of capture_time is disabled for now, therefore only 6 addresses expected
-    final int expectedTotalNumberOfAttributeAddresses = 6;
+    final int expectedTotalNumberOfAttributeAddresses = 7;
 
     // Set responses in stub
     this.setResponseForOperator(expectedAddressOperator);
@@ -177,9 +178,8 @@ class GetGsmDiagnosticCommandExecutorIntegrationTest {
     assertThat(adjacentCells).hasSize(3);
     assertThat(adjacentCells.get(0).getCellId()).isEqualTo(85L);
     assertThat(adjacentCells.get(0).getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
-    // Reading of capture_time is disabled, so don't check the capture time
-    // assertThat(response.getCaptureTime())
-    //    .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC).toDate());
+    assertThat(response.getCaptureTime())
+        .isEqualTo(Date.from(Instant.parse("2021-04-01T09:28:00Z")));
   }
 
   private DlmsDevice createDlmsDevice(final Protocol protocol, final CommunicationMethod method) {
