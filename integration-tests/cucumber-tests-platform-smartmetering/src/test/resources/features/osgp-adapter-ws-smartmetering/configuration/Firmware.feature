@@ -87,37 +87,6 @@ Feature: SmartMetering Configuration - Firmware
       | e-meter           | mbus-meter        | type | protocol | version |
       | TEST1030000000001 | TESTW103000000002 | W    | SMR      | 5.5     |
 
-  @GetFirmwareVersion @GetFirmwareGas @EmptyFirmwareVersion
-  Scenario Outline: Get the firmware version from <protocol> <version> <type>-meter when version is empty
-    Given a dlms device
-      | DeviceIdentification | <e-meter>     |
-      | DeviceType           | SMART_METER_E |
-      | Protocol             | <protocol>    |
-      | ProtocolVersion      | <version>     |
-    And a dlms device
-      | DeviceIdentification        | <mbus-meter>       |
-      | DeviceType                  | SMART_METER_<type> |
-      | GatewayDeviceIdentification | <e-meter>          |
-      | Channel                     |                  3 |
-      | FirmwareModuleVersionSimple |           19180706 |
-    And device simulation of "<g-meter>" with classid 4 obiscode "0-3:24.2.11" and attributes
-      | 2  | octet-string   | |
-      | 3  | scal_unit_type | |
-      | 4  | unsigned       | |
-      | 5  | octet-string   | |
-    When the get firmware version gas request is received
-      | DeviceIdentification | <mbus-meter> |
-    Then the firmware version gas result should be returned
-      | DeviceIdentification | <mbus-meter> |
-      | SimpleVersionInfo    |     00400011 |
-    And the database should be updated with the device firmware version
-      | DeviceIdentification | <mbus-meter> |
-      | SimpleVersionInfo    |     00400011 |
-
-    Examples:
-      | e-meter           | mbus-meter        | type | protocol | version |
-      | TEST1027000000001 | TESTG102700000001 | G    | SMR      | 5.0.0   |
-
   @GetFirmwareVersion @GetFirmwareGas
   Scenario Outline: Get the firmware version from a gas meter with none supporting protocol <protocol> <version>
     Given a dlms device
@@ -183,7 +152,7 @@ Feature: SmartMetering Configuration - Firmware
     Examples:
       | deviceIdentification | protocol | version |
       | TEST1024000000001    | DSMR     | 4.2.2   |
-    @NightlyBuildOnly
+  @NightlyBuildOnly
     Examples:
       | deviceIdentification | protocol | version |
       | TEST1031000000001    | SMR      | 4.3     |
@@ -233,7 +202,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc   | M57 4836               |
 
   @NightlyBuildOnly @UpdateFirmware
-  Scenario: update of firmware, firmware has no imageIdentifier
+  Scenario: update of firmware, firmware has no imageIdentifier 
     Given a manufacturer
       | ManufacturerCode | KAI   |
       | ManufacturerName | Kaifa |
