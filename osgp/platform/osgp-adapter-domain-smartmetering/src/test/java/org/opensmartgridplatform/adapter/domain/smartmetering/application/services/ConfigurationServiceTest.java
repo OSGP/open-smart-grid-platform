@@ -4,7 +4,6 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -14,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +39,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseD
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -186,13 +187,14 @@ class ConfigurationServiceTest {
   private void handleGetFirmwareVersionGasResponseWithoutVersionThrowsFunctionalException(
       final FirmwareVersionGasDto firmwareVersionGas) {
 
-    assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(
-            () -> {
-              this.instance.handleGetFirmwareVersionGasResponse(
-                  messageMetadata, ResponseMessageResultType.OK, null, firmwareVersionGas);
-            });
-
+    final FunctionalException exception =
+        Assertions.assertThrows(
+            FunctionalException.class,
+            () ->
+                this.instance.handleGetFirmwareVersionGasResponse(
+                    messageMetadata, ResponseMessageResultType.OK, null, firmwareVersionGas));
+    assertThat(exception.getExceptionType())
+        .isEqualTo(FunctionalExceptionType.EMPTY_FIRMWARE_VERSION);
     verifyNoInteractions(
         this.configurationMapper, this.webServiceResponseMessageSender, this.firmwareService);
   }
