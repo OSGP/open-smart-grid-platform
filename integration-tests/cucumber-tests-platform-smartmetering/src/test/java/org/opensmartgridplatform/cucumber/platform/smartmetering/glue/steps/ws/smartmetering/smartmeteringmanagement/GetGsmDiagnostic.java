@@ -71,7 +71,6 @@ public class GetGsmDiagnostic {
 
     assertThat(response.getGetGsmDiagnosticResponseData())
         .usingRecursiveComparison()
-        .ignoringFields("captureTime") // Reading of captureTime is disabled for now
         .isEqualTo(expectedResponse);
   }
 
