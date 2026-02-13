@@ -7,10 +7,13 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,20 +21,25 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -87,10 +95,13 @@ class ConfigurationServiceTest {
   @Mock private DomainHelperService domainHelperService;
   @Mock private JmsMessageSender osgpCoreRequestMessageSender;
   @Mock private WebServiceResponseMessageSender webServiceResponseMessageSender;
+  @Mock private ConfigurationMapper configurationMapper;
+  @Mock private FirmwareService firmwareService;
 
   @Captor private ArgumentCaptor<MessageMetadata> messageMetadataCaptor;
   @Captor private ArgumentCaptor<Serializable> requestMessageCaptor;
   @Captor private ArgumentCaptor<ResponseMessage> responseMessageCaptor;
+  @Captor private ArgumentCaptor<List<FirmwareVersion>> firmwareVersionsCaptor;
 
   @Test
   void getKeys() throws FunctionalException {
@@ -150,5 +161,41 @@ class ConfigurationServiceTest {
     assertThat(this.responseMessageCaptor.getValue())
         .usingRecursiveComparison()
         .isEqualTo(expectedResponseMessage);
+  }
+
+  @Test
+  void handleGetFirmwareVersionGasResponseWithoutVersionDto() {
+    this.handleGetFirmwareVersionGasResponseWithoutVersionThrowsFunctionalException(null);
+  }
+
+  @Test
+  void handleGetFirmwareVersionGasResponseWithNullVersion() {
+    final FirmwareVersionGasDto firmwareVersionGas =
+        new FirmwareVersionGasDto(FirmwareModuleType.SIMPLE_VERSION_INFO, null, "mbus-1");
+    this.handleGetFirmwareVersionGasResponseWithoutVersionThrowsFunctionalException(
+        firmwareVersionGas);
+  }
+
+  @Test
+  void handleGetFirmwareVersionGasResponseWithZeroLengthVersion() {
+    final FirmwareVersionGasDto firmwareVersionGas =
+        new FirmwareVersionGasDto(FirmwareModuleType.SIMPLE_VERSION_INFO, "", "mbus-1");
+    this.handleGetFirmwareVersionGasResponseWithoutVersionThrowsFunctionalException(
+        firmwareVersionGas);
+  }
+
+  private void handleGetFirmwareVersionGasResponseWithoutVersionThrowsFunctionalException(
+      final FirmwareVersionGasDto firmwareVersionGas) {
+
+    final FunctionalException exception =
+        Assertions.assertThrows(
+            FunctionalException.class,
+            () ->
+                this.instance.handleGetFirmwareVersionGasResponse(
+                    messageMetadata, ResponseMessageResultType.OK, null, firmwareVersionGas));
+    assertThat(exception.getExceptionType())
+        .isEqualTo(FunctionalExceptionType.EMPTY_FIRMWARE_VERSION);
+    verifyNoInteractions(
+        this.configurationMapper, this.webServiceResponseMessageSender, this.firmwareService);
   }
 }

@@ -984,7 +984,8 @@ public class ConfigurationService {
       final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
-      final FirmwareVersionGasDto firmwareVersionGas) {
+      final FirmwareVersionGasDto firmwareVersionGas)
+      throws FunctionalException {
     log.info(
         "handleGetFirmwareVersionGasResponse for MessageType: {}",
         messageMetadata.getMessageType());
@@ -993,6 +994,13 @@ public class ConfigurationService {
     if (exception != null) {
       log.error("Get firmware version response not ok. Unexpected Exception", exception);
       result = ResponseMessageResultType.NOT_OK;
+    }
+
+    if (this.isEmpty(firmwareVersionGas)) {
+      throw new FunctionalException(
+          FunctionalExceptionType.EMPTY_FIRMWARE_VERSION,
+          ComponentType.DOMAIN_SMART_METERING,
+          new AssertionError("No firmware version found for gas meter."));
     }
 
     final FirmwareVersion firmwareVersion =
@@ -1012,6 +1020,12 @@ public class ConfigurationService {
 
     this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
         firmwareVersionGas.getMbusDeviceIdentification(), Arrays.asList(firmwareVersion));
+  }
+
+  private boolean isEmpty(final FirmwareVersionGasDto firmwareVersionGas) {
+    return firmwareVersionGas == null
+        || firmwareVersionGas.getVersion() == null
+        || firmwareVersionGas.getVersion().isEmpty();
   }
 
   public void requestUpdateFirmware(
