@@ -10,10 +10,13 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.AdjacentCellInfo;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.CellInfo;
@@ -21,6 +24,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Circ
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ModemRegistrationStatus;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.PacketSwitchedStatus;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SignalQuality;
+import org.opensmartgridplatform.cucumber.platform.helpers.DateConverter;
 
 public class GetGsmDiagnosticResponseFactory {
 
@@ -47,6 +51,7 @@ public class GetGsmDiagnosticResponseFactory {
     final Integer mobileCountryCode = getInteger(requestParameters, "mobileCountryCode");
     final Integer mobileNetworkCode = getInteger(requestParameters, "mobileNetworkCode");
     final Long channelNumber = getLong(requestParameters, "channelNumber");
+    final String captureTime = getString(requestParameters, "captureTime");
 
     final CellInfo cellInfo = new CellInfo();
     cellInfo.setCellId(cellId);
@@ -82,6 +87,11 @@ public class GetGsmDiagnosticResponseFactory {
     getGsmDiagnosticResponse.setPacketSwitchedStatus(packetSwitchedStatus);
     getGsmDiagnosticResponse.setCellInfo(cellInfo);
     getGsmDiagnosticResponse.getAdjacentCells().addAll(adjacentCellInfos);
+
+    final Instant instant = Instant.parse(captureTime);
+    final XMLGregorianCalendar beginDate =
+        DateConverter.createXMLGregorianCalendar(Date.from(instant));
+    getGsmDiagnosticResponse.setCaptureTime(beginDate);
 
     return getGsmDiagnosticResponse;
   }

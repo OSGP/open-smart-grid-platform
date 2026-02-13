@@ -38,8 +38,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | channelNumber               |                       107 |
       | adjacentCellIds             |                     93,94 |
       | adjacentCellSignalQualities | MINUS_91_DBM,MINUS_89_DBM |
-# Reading of captureTime is disabled for now
-#      | captureTime               | 2021-04-13T08:45:00.000Z |
+      | captureTime                 | 2021-04-13T07:45:00.000Z  |
   Examples:
     | DeviceIdentification | Port | Protocol | ProtocolVersion | CommunicationMethod | ModelCode | BitErrorRate |
     | TEST1031000000001    | 1031 | SMR      | 4.3             | CDMA                | MA105A    |            6 |
