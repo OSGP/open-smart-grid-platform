@@ -4,6 +4,7 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -141,9 +142,9 @@ public class PowerOutages extends DynamicProfile {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
     // Add all events.
-    //    for (int i = 1; i < 5; i++) {
-    //      this.bufferData.add(Arrays.asList(this.getNextDateTime(), (long) (i * 180)));
-    //    }
+    for (int i = 1; i < 5; i++) {
+      this.bufferData.add(Arrays.asList(this.getNextDateTime(), (long) (i * 180)));
+    }
   }
 
   private Calendar getNextDateTime() {
