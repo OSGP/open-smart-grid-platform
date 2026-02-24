@@ -5,6 +5,7 @@
 package org.opensmartgridplatform.simulator.protocol.dlms.server.profile;
 
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject.ALARM_OBJECT_1;
+import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.Clock.LOGICAL_NAME_CLOCK;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L1_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L2_LOGICAL_NAME;
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityProfile1.AVERAGE_ACTIVE_POWER_EXPORT_L3_LOGICAL_NAME;
@@ -42,6 +43,7 @@ import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQuali
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -54,7 +56,10 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActiveFirmwareSignature;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.ActivityCalendar;
@@ -63,6 +68,7 @@ import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AdministrativeSta
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmFilter;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AmrProfileStatusCodeEMeter;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CaptureObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.Clock;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationModuleActiveFirmwareIdentifier;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.CommunicationModuleFirmwareSignature;
@@ -764,8 +770,41 @@ public class DefaultDeviceProfile {
   }
 
   @Bean
-  public PowerOutages powerFailureEventLog(final Calendar cal) {
-    return new PowerOutages(cal);
+  public PowerOutages powerFailureEventLog(final Calendar cal, final DynamicValues dynamicValues) {
+    final Integer classId = InterfaceClass.PROFILE_GENERIC.id();
+    final ObisCode obisCode = new ObisCode(1, 0, 99, 97, 0, 255);
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.CAPTURE_PERIOD.attributeId(),
+        DataObject.newUInteger32Data(0));
+
+    dynamicValues.setDefaultAttributeValue(
+        classId,
+        obisCode,
+        ProfileGenericAttribute.PROFILE_ENTRIES.attributeId(),
+        DataObject.newUInteger32Data(4));
+
+    final CaptureObject clockTime =
+        new CaptureObject(
+            InterfaceClass.CLOCK.id(),
+            LOGICAL_NAME_CLOCK,
+            (byte) ClockAttribute.TIME.attributeId(),
+            0);
+
+    final CaptureObject powerFailureEventLogRegister =
+        new CaptureObject(
+            InterfaceClass.REGISTER.id(),
+            "0.0.96.7.19.255",
+            (byte) RegisterAttribute.VALUE.attributeId(),
+            0);
+    return new PowerOutages(
+        obisCode.toString(),
+        dynamicValues,
+        cal,
+        2,
+        List.of(clockTime, powerFailureEventLogRegister),
+        new HashMap<>());
   }
 
   @Bean

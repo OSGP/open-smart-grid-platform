@@ -4,7 +4,10 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BigIntegerNode;
 import com.fasterxml.jackson.databind.node.DecimalNode;
 import com.fasterxml.jackson.databind.node.IntNode;
@@ -18,6 +21,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.springframework.stereotype.Service;
 
 /**
@@ -100,11 +104,17 @@ public class JsonObjectCreator {
     if (DATA_OBJECT_NO_VALUE_TYPES.contains(dataObjectType)) {
       return;
     }
-    JsonNode valueNode;
+    final JsonNode valueNode;
     if (DATA_OBJECT_INTEGER_VALUE_TYPES.contains(dataObjectType)) {
       valueNode = this.createIntegerNode(new BigInteger(textValue));
     } else if (DATA_OBJECT_DECIMAL_VALUE_TYPES.contains(dataObjectType)) {
       valueNode = DecimalNode.valueOf(new BigDecimal(textValue));
+    } else if (dataObjectType == Type.ARRAY) {
+      try {
+        valueNode = (ArrayNode) new ObjectMapper().readTree(textValue);
+      } catch (final JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
     } else {
       valueNode = TextNode.valueOf(textValue);
     }

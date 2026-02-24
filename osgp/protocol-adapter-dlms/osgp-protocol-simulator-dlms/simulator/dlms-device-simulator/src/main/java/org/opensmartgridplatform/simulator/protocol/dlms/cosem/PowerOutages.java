@@ -4,21 +4,25 @@
 
 package org.opensmartgridplatform.simulator.protocol.dlms.cosem;
 
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.openmuc.jdlms.AttributeAccessMode;
 import org.openmuc.jdlms.CosemAttribute;
 import org.openmuc.jdlms.CosemClass;
+import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinition;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CaptureObjectDefinitionCollection;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.CosemDateTimeProcessor;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.DataProcessor;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.processing.UInteger32DataProcessor;
+import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 
 @CosemClass(id = 7)
-public class PowerOutages extends ProfileGeneric {
+public class PowerOutages extends DynamicProfile {
 
   private static final int CAPTURE_PERIOD = 0;
   private static final int PROFILE_ENTRIES = 10;
@@ -90,8 +94,21 @@ public class PowerOutages extends ProfileGeneric {
       snOffset = 0x38)
   public DataObject profileEntries;
 
-  public PowerOutages(final Calendar time) {
-    super("1.0.99.97.0.255");
+  public PowerOutages(
+      final String instanceId,
+      final DynamicValues dynamicValues,
+      final Calendar time,
+      final Integer maxNumberOfCaptureObjects,
+      final List<CaptureObject> captureObjectList,
+      final Map<CaptureObject, DataProcessor> dataProcessorByCaptureObject) {
+
+    super(
+        instanceId,
+        dynamicValues,
+        time,
+        maxNumberOfCaptureObjects,
+        captureObjectList,
+        dataProcessorByCaptureObject);
     this.time = time;
 
     this.buffer = DataObject.newNullData();
@@ -124,9 +141,9 @@ public class PowerOutages extends ProfileGeneric {
     this.bufferData = new CircularFifoQueue<>(PROFILE_ENTRIES);
 
     // Add all events.
-    for (int i = 1; i < 5; i++) {
-      this.bufferData.add(Arrays.asList(this.getNextDateTime(), (long) (i * 180)));
-    }
+    //    for (int i = 1; i < 5; i++) {
+    //      this.bufferData.add(Arrays.asList(this.getNextDateTime(), (long) (i * 180)));
+    //    }
   }
 
   private Calendar getNextDateTime() {
@@ -138,5 +155,10 @@ public class PowerOutages extends ProfileGeneric {
   @Override
   protected CaptureObjectDefinitionCollection getCaptureObjectDefinitionCollection() {
     return CAPTURE_OBJECT_DEFINITIONS;
+  }
+
+  @Override
+  public DataObject getBuffer(final SelectiveAccessDescription selectiveAccessDescription) {
+    return super.getBuffer(selectiveAccessDescription);
   }
 }

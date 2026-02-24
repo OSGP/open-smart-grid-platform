@@ -42,4 +42,16 @@ public class BundledGetOutagesSteps extends BaseBundleSteps {
 
     assertThat(values).containsExactlyInAnyOrderEntriesOf(expectedValues);
   }
+
+  @Then("^the bundle response should contain a get outages response without outages$")
+  public void theBundleResponseShouldContainAGetOutagesResponseWithoutValues() throws Throwable {
+    final Response response = this.getNextBundleResponse();
+
+    assertThat(response instanceof GetOutagesResponse).isTrue();
+
+    final GetOutagesResponse outagesResponse = (GetOutagesResponse) response;
+    final List<Outage> outages = outagesResponse.getOutages();
+
+    assertThat(outages).isEmpty();
+  }
 }
