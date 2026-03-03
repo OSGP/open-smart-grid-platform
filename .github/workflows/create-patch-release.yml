@@ -1,0 +1,67 @@
+name: create-patch-release.yml
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "The release version for which to create a new patch release"
+        required: true
+        type: string
+      dry-run:
+        description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
+        required: false
+        type: boolean
+        default: true
+
+env:
+  ENV_FILE: .github/workflows/.env
+
+jobs:
+  create-patch-release:
+    name: Create a new patch release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify release version
+        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}"
+
+      - name: Setup SSH
+        if: success()
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: |
+            ${{secrets.REPOS_PRIVATE_SSH_KEY}}
+
+      # Checkout current repository for env file
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup git identity
+        if: success()
+        run: bash scripts/common/setup-git-identify $ENV_FILE
+
+      - name: Checkout repositories
+        run: bash scripts/common/checkout-repositories.sh $ENV_FILE
+
+      - name: Update patch release version
+        id: patch_version
+        if: success()
+        run: bash scripts/patch-release/update-minor-version.sh "${{ github.event.inputs.release_version }}"
+
+      - name: Verify repositories
+        if: success()
+        run: bash scripts/patch-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
+
+      - name: Create Release Branches
+        if: success()
+        run: bash scripts/patch-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
+
+      - name: Increment pom version
+        if: success()
+        run: bash scripts/patch-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
+
+    # Push release branches
+      - name: Push Release Branches
+        if: success()
+        run: bash scripts/common/push-release-branches.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }}" "${{ steps.patch_version.outputs.new }}"
+
+
+

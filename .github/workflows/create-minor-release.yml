@@ -1,0 +1,65 @@
+name: create-minor-release.yml
+on:
+  workflow_dispatch:
+    inputs:
+      release-version:
+        description: "The release version to create (in «major».«minor».«patch» format)."
+        required: true
+        type: string
+      dry-run:
+        description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
+        required: false
+        type: boolean
+        default: true
+
+env:
+  ENV_FILE: .github/workflows/.env
+
+jobs:
+  create-minor-release:
+    name: Create a new minor release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify release version
+        run: bash scripts/verify-release-version.sh "${{ github.event.inputs.release_version }}"
+
+      - name: Setup SSH
+        if: success()
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: |
+            ${{secrets.REPOS_PRIVATE_SSH_KEY}}
+
+      # Checkout current repository for env file
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup git identity
+        if: success()
+        run: bash scripts/common/setup-git-identity $ENV_FILE
+
+      - name: Checkout repositories
+        if: success()
+        id: checkout
+        run: bash scripts/common/checkout-repositories.sh $ENV_FILE
+
+      - name: Verify repositories
+        if: success()
+        run: bash scripts/minor-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
+
+      - name: Update minor release version
+        id: minor_version
+        if: success()
+        run: bash scripts/minor-release/update-minor-version.sh "${{ github.event.inputs.release_version }}"
+
+      - name: Create release branches
+        if: success()
+        run: bash scripts/minor-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
+
+      - name: Increment pom version
+        if: success()
+        run: bash scripts/minor-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}"  "${{ github.event.inputs.release_version }}" "${{ steps.minor_version.outputs.new }}"
+
+      - name: Push release branches
+        if: success()
+        run: bash scripts/common/push-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ github.event.inputs.dry_run }}"
