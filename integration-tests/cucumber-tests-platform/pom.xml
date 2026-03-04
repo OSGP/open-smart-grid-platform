@@ -188,7 +188,7 @@ SPDX-License-Identifier: Apache-2.0
                   <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
                   <resources>
                     <resource>
-                      <directory>${project.basedir}/../../data</directory>
+                      <directory>${project.basedir}/../../k3d-config</directory>
                       <includes>
                         <include>cucumber-tests-platform.properties</include>
                       </includes>
