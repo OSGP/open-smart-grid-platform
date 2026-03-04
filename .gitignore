@@ -11,7 +11,7 @@
 .metadata
 .gradle
 bin/
-data/
+k3d-config/
 tmp/
 target/
 *.tmp
