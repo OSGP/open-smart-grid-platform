@@ -9,9 +9,10 @@ echo "::debug:: ENV_FILE: $ENV_FILE"
 echo "::debug:: HOME_DIR: $HOME_DIR"
 echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 
-# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-source ./.github/workflows/scripts/common/ensure-ssh.sh
-ensure_ssh
+
+## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
+#source ./.github/workflows/scripts/common/ensure-ssh.sh
+#ensure_ssh
 
 
 # shellcheck source=../../.env

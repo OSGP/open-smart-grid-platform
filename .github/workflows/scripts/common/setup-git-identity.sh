@@ -2,13 +2,13 @@
 
 ENV_FILE=$1
 
-echo "::info:: Executing setup-git-identity.sh with parameters:"
-echo "::info:: ENV_FILE: $ENV_FILE"
+echo "::debug:: Executing setup-git-identity.sh with parameters:"
+echo "::debug:: ENV_FILE: $ENV_FILE"
 
 
-# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-source ./.github/workflows/scripts/common/ensure-ssh.sh
-ensure_ssh
+## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
+#source ./.github/workflows/scripts/common/ensure-ssh.sh
+#ensure_ssh
 
 
 # shellcheck source=../../.env
