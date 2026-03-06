@@ -7,7 +7,7 @@ echo "::info:: ENV_FILE: $ENV_FILE"
 
 # TODO remove
 # Needed locally to make sure ssh is working with passphrase
-source ./ensure-ssh.sh
+source ./.github/workflows/scripts/common/ensure-ssh.sh
 ensure_ssh
 
 

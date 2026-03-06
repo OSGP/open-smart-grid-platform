@@ -12,7 +12,7 @@ echo "::info:: RELEASE_VERSION: $RELEASE_VERSION"
 
 # TODO remove
 # Needed locally to make sure ssh is working with passphrase
-source ../common/ensure-ssh.sh
+source ./.github/workflows/scripts/common/ensure-ssh.sh
 ensure_ssh
 
 
