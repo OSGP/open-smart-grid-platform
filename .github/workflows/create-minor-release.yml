@@ -44,27 +44,21 @@ jobs:
 
       - name: Setup git identity
         if: success()
-        run: |
-          bash ./.github/workflows/scripts/common/ensure-ssh.sh
-          bash ./.github/workflows/scripts/common/setup-git-identity.sh $ENV_FILE
+        run: bash ./.github/workflows/scripts/common/setup-git-identity.sh $ENV_FILE
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Checkout repositories
         if: success()
         id: checkout
-        run: |
-          bash ./.github/workflows/scripts/common/ensure-ssh.sh
-          bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
+        run: bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: Verify repositories
         if: success()
-        run: |
-          bash ./.github/workflows/scripts/common/ensure-ssh.sh
-          bash ./.github/workflows/scripts/minor-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/minor-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
 
       - name: Update minor release version
         id: minor_version
@@ -73,18 +67,12 @@ jobs:
 
       - name: Create release branches
         if: success()
-        run: |
-          bash ./.github/workflows/scripts/common/ensure-ssh.sh
-          bash ./.github/workflows/scripts/minor-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/minor-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
 
       - name: Increment pom version
         if: success()
-        run: |
-          bash ./.github/workflows/scripts/common/ensure-ssh.sh
-          bash ./.github/workflows/scripts/minor-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}"  "${{ github.event.inputs.release_version }}" "${{ steps.minor_version.outputs.new }}"
+        run: bash ./.github/workflows/scripts/minor-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}"  "${{ github.event.inputs.release_version }}" "${{ steps.minor_version.outputs.new }}"
 
       - name: Push release branches
         if: false
-        run: |
-          bash ./.github/workflows/scripts/common/ensure-ssh.sh
-          bash scripts/common/push-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ github.event.inputs.dry_run }}"
+        run: bash scripts/common/push-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ github.event.inputs.dry_run }}"
