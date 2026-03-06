@@ -2,8 +2,8 @@
 
 ENV_FILE=$1
 
-echo "::debug:: Executing setup-git-identity.sh with parameters:"
-echo "::debug:: ENV_FILE: $ENV_FILE"
+echo "::info:: Executing setup-git-identity.sh with parameters:"
+echo "::info:: ENV_FILE: $ENV_FILE"
 
 # shellcheck source=../../.env
 source "$ENV_FILE"
