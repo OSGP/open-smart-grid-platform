@@ -4,14 +4,13 @@ ENV_FILE=$1
 HOME_DIR=$2
 RELEASE_VERSION=$3
 
-echo "::info:: Executing verify-repositories.sh with parameters:"
-echo "::info:: ENV_FILE: $ENV_FILE"
-echo "::info:: HOME_DIR: $HOME_DIR"
-echo "::info:: RELEASE_VERSION: $RELEASE_VERSION"
+echo "::debug:: Executing verify-repositories.sh with parameters:"
+echo "::debug:: ENV_FILE: $ENV_FILE"
+echo "::debug:: HOME_DIR: $HOME_DIR"
+echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 
 
-# TODO remove
-# Needed locally to make sure ssh is working with passphrase
+# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
 source ./.github/workflows/scripts/common/ensure-ssh.sh
 ensure_ssh
 

@@ -6,8 +6,7 @@ echo "::info:: Executing setup-git-identity.sh with parameters:"
 echo "::info:: ENV_FILE: $ENV_FILE"
 
 
-# TODO remove
-# Needed locally to make sure ssh is working with passphrase
+# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
 source ./.github/workflows/scripts/common/ensure-ssh.sh
 ensure_ssh
 

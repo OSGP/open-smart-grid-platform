@@ -12,8 +12,7 @@ echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 echo "::debug:: NEW_MINOR_VERSION: $NEW_MINOR_VERSION"
 
 
-# TODO remove
-# Needed locally to make sure ssh is working with passphrase
+# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
 source ./.github/workflows/scripts/common/ensure-ssh.sh
 ensure_ssh
 
