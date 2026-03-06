@@ -5,10 +5,17 @@ ENV_FILE=$1
 echo "::info:: Executing setup-git-identity.sh with parameters:"
 echo "::info:: ENV_FILE: $ENV_FILE"
 
+
+# TODO remove
+# Needed locally to make sure ssh is working with passphrase
+source ./.github/workflows/scripts/common/ensure-ssh.sh
+ensure_ssh
+
+
 # shellcheck source=../../.env
 source "$ENV_FILE"
 git config --global gpg.format ssh
-ssh-add -L > ~/public.key
+#ssh-add -L > ~/public.key
 git config --global user.signingkey ~/public.key
 git config --global commit.gpgsign true
 git config --global user.name "$GIT_USER"
