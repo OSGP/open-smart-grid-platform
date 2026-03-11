@@ -26,6 +26,11 @@ SPDX-License-Identifier: Apache-2.0
   </parent>
 
   <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub OSGP Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/OSGP/open-smart-grid-platform</url>
+    </repository>
     <site>
       <id>shared-components</id>
       <name>shared-components</name>

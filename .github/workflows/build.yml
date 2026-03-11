@@ -50,6 +50,47 @@ jobs:
           name: warFiles
           path: staging
 
+  deploy:
+    name: Deploying shared libraries
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'release')
+    needs: build
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: warFiles
+      - name: Configure Maven for GitHub Packages
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+      - name: Deploy
+        run: |
+          ./mvnw deploy -f super/pom.xml
+          ./mvnw deploy -f ospg/shared/pom.xml
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   docker:
     name: Building docker images
     runs-on: ubuntu-latest
