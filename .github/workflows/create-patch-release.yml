@@ -20,19 +20,22 @@ jobs:
     name: Create a new patch release
     runs-on: ubuntu-latest
     steps:
-      - name: Verify release version
-        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}"
-
-      - name: Setup SSH
-        if: success()
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: |
-            ${{secrets.REPOS_PRIVATE_SSH_KEY}}
+#      - name: Verify release version
+#        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}"
+#
+#      - name: Setup SSH
+#        if: success()
+#        uses: webfactory/ssh-agent@v0.9.1
+#        with:
+#          ssh-private-key: |
+#            ${{secrets.REPOS_PRIVATE_SSH_KEY}}
 
       # Checkout current repository for env file
       - name: Checkout
         uses: actions/checkout@v6.0.2
+
+      - name: Verify release version
+        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}"
 
       - name: Setup git identity
         if: success()
