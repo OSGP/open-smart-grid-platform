@@ -52,7 +52,7 @@ SPDX-License-Identifier: Apache-2.0
     <spring.version>6.2.11</spring.version>
     <spring.data.version>3.5.3</spring.data.version>
     <spring.data.commons.version>3.5.3</spring.data.commons.version>
-    <spring.security.version>6.5.5</spring.security.version>
+    <spring.security.version>6.5.9</spring.security.version>
     <spring.ws.version>4.1.1</spring.ws.version>
     <spring.integration.version>6.5.3</spring.integration.version>
     <reactor.version>2024.0.11</reactor.version>
