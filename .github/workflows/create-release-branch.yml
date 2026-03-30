@@ -37,7 +37,7 @@ jobs:
       - name: Checkout
         if: success()
         uses: actions/checkout@v6.0.2
-        # TODO - Remove specific branch ref to use development branch instead
+        # TODO - Replace feature branch ref by development branch
         with:
           ref: feature/FDP-3711-separate-releases
 

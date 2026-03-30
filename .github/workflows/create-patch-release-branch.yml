@@ -34,6 +34,9 @@ jobs:
       # Checkout current repository for env file
       - name: Checkout
         uses: actions/checkout@v6.0.2
+        # TODO - Replace feature branch ref by development branch
+        with:
+          ref: feature/FDP-3711-separate-releases
 
       - name: Verify release version
         run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
