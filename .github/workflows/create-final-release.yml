@@ -1,0 +1,76 @@
+# Finalizes the release by:
+#   * removing the -SNAPSHOT suffix from the versions in the pom files
+#   * creating a new release tag
+
+name: create-final-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "The release version that will be finalized"
+        required: true
+        type: string
+      dry-run:
+        description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
+        required: false
+        type: boolean
+        default: true
+      tag-release-message:
+        description: "The message to be used in the release tag"
+        required: false
+        type: string
+        default: "New release version"
+
+env:
+  ENV_FILE: ".github/workflows/.env"
+
+jobs:
+  create-final-release:
+    name: "Create final release"
+    runs-on: ubuntu-latest
+    steps:
+#      - name: "Verify release version"
+#        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
+#
+#      - name: Setup SSH
+#        if: success()
+#        uses: webfactory/ssh-agent@v0.9.1
+#        with:
+#          ssh-private-key: |
+#            ${{ secrets.REPOS_PRIVATE_SSH_KEY }}
+
+      # Checkout current repository for env file
+      - name: "Checkout"
+        if: success()
+        uses: actions/checkout@v6.0.2
+        # TODO - Remove specific branch ref to use development branch instead
+        with:
+          ref: feature/FDP-3711-separate-releases
+
+      - name: "Verify release version"
+        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
+
+      - name: "Setup git identity"
+        if: success()
+        run: bash scripts/common/setup-git-identify $ENV_FILE
+
+      - name: "Checkout repositories"
+        if: success()
+        id: checkout
+        run: bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+
+      - name: "Verify repositories"
+        if: success()
+        run: bash ./.github/workflows/scripts/final-release/verify-repositories.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }} ${{ github.event.inputs.release_version }}
+
+      - name: "Update pom versions"
+        if: success()
+        run: bash ./.github/workflows/scripts/final-release/update-release-version.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }} ${{ github.event.inputs.release_version }} ${{ github.event.inputs.dry_run }}
+
+      - name: "Create release tag"
+        if: success()
+        run: bash ./.github/workflows/scripts/final-release/create-release-tag.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }} ${{ github.event.inputs.release_version }} ${{ github.event.inputs.tag_release_messge }} ${{ github.event.inputs.dry_run }}

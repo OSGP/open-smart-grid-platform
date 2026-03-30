@@ -1,4 +1,5 @@
-name: create-minor-release.yml
+# Creates a new release branch based on the development branch and increases the minor version in the pom files in the development branch
+name: create-release-branch
 on:
   workflow_dispatch:
     inputs:
@@ -18,8 +19,8 @@ env:
   SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
 jobs:
-  create-minor-release:
-    name: Create a new minor release
+  create-release-branch:
+    name: Create a new release branch
     runs-on: ubuntu-latest
     steps:
 #      - name: Verify release version
@@ -36,11 +37,12 @@ jobs:
       - name: Checkout
         if: success()
         uses: actions/checkout@v6.0.2
+        # TODO - Remove specific branch ref to use development branch instead
         with:
           ref: feature/FDP-3711-separate-releases
 
       - name: Verify release version
-        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.]0$"
 
       - name: Setup git identity
         if: success()
@@ -58,20 +60,20 @@ jobs:
 
       - name: Verify repositories
         if: success()
-        run: bash ./.github/workflows/scripts/minor-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
 
       - name: Update minor release version
         id: minor_version
         if: success()
-        run: bash ./.github/workflows/scripts/minor-release/update-minor-version.sh "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/release/update-minor-version.sh "${{ github.event.inputs.release_version }}"
 
       - name: Create release branches
         if: success()
-        run: bash ./.github/workflows/scripts/minor-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}"
 
       - name: Increment pom version
         if: success()
-        run: bash ./.github/workflows/scripts/minor-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}"  "${{ github.event.inputs.release_version }}" "${{ steps.minor_version.outputs.new }}"
+        run: bash ./.github/workflows/scripts/release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}"  "${{ github.event.inputs.release_version }}" "${{ steps.minor_version.outputs.new }}"
 
       - name: Push release branches
         if: false

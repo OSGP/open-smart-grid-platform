@@ -1,4 +1,5 @@
-name: create-patch-release.yml
+# Creates a new patch release branch based on the previous release branch and increments the patch version in the poom files in the new patch release branch
+name: create-patch-release-branch
 on:
   workflow_dispatch:
     inputs:
@@ -16,8 +17,8 @@ env:
   ENV_FILE: .github/workflows/.env
 
 jobs:
-  create-patch-release:
-    name: Create a new patch release
+  create-patch-release-branch:
+    name: Create a new patch release branch
     runs-on: ubuntu-latest
     steps:
 #      - name: Verify release version
@@ -35,7 +36,7 @@ jobs:
         uses: actions/checkout@v6.0.2
 
       - name: Verify release version
-        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}"
+        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
 
       - name: Setup git identity
         if: success()
@@ -47,7 +48,7 @@ jobs:
       - name: Update patch release version
         id: patch_version
         if: success()
-        run: bash scripts/patch-release/update-minor-version.sh "${{ github.event.inputs.release_version }}"
+        run: bash scripts/patch-release/update-patch-version.sh "${{ github.event.inputs.release_version }}"
 
       - name: Verify repositories
         if: success()
