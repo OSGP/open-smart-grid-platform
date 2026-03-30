@@ -24,6 +24,8 @@ on:
 
 env:
   ENV_FILE: ".github/workflows/.env"
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
 jobs:
   create-final-release:
@@ -49,11 +51,11 @@ jobs:
           ref: feature/FDP-3711-separate-releases
 
       - name: "Verify release version"
-        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
+        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
 
       - name: "Setup git identity"
         if: success()
-        run: bash scripts/common/setup-git-identify $ENV_FILE
+        run: bash ./.github/workflows/scripts/common/setup-git-identity.sh $ENV_FILE
 
       - name: "Checkout repositories"
         if: success()

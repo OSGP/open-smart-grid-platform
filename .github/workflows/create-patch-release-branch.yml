@@ -7,7 +7,7 @@ on:
         description: "The release version for which to create a new patch release"
         required: true
         type: string
-      dry-run:
+      dry_run:
         description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
         required: false
         type: boolean
@@ -15,6 +15,8 @@ on:
 
 env:
   ENV_FILE: .github/workflows/.env
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
 jobs:
   create-patch-release-branch:
@@ -39,36 +41,37 @@ jobs:
           ref: feature/FDP-3711-separate-releases
 
       - name: Verify release version
-        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
-
+        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
       - name: Setup git identity
         if: success()
-        run: bash scripts/common/setup-git-identify $ENV_FILE
+        run: bash ./.github/workflows/scripts/common/setup-git-identity.sh $ENV_FILE
 
       - name: Checkout repositories
-        run: bash scripts/common/checkout-repositories.sh $ENV_FILE
+        id: checkout
+        if: success()
+        run: bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
 
       - name: Update patch release version
         id: patch_version
         if: success()
-        run: bash scripts/patch-release/update-patch-version.sh "${{ github.event.inputs.release_version }}"
+        run: bash ./.github/workflows/scripts/patch-release/update-patch-version.sh "${{ github.event.inputs.release_version }}"
 
       - name: Verify repositories
         if: success()
-        run: bash scripts/patch-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
+        run: bash ./.github/workflows/scripts/patch-release/verify-repositories.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
 
       - name: Create Release Branches
         if: success()
-        run: bash scripts/patch-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
+        run: bash ./.github/workflows/scripts/patch-release/create-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
 
       - name: Increment pom version
         if: success()
-        run: bash scripts/patch-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
+        run: bash ./.github/workflows/scripts/patch-release/increment-pom-version.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ steps.patch_version.outputs.new }}"
 
     # Push release branches
       - name: Push Release Branches
-        if: success()
-        run: bash scripts/common/push-release-branches.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }}" "${{ steps.patch_version.outputs.new }}"
+        if: false
+        run: bash ./.github/workflows/scripts/common/push-release-branches.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }}" "${{ steps.patch_version.outputs.new }}"
 
 
 

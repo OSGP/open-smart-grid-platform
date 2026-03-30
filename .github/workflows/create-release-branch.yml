@@ -54,9 +54,9 @@ jobs:
         if: success()
         id: checkout
         run: bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+#        env:
+#          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: Verify repositories
         if: success()
@@ -77,4 +77,4 @@ jobs:
 
       - name: Push release branches
         if: false
-        run: bash scripts/common/push-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ github.event.inputs.dry_run }}"
+        run: bash ./.github/workflows/scripts/common/push-release-branches.sh $ENV_FILE "${{ steps.checkout.outputs.repo_dir }}" "${{ github.event.inputs.release_version }}" "${{ github.event.inputs.dry_run }}"
