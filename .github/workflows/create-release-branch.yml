@@ -1,5 +1,11 @@
-# Creates a new release branch based on the development branch and increases the minor version in the pom files in the development branch
+# Creates a new release branch based on the development branch
+# and increases the minor version in the pom files in the development branch
+
 name: create-release-branch
+
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -15,8 +21,8 @@ on:
 
 env:
   ENV_FILE: .github/workflows/.env
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+#  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
 jobs:
   create-release-branch:

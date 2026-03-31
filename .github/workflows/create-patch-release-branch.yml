@@ -1,5 +1,11 @@
-# Creates a new patch release branch based on the previous release branch and increments the patch version in the poom files in the new patch release branch
+# Creates a new patch release branch based on the previous release branch
+# and increments the patch version in the pom files in the new patch release branch
+
 name: create-patch-release-branch
+
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:

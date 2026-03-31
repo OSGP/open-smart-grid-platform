@@ -1,8 +1,10 @@
-# Finalizes the release by:
-#   * removing the -SNAPSHOT suffix from the versions in the pom files
-#   * creating a new release tag
+# Finalizes the release by removing the -SNAPSHOT suffix from the versions in the pom files
+# and creating a new release tag
 
 name: create-final-release
+
+permissions:
+  contents: write
 
 on:
   workflow_dispatch:
