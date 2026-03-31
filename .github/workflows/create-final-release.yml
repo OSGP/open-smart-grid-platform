@@ -24,34 +24,33 @@ on:
 
 env:
   ENV_FILE: ".github/workflows/.env"
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+#  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+#  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
 jobs:
   create-final-release:
     name: "Create final release"
     runs-on: ubuntu-latest
     steps:
-#      - name: "Verify release version"
-#        run: bash scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
-#
-#      - name: Setup SSH
-#        if: success()
-#        uses: webfactory/ssh-agent@v0.9.1
-#        with:
-#          ssh-private-key: |
-#            ${{ secrets.REPOS_PRIVATE_SSH_KEY }}
+      - name: "Verify release version"
+        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
+
+      - name: Setup SSH
+        if: success()
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: |
+            ${{ secrets.REPOS_PRIVATE_SSH_KEY }}
 
       # Checkout current repository for env file
       - name: "Checkout"
         if: success()
         uses: actions/checkout@v6.0.2
-        # TODO - Remove specific branch ref to use development branch instead
-        with:
-          ref: feature/FDP-3711-separate-releases
+#        with:
+#          ref: feature/FDP-3711-separate-releases
 
-      - name: "Verify release version"
-        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
+#      - name: "Verify release version"
+#        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
 
       - name: "Setup git identity"
         if: success()
@@ -61,9 +60,6 @@ jobs:
         if: success()
         id: checkout
         run: bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
       - name: "Verify repositories"
         if: success()

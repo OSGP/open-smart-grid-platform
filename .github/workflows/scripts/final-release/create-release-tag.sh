@@ -13,9 +13,9 @@ echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 echo "::debug:: RELEASE_TAG_MESSAGE: $RELEASE_TAG_MESSAGE"
 echo "::debug:: DRY_RUN: $DRY_RUN"
 
-# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-source ./.github/workflows/scripts/common/ensure-ssh.sh
-ensure_ssh
+## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
+#source ./.github/workflows/scripts/common/ensure-ssh.sh
+#ensure_ssh
 
 # shellcheck source=../../.env
 source "$ENV_FILE"

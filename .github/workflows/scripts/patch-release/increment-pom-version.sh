@@ -12,11 +12,9 @@ echo "::debug:: RELEASE_BRANCH_PREFIX: $RELEASE_BRANCH_PREFIX"
 echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 echo "::debug:: NEW_PATCH_VERSION: $NEW_PATCH_VERSION"
 
-
-# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-source ./.github/workflows/scripts/common/ensure-ssh.sh
-ensure_ssh
-
+## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
+#source ./.github/workflows/scripts/common/ensure-ssh.sh
+#ensure_ssh
 
 # shellcheck source=../../.env
 source "$ENV_FILE"

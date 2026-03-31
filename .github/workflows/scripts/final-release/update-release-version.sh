@@ -11,11 +11,11 @@ echo "::debug:: HOME_DIR: $HOME_DIR"
 echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 echo "::debug:: DRY_RUN: $DRY_RUN"
 
-# TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-source ./.github/workflows/scripts/common/ensure-ssh.sh
-ensure_ssh
+## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
+#source ./.github/workflows/scripts/common/ensure-ssh.sh
+#ensure_ssh
 
-#shellcheck source=../../.env
+# shellcheck source=../../.env
 source "$ENV_FILE"
 expected_version=${RELEASE_VERSION}-SNAPSHOT
 repositories=$(echo "$RELEASE_REPOSITORIES" | tr -d '[:space:]')
