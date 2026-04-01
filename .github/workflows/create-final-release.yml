@@ -33,24 +33,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Verify release version"
-        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
+        run: |
+          bash ./.github/workflows/scripts/common/verify-release-version.sh \
+            "${{ github.event.inputs.release_version }}" \
+            "^[0-9]+[.][0-9]+[.][0-9]+$"
 
-      - name: Generate GitHub App token
+      - name: "Generate GitHub App token"
         id: app-token
+        if: success()
         uses: actions/create-github-app-token@v3.0.0
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      # Checkout current repository for env file
-      - name: Checkout repo
+      - name: "Checkout current repo for env file"
         if: success()
         uses: actions/checkout@v6.0.2
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-      # Configure git
-      - name: Configure git
+      - name: "Configure git"
         if: success()
         run: |
           bash ./.github/workflows/scripts/common/configure-git.sh \

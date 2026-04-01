@@ -24,28 +24,29 @@ env:
 
 jobs:
   create-release-branch:
-    name: Create a new release branch
+    name: "Create a new release branch"
     runs-on: ubuntu-latest
     steps:
-      - name: Verify release version
-        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.]0$"
+      - name: "Verify release version"
+        run: |
+          bash ./.github/workflows/scripts/common/verify-release-version.sh \
+            "${{ github.event.inputs.release_version }}" \
+            "^[0-9]+[.][0-9]+[.]0$"
 
-      - name: Generate GitHub App token
+      - name: "Generate GitHub App token"
         id: app-token
         uses: actions/create-github-app-token@v3.0.0
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      # Checkout current repository for env file
-      - name: Checkout repo
+      - name: "Checkout current repo for env file"
         if: success()
         uses: actions/checkout@v6.0.2
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-      # Configure git
-      - name: Configure git
+      - name: "Configure git"
         if: success()
         run: |
           bash ./.github/workflows/scripts/common/configure-git.sh \
@@ -53,14 +54,14 @@ jobs:
         env:
           TOKEN: ${{ steps.app-token.outputs.token }}
 
-      - name: Checkout repositories
+      - name: "Checkout repositories"
         if: success()
         id: checkout
         run: |
           bash ./.github/workflows/scripts/common/checkout-repositories.sh \
             $ENV_FILE
 
-      - name: Verify repositories
+      - name: "Verify repositories"
         if: success()
         run: |
           bash ./.github/workflows/scripts/release/verify-repositories.sh \
@@ -68,14 +69,14 @@ jobs:
             "${{ steps.checkout.outputs.repo_dir }}" \
             "${{ github.event.inputs.release_version }}"
 
-      - name: Update minor release version
+      - name: "Update minor release version"
         id: minor_version
         if: success()
         run: |
           bash ./.github/workflows/scripts/release/update-minor-version.sh \
             "${{ github.event.inputs.release_version }}"
 
-      - name: Create release branches
+      - name: "Create release branches"
         if: success()
         run: |
           bash ./.github/workflows/scripts/release/create-release-branches.sh \
@@ -83,7 +84,7 @@ jobs:
             "${{ steps.checkout.outputs.repo_dir }}" \
             "${{ github.event.inputs.release_version }}"
 
-      - name: Increment pom version
+      - name: "Increment pom version"
         if: success()
         run: |
           bash ./.github/workflows/scripts/release/increment-pom-version.sh \
@@ -92,7 +93,7 @@ jobs:
             "${{ github.event.inputs.release_version }}" \
             "${{ steps.minor_version.outputs.new }}"
 
-      - name: Push release branches
+      - name: "Push release branches"
         if: success()
         run: |
           bash ./.github/workflows/scripts/common/push-release-branches.sh \
