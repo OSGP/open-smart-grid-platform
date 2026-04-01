@@ -11,15 +11,13 @@ echo "::debug:: HOME_DIR: $HOME_DIR"
 echo "::debug:: OLD_RELEASE_VERSION: $OLD_RELEASE_VERSION"
 echo "::debug:: NEW_RELEASE_VERSION: $NEW_RELEASE_VERSION"
 
-## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-#source ./.github/workflows/scripts/common/ensure-ssh.sh
-#ensure_ssh
-
 # shellcheck source=../../.env
 source "$ENV_FILE"
+
 repositories=$(echo "$RELEASE_REPOSITORIES" | tr -d '[:space:]')
 new_release_branch=${RELEASE_BRANCH_PREFIX}$NEW_RELEASE_VERSION
 old_release_branch=${RELEASE_BRANCH_PREFIX}$OLD_RELEASE_VERSION
+
 for value in ${repositories//,/ }
 do
   if [[ ! $value =~ "b:" ]]; then

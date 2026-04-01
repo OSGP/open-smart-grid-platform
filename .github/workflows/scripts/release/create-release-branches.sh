@@ -9,14 +9,12 @@ echo "::debug:: ENV_FILE: $ENV_FILE"
 echo "::debug:: HOME_DIR: $HOME_DIR"
 echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 
-## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-#source ./.github/workflows/scripts/common/ensure-ssh.sh
-#ensure_ssh
-
 # shellcheck source=../../.env
 source "$ENV_FILE"
+
 repositories=$(echo "$RELEASE_REPOSITORIES" | tr -d '[:space:]')
 release_branch=${RELEASE_BRANCH_PREFIX}$RELEASE_VERSION
+
 for value in ${repositories//,/ }
 do
   if [[ ! $value =~ "b:" ]]; then

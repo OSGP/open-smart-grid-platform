@@ -13,6 +13,7 @@ echo "::debug:: DRY_RUN: $DRY_RUN"
 
 # shellcheck source=../../.env
 source "$ENV_FILE"
+
 repositories=$(echo "$RELEASE_REPOSITORIES" | tr -d '[:space:]')
 release_branch=${RELEASE_BRANCH_PREFIX}$RELEASE_VERSION
 

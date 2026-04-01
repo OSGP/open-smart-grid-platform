@@ -13,15 +13,13 @@ echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
 echo "::debug:: RELEASE_TAG_MESSAGE: $RELEASE_TAG_MESSAGE"
 echo "::debug:: DRY_RUN: $DRY_RUN"
 
-## TODO remove - Needed locally to make sure ssh is working with passphrase-protected key
-#source ./.github/workflows/scripts/common/ensure-ssh.sh
-#ensure_ssh
-
 # shellcheck source=../../.env
 source "$ENV_FILE"
+
 repositories=$(echo "$RELEASE_REPOSITORIES" | tr -d '[:space:]')
 release_branch=${RELEASE_BRANCH_PREFIX}${RELEASE_VERSION}
 release_tag=${RELEASE_TAG_PREFIX}${RELEASE_VERSION}
+
 for value in ${repositories//,/ }
 do
   if [[ ! $value =~ "b:" ]]; then

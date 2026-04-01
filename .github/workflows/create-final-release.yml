@@ -13,12 +13,12 @@ on:
         description: "The release version that will be finalized"
         required: true
         type: string
-      dry-run:
+      dry_run:
         description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
         required: false
         type: boolean
         default: true
-      tag-release-message:
+      tag_release_message:
         description: "The message to be used in the release tag"
         required: false
         type: string
@@ -26,8 +26,6 @@ on:
 
 env:
   ENV_FILE: ".github/workflows/.env"
-#  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-#  SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
 jobs:
   create-final-release:
@@ -37,40 +35,59 @@ jobs:
       - name: "Verify release version"
         run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
 
-      - name: Setup SSH
-        if: success()
-        uses: webfactory/ssh-agent@v0.9.1
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3.0.0
         with:
-          ssh-private-key: |
-            ${{ secrets.REPOS_PRIVATE_SSH_KEY }}
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       # Checkout current repository for env file
-      - name: "Checkout"
+      - name: Checkout repo
         if: success()
         uses: actions/checkout@v6.0.2
-#        with:
-#          ref: feature/FDP-3711-separate-releases
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
-#      - name: "Verify release version"
-#        run: bash ./.github/workflows/scripts/common/verify-release-version.sh "${{ github.event.inputs.release_version }}" "^[0-9]+[.][0-9]+[.][0-9]+$"
-
-      - name: "Setup git identity"
+      # Configure git
+      - name: Configure git
         if: success()
-        run: bash ./.github/workflows/scripts/common/setup-git-identity.sh $ENV_FILE
+        run: |
+          bash ./.github/workflows/scripts/common/configure-git.sh \
+            $ENV_FILE
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: "Checkout repositories"
         if: success()
         id: checkout
-        run: bash ./.github/workflows/scripts/common/checkout-repositories.sh $ENV_FILE
+        run: |
+          bash ./.github/workflows/scripts/common/checkout-repositories.sh \
+            $ENV_FILE
 
       - name: "Verify repositories"
         if: success()
-        run: bash ./.github/workflows/scripts/final-release/verify-repositories.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }} ${{ github.event.inputs.release_version }}
+        run: |
+          bash ./.github/workflows/scripts/final-release/verify-repositories.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}"
 
       - name: "Update pom versions"
         if: success()
-        run: bash ./.github/workflows/scripts/final-release/update-release-version.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }} ${{ github.event.inputs.release_version }} ${{ github.event.inputs.dry_run }}
+        run: |
+          bash ./.github/workflows/scripts/final-release/update-release-version.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}" \
+            "${{ github.event.inputs.dry_run }}"
 
       - name: "Create release tag"
         if: success()
-        run: bash ./.github/workflows/scripts/final-release/create-release-tag.sh $ENV_FILE ${{ steps.checkout.outputs.repo_dir }} ${{ github.event.inputs.release_version }} ${{ github.event.inputs.tag_release_messge }} ${{ github.event.inputs.dry_run }}
+        run: |
+          bash ./.github/workflows/scripts/final-release/create-release-tag.sh \
+              $ENV_FILE \
+              "${{ steps.checkout.outputs.repo_dir }}" \
+              "${{ github.event.inputs.release_version }}" \
+              "${{ github.event.inputs.tag_release_message }}" \
+              "${{ github.event.inputs.dry_run }}"
