@@ -81,7 +81,10 @@ public class PushedMessageProcessor {
             pushNotificationAlarm);
 
     final MessageMetadata messageMetadata =
-        new Builder().withMessagePriority(MessagePriorityEnum.HIGH.getPriority()).build();
+        new Builder()
+            .withMessagePriority(MessagePriorityEnum.HIGH.getPriority())
+            .withCorrelationUid(correlationId)
+            .build();
 
     log.info("Sending push notification alarm to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(
