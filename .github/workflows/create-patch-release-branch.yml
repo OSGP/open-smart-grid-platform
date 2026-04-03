@@ -97,10 +97,10 @@ jobs:
             "${{ github.event.inputs.release_version }}" \
             "${{ steps.patch_version.outputs.new }}"
 
-      - name: "Push Release Branches"
+      - name: "Push changes"
         if: success()
         run: |
-          bash ./.github/workflows/scripts/common/push-release-branches.sh \
+          bash ./.github/workflows/scripts/patch-release/push-changes.sh \
             $ENV_FILE \
             "${{ steps.checkout.outputs.repo_dir }}" \
             "${{ steps.patch_version.outputs.new }}" \

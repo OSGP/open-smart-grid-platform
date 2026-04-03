@@ -3,11 +3,13 @@
 ENV_FILE=$1
 HOME_DIR=$2
 RELEASE_VERSION=$3
+DRY_RUN=$4
 
-echo "::debug::Executing create-release-branches.sh with parameters:"
+echo "::debug::Executing push-changes.sh with parameters:"
 echo "::debug::ENV_FILE: ${ENV_FILE}"
 echo "::debug::HOME_DIR: ${HOME_DIR}"
 echo "::debug::RELEASE_VERSION: ${RELEASE_VERSION}"
+echo "::debug::DRY_RUN: ${DRY_RUN}"
 
 # shellcheck source=../../.env
 source "${ENV_FILE}"
@@ -19,16 +21,19 @@ for value in ${repositories//,/ }
 do
   if [[ ! ${value} =~ "b:" ]]; then
     working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
-    echo "::debug::Change directory to ${working_dir}"
     cd "${working_dir}" || return
-
-    current_branch="$(git rev-parse --abbrev-ref HEAD)"
-
-    echo "::notice::Creating new release branch ${release_branch} in repository ${value}"
-    git checkout -b "${release_branch}"
+    echo "::notice::Pushing changes for repo ${value}, branch ${release_branch}"
+    echo "::debug::in directory ${working_dir}"
 
     status="$(git status 2>&1)"
     echo "::debug::Git status: ${status}"
-    git checkout "${current_branch}"
+
+    if [[ "${DRY_RUN}" == "true" ]]; then
+      echo "::debug::Dry-run push changes for branch: ${release_branch}"
+      git push --dry-run --set-upstream origin "${release_branch}"
+    else
+      echo "::debug::Push changes for branch: ${release_branch}"
+      git push --set-upstream origin "${release_branch}"
+    fi
   fi
 done

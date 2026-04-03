@@ -4,49 +4,43 @@ ENV_FILE=$1
 HOME_DIR=$2
 RELEASE_VERSION=$3
 NEW_MINOR_VERSION=$4
-DRY_RUN=$5
 
 echo "::debug:: Executing increment-pom-version.sh with parameters:"
-echo "::debug:: ENV_FILE: $ENV_FILE"
-echo "::debug:: HOME_DIR: $HOME_DIR"
-echo "::debug:: RELEASE_VERSION: $RELEASE_VERSION"
-echo "::debug:: NEW_MINOR_VERSION: $NEW_MINOR_VERSION"
-echo "::debug:: DRY_RUN: $DRY_RUN"
+echo "::debug:: ENV_FILE: ${ENV_FILE}"
+echo "::debug:: HOME_DIR: ${HOME_DIR}"
+echo "::debug:: RELEASE_VERSION: ${RELEASE_VERSION}"
+echo "::debug:: NEW_MINOR_VERSION: ${NEW_MINOR_VERSION}"
 
 # shellcheck source=../../.env
-source "$ENV_FILE"
+source "${ENV_FILE}"
 
-repositories=$(echo "$RELEASE_REPOSITORIES" | tr -d '[:space:]')
+repositories="$(echo "${RELEASE_REPOSITORIES}" | tr -d '[:space:]')"
 
 for value in ${repositories//,/ }
 do
   if [[ ! $value =~ "b:" ]]; then
-    cd "$HOME_DIR/$(echo "$value" | tr -d /)" || return
-    echo "::debug:: Updating pom versions in $(echo "$value" | tr -d /)"
-    poms=$(git ls-files '**pom.xml')
+    working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
+    cd "${working_dir}" || return
+    echo "::notice::Updating pom versions in repository ${value}, default branch"
+    echo "::debug::in directory ${working_dir}"
 
-    if [ -z "$poms" ]; then
-      echo "::notice::No pom.xml files found in $(echo "$value" | tr -d /). Skip incrementing pom versions."
+    poms="$(git ls-files '**pom.xml')"
+
+    if [ -z "${poms}" ]; then
+      echo "::notice::No pom.xml files found in ${working_dir}. Skip incrementing pom versions."
       continue
     fi
 
-    for pom in $poms
+    for pom in ${poms}
     do
-      echo "::debug::Updating: $pom in $value"
-      sed -i "s#<\\(osgp.[A-Za-z.-]*\\|shared.\\|smart.meter.[A-Za-z.-]*\\)\\?version>$RELEASE_VERSION#<\\1version>$NEW_MINOR_VERSION#g" "$pom"
-      git add "$pom"
+      echo "::debug::Updating: ${pom} in ${value}"
+      sed -i "s#<\\(osgp.[A-Za-z.-]*\\|shared.\\|smart.meter.[A-Za-z.-]*\\)\\?version>${RELEASE_VERSION}#<\\1version>${NEW_MINOR_VERSION}#g" "${pom}"
+      git add "${pom}"
     done
 
-    git commit -m "Adapted version to $NEW_MINOR_VERSION" || true
-    status=$(git status 2>&1)
-    echo "::debug::$status"
+    git commit -m "Adapted version to ${NEW_MINOR_VERSION}" || true
 
-    if [ "$DRY_RUN" = "true" ]; then
-      git push --dry-run origin
-      echo "::notice::Finished dry-run for pushing pom version update"
-    else
-      git push origin
-      echo "::notice::Finished pushing pom version update"
-    fi
+    status="$(git status 2>&1)"
+    echo "::debug::Git status: ${status}"
   fi
 done
