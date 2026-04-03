@@ -21,12 +21,16 @@ for value in ${repositories//,/ }
 do
   if [[ ! $value =~ "b:" ]]; then
     cd "$HOME_DIR/$(echo "$value" | tr -d /)" || return
-    echo "::notice:: pushing release branch $release_branch"
-    echo "::debug:: in $HOME_DIR/$(echo "$value" | tr -d /)"
+    echo "::notice::pushing release branch $release_branch"
+    echo "::debug::in $HOME_DIR/$(echo "$value" | tr -d /)"
 
     status=$(git status 2>&1)
-    echo "::debug:: $status"
-    git push "$(if $DRY_RUN; then echo "--dry-run"; fi)"
-    git push --set-upstream "$(if $DRY_RUN; then echo "--dry-run"; fi)" origin "$release_branch"
+    echo "::debug::git status: $status"
+
+    if [ "$DRY_RUN" = "true" ]; then
+      git push --dry-run --set-upstream origin "$release_branch"
+    else
+      git push --set-upstream origin "$release_branch"
+    fi
   fi
 done
