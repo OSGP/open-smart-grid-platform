@@ -76,7 +76,7 @@ jobs:
             "${{ steps.checkout.outputs.repo_dir }}" \
             "${{ github.event.inputs.release_version }}"
 
-      - name: "Update pom versions"
+      - name: "Update pom version"
         if: success()
         run: |
           bash ./.github/workflows/scripts/final-release/update-release-version.sh \
