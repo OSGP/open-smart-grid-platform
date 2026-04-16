@@ -63,7 +63,7 @@ increases the minor version from *x.y.0-SNAPSHOT* to *x.y+1.0-SNAPSHOT* in the m
 - *Dry run*, flag indicating whether it concerns a dry run, so that changes will not be pushed.
 
 ### Steps
-* Common steps, see [above](#Common)
+* _Common steps, see [above](#Common)_
 * Verify repositories, checks the release version inside the pom files
 * Update minor release version, determines the new minor version to be used in the main (development) branch
 * Create release branches, creates new release branches for all the checked out repositories listed in the .env file
@@ -73,12 +73,12 @@ increases the minor version from *x.y.0-SNAPSHOT* to *x.y+1.0-SNAPSHOT* in the m
 ### Workflow diagram
 ```mermaid
 flowchart TD
-X[/Workflow dispatch/] --> A[/Release version/]
+X([Workflow dispatch]) --> A[/Release version/]
 A -->|x.y.z| B[/Dry run/] 
 B -->|true/false| C[[Common steps]]
 C --> D(Verify repositories)
 D --> E(Update minor release version)
-E --> |minor-version| F(Create release branches)
+E --> |x.y+1.z| F(Create release branches)
 F --> G(Increment pom version)
 G --> H(Push changes)
 ```
@@ -93,11 +93,7 @@ updates the version in the maven pom files from *x.y.z* to *x.y.z+1* inside the 
 
 ### Steps
 
-* Common steps, see [above](#Common)
-* Checkout current repo for env file, checks out the repository so that the environment variables inside the .env file can be used
-* Verify release version, checks the release version input parameter
-* Configure git, configures git to use the github app token amongst others
-* Checkout repositories, checks out all repositories listed in the env file
+* _Common steps, see [above](#Common)_
 * Update patch release version, determines the new patch version to be used in the new patch release branch
 * Verify repositories, checks the release version inside the pom files
 * Create release branches, creates new patch release branches for all the checked out repositories listed in the .env file
@@ -107,11 +103,11 @@ updates the version in the maven pom files from *x.y.z* to *x.y.z+1* inside the 
 ### Workflow diagram
 ```mermaid
 flowchart TD
-X[/Workflow dispatch/] --> A[/Release version/]
+X([Workflow dispatch]) --> A[/Release version/]
 A -->|x.y.z| B[/Dry run/] 
 B -->|true/false| C[[Common steps]]
 C --> D(Update patch release version)
-D --> |patch-version| E(Verify repositories)
+D --> |x.y.z+1| E(Verify repositories)
 E --> F(Create release branches)
 F --> G(Increment pom version)
 G --> H(Push changes)
@@ -128,7 +124,7 @@ in the release branches *release-x.y.z* and creating new release tags, which wil
 - *Tag release message*, the message to be used in the release tag.
 
 ### Steps
-* Common steps see [above](#Common)
+* _Common steps, see [above](#Common)_
 * Verify repositories, checks the release version inside the pom files
 * Update pom version, updates the version in the pom files, when needed, by removing the *-SNAPSHOT* suffix in the release branches 
   and pushes the changes (only when dry run is set to false) 
@@ -137,7 +133,7 @@ in the release branches *release-x.y.z* and creating new release tags, which wil
 ### Workflow diagram
 ```mermaid
 flowchart TD
-X[/Workflow dispatch/] --> A[/Release version/]
+X([Workflow dispatch]) --> A[/Release version/]
 A -->|x.y.z| B[/Dry run/] 
 B -->|true/false| C(Tag release message)
 C -->|string| D[[Common steps]]
