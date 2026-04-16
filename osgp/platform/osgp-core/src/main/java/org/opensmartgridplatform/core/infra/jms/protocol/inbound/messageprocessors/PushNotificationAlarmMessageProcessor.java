@@ -104,8 +104,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
             DeviceFunction.PUSH_NOTIFICATION_ALARM.name(),
             smartMeteringDomain.get());
 
-        device.updateConnectionDetailsToSuccess();
-        this.deviceRepository.save(device);
+        this.deviceRepository.updateConnectionDetailsToSuccess(device.getDeviceIdentification());
       } else {
         LOGGER.error(
             "No DomainInfo found for SMART_METERING 1.0, unable to send message of message type: {} to "

@@ -826,7 +826,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_1,
+              EventType.MBUS_STATUS_BIT_19_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -996,7 +996,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_2,
+              EventType.MBUS_STATUS_BIT_19_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -1166,7 +1166,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_3,
+              EventType.MBUS_STATUS_BIT_19_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
@@ -1336,7 +1336,7 @@ class ListEventMappingTest {
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
               DateTime.now(),
-              EventType.MBUS_STATUS_BIT_19_RESERVED_CHANNEL_4,
+              EventType.MBUS_STATUS_BIT_19_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
           newEvent(
