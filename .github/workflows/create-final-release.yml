@@ -92,3 +92,5 @@ jobs:
               "${{ github.event.inputs.release_version }}" \
               "${{ github.event.inputs.tag_release_message }}" \
               "${{ github.event.inputs.dry_run }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
