@@ -22,7 +22,7 @@ do
     echo "::debug::Checking out branch $branch for $(git config --get remote.origin.url)"
     git checkout "${branch}"
   elif [[ ! "$value" =~ ^[[:space:]]*$ ]]; then
-    cd "${home_dir}" || return
+    cd "${home_dir}" || exit 1
     echo "::debug::Cloning repository: ${value}"
     git clone https://github.com/"${value}".git
 
@@ -30,7 +30,7 @@ do
     echo "::debug::Moving directory: ${value#*/} to unique name: ${repo_name}"
     mv "${value#*/}" "$repo_name"
     echo "::debug::Changing directory to repo: ${repo_name}"
-    cd "${repo_name}" || return
+    cd "${repo_name}" || exit 1
     git fetch
     status=$(git status 2>&1)
     echo "::debug::${status}"

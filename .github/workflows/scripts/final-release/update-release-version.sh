@@ -5,7 +5,7 @@ HOME_DIR=$2
 RELEASE_VERSION=$3
 DRY_RUN=$4
 
-echo "::debug::Executing verify-repositories.sh with parameters:"
+echo "::debug::Executing update-release-version.sh with parameters:"
 echo "::debug::ENV_FILE: ${ENV_FILE}"
 echo "::debug::HOME_DIR: ${HOME_DIR}"
 echo "::debug::RELEASE_VERSION: ${RELEASE_VERSION}"
@@ -22,7 +22,7 @@ for value in ${repositories//,/ }
 do
   if [[ ! ${value} =~ "b:" ]]; then
     working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
-    cd "${working_dir}" || return
+    cd "${working_dir}" || exit 1
 
     current_branch="$(git rev-parse --abbrev-ref HEAD)"
 

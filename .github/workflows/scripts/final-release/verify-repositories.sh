@@ -21,7 +21,7 @@ echo "::notice::Expecting release: ${expected_version} on release branch: ${rele
 for value in ${repositories//,/ }
 do
   if [[ ! ${value} =~ "b:" ]]; then
-    cd "${HOME_DIR}/$(echo "${value}" | tr -d /)" || return
+    cd "${HOME_DIR}/$(echo "${value}" | tr -d /)" || exit 1
 
     current_branch="$(git rev-parse --abbrev-ref HEAD)"
 

@@ -1,5 +1,5 @@
 # Release process
-[Back to Github actions documentation](../../.github/workflows/README.md)
+[Back to GitHub actions documentation](../../.github/workflows/README.md)
 
 The release process is responsible for managing our application version. The chosen release strategy is one uniform version for all components.
 

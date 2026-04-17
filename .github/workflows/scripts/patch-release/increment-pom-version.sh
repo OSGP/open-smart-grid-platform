@@ -23,7 +23,7 @@ do
   if [[ ! $value =~ "b:" ]]; then
     working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
 
-    cd "${working_dir}" || return
+    cd "${working_dir}" || exit 1
 
     current_branch=$(git rev-parse --abbrev-ref HEAD)
 

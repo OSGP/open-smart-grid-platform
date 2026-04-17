@@ -6,7 +6,7 @@ RELEASE_VERSION=$3
 RELEASE_TAG_MESSAGE=$4
 DRY_RUN=$5
 
-echo "::debug::Executing verify-repositories.sh with parameters:"
+echo "::debug::Executing create-release-tag.sh with parameters:"
 echo "::debug::ENV_FILE: ${ENV_FILE}"
 echo "::debug::HOME_DIR: ${HOME_DIR}"
 echo "::debug::RELEASE_VERSION: ${RELEASE_VERSION}"
@@ -25,7 +25,7 @@ do
   if [[ ! $value =~ "b:" ]]; then
     working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
 
-    cd "${working_dir}" || return
+    cd "${working_dir}" || exit 1
 
     current_branch=$(git rev-parse --abbrev-ref HEAD)
 
@@ -35,8 +35,7 @@ do
 
     git checkout -f "${release_branch}"
 
-    # shellcheck disable=SC2046
-    if [ $(git tag -l "${release_tag}") ]; then
+    if [ -n "$(git tag -l "${release_tag}")" ]; then
       echo "::warning::Tag exists, skipping release creation."
       continue
     fi

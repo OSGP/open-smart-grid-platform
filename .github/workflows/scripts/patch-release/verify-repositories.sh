@@ -22,7 +22,7 @@ old_release_branch="${RELEASE_BRANCH_PREFIX}${OLD_RELEASE_VERSION}"
 for value in ${repositories//,/ }
 do
   if [[ ! ${value} =~ "b:" ]]; then
-    cd "${HOME_DIR}/$(echo "${value}" | tr -d /)" || return
+    cd "${HOME_DIR}/$(echo "${value}" | tr -d /)" || exit 1
 
     current_branch="$(git rev-parse --abbrev-ref HEAD)"
 

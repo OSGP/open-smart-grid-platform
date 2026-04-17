@@ -1,5 +1,5 @@
 # Build process
-[Back to Github actions documentation](../../.github/workflows/README.md)
+[Back to GitHub actions documentation](../../.github/workflows/README.md)
 
 ## Jobs
 * [Build and analyze](#Build)
@@ -55,7 +55,7 @@ Creates docker images in parallel
 
 ## Cucumber
 * Runs cucumber tests in parallel
-* 
+
 ### Prerequisites
 * Docker job has run, so that container images are available
 * Build is triggered by:

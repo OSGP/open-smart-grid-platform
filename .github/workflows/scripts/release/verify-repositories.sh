@@ -19,7 +19,7 @@ release_branch="${RELEASE_BRANCH_PREFIX}${RELEASE_VERSION}"
 for value in ${repositories//,/ }
 do
   if [[ ! ${value} =~ "b:" ]]; then
-    cd "${HOME_DIR}/$(echo "${value}" | tr -d /)" || return
+    cd "${HOME_DIR}/$(echo "${value}" | tr -d /)" || exit 1
 
     echo "::notice::Verifying that branch not yet exists:${release_branch} in repository ${value}"
     if [ -n "$(git ls-remote --exit-code --heads origin "${release_branch}")" ]; then

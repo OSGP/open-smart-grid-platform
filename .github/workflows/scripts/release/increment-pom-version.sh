@@ -20,7 +20,7 @@ for value in ${repositories//,/ }
 do
   if [[ ! $value =~ "b:" ]]; then
     working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
-    cd "${working_dir}" || return
+    cd "${working_dir}" || exit 1
     echo "::notice::Updating pom versions in repository ${value}, default branch"
     echo "::debug::in directory ${working_dir}"
 

@@ -21,7 +21,7 @@ for value in ${repositories//,/ }
 do
   if [[ ! ${value} =~ "b:" ]]; then
     working_dir="${HOME_DIR}/$(echo "${value}" | tr -d /)"
-    cd "${working_dir}" || return
+    cd "${working_dir}" || exit 1
     echo "::notice::Pushing changes for repo ${value}, branch ${release_branch}"
     echo "::debug::in directory ${working_dir}"
 
