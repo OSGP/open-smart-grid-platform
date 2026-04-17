@@ -55,7 +55,7 @@ end
 ```
 
 ## Create release branch
-This workflow creates new release branches *release-x.y.0" and 
+This workflow creates new release branches `release-x.y.0` and 
 increases the minor version from *x.y.0-SNAPSHOT* to *x.y+1.0-SNAPSHOT* in the main (development) branches for the OSGP repositories listed in the .env file
 
 ### Inputs
