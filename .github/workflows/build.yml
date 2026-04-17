@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Build and analyze
+    name: Build, analyze and deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,44 +33,9 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Set maven options for cucumber containers
-        id: maven_options
-        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
-        run: echo 'maven_options=-DskipTestJarWithDependenciesAssembly=false' >> $GITHUB_OUTPUT
-      - name: Build and analyse
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -T1C -B -P pl,sm verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
-      - name: Staging war and jar files
-        run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
-        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
-      - uses: actions/upload-artifact@v6
-        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
-        with:
-          name: warFiles
-          path: staging
 
-  deploy:
-    name: Deploying shared libraries
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
-    needs: build
-    outputs:
-      tags: ${{ steps.meta.outputs.tags }}
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Download artifacts
-        uses: actions/download-artifact@v7
-        with:
-          name: warFiles
       - name: Configure Maven for GitHub Packages
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<EOF
@@ -87,7 +52,19 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set maven options for cucumber containers
+        id: maven_options
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+        run: echo 'maven_options=-DskipTestJarWithDependenciesAssembly=false' >> $GITHUB_OUTPUT
+      - name: Build and analyse
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./mvnw -T1C -B -P pl,sm verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
+
       - name: Deploy
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: |
           ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f super/pom.xml
           ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f osgp/shared/pom.xml
@@ -96,7 +73,16 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPO: "github::default::https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
+          GITHUB_REPO: "github::https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
+
+      - name: Staging war and jar files
+        run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+      - uses: actions/upload-artifact@v6
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+        with:
+          name: warFiles
+          path: staging
 
   docker:
     name: Building docker images
