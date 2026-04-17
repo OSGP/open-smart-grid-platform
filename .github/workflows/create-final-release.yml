@@ -93,4 +93,4 @@ jobs:
               "${{ github.event.inputs.tag_release_message }}" \
               "${{ github.event.inputs.dry_run }}"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
