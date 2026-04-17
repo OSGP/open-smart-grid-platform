@@ -41,7 +41,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -T1C -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
+        run: ./mvnw -T1C -B -P pl,sm verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
       - name: Staging war and jar files
         run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
@@ -88,6 +88,8 @@ jobs:
         run: |
           ./mvnw deploy -f super/pom.xml
           ./mvnw deploy -f osgp/shared/pom.xml
+          ./mvnw deploy -f osgp/protocol-adapter-dlms/osgp-dlms/pom.xml
+          ./mvnw deploy -f integration-test/pom.xml
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -81,7 +81,7 @@ SPDX-License-Identifier: Apache-2.0
       <!-- Public Lighting -->
       <id>pl</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>cucumber-tests-platform-publiclighting</module>
@@ -93,7 +93,7 @@ SPDX-License-Identifier: Apache-2.0
       <!-- Smart meter -->
       <id>sm</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>cucumber-tests-platform-smartmetering</module>
