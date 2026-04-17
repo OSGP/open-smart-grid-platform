@@ -61,7 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -T1C -B -P pl,sm verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
+        run: ./mvnw -T1C -B -P pl,sm install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
 
       - name: Deploy
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
