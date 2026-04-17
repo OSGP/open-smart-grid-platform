@@ -27,19 +27,9 @@ jobs:
     name: "Create a new patch release branch"
     runs-on: ubuntu-latest
     steps:
-      - name: "Generate GitHub App token"
-        id: app-token
-        uses: actions/create-github-app-token@v3.0.0
-        with:
-          app-id: ${{ secrets.OSGP_CI_APP_ID }}
-          private-key: ${{ secrets.OSGP_CI_APP_PRIVATE_KEY }}
-          owner: OSGP
-
-      - name: "Checkout current repo for env file"
+      - name: "Checkout current repo for env file and scripts"
         if: success()
         uses: actions/checkout@v6.0.2
-        with:
-          token: ${{ steps.app-token.outputs.token }}
 
       - name: "Verify release version"
         if: success()
@@ -47,6 +37,14 @@ jobs:
           bash ./.github/workflows/scripts/common/verify-release-version.sh \
             "${{ github.event.inputs.release_version }}" \
             "^[0-9]+[.][0-9]+[.][0-9]+$"
+
+      - name: "Generate GitHub App token"
+        id: app-token
+        uses: actions/create-github-app-token@v3.0.0
+        with:
+          app-id: ${{ secrets.OSGP_CI_APP_ID }}
+          private-key: ${{ secrets.OSGP_CI_APP_PRIVATE_KEY }}
+          owner: OSGP
 
       - name: "Configure git"
         if: success()
