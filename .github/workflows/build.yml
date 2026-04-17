@@ -89,14 +89,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Deploy
         run: |
-          ./mvnw deploy -DaltReleaseDeploymentRepository=${GITHUB_REPO} -f super/pom.xml
-          ./mvnw deploy -DaltReleaseDeploymentRepository=${GITHUB_REPO} -f osgp/shared/pom.xml
-          ./mvnw deploy -DaltReleaseDeploymentRepository=${GITHUB_REPO} -f osgp/protocol-adapter-dlms/osgp-dlms/pom.xml
-          ./mvnw deploy -DaltReleaseDeploymentRepository=${GITHUB_REPO} -f integration-test/pom.xml
+          ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f super/pom.xml
+          ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f osgp/shared/pom.xml
+          ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f osgp/protocol-adapter-dlms/osgp-dlms/pom.xml
+          ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f integration-tests/pom.xml
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPO: "https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
+          GITHUB_REPO: "github::default::https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
 
   docker:
     name: Building docker images
