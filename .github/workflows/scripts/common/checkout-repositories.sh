@@ -8,7 +8,7 @@ echo "::debug::ENV_FILE: ${ENV_FILE}"
 # shellcheck source=../../.env
 source "${ENV_FILE}"
 
-mkdir repositories
+mkdir -p repositories
 home_dir=$PWD/repositories
 echo "::debug::Home directory: ${home_dir}"
 
