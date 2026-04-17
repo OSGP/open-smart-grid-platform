@@ -87,7 +87,7 @@ jobs:
       - name: Deploy
         run: |
           ./mvnw deploy -f super/pom.xml
-          ./mvnw deploy -f ospg/shared/pom.xml
+          ./mvnw deploy -f osgp/shared/pom.xml
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
