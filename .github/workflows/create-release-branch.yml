@@ -38,8 +38,8 @@ jobs:
       - name: "Checkout current repo for env file"
         if: success()
         uses: actions/checkout@v6.0.2
-        with:
-          token: ${{ steps.app-token.outputs.token }}
+#        with:
+#          token: ${{ steps.app-token.outputs.token }}
 
       - name: "Verify release version"
         if: success()
