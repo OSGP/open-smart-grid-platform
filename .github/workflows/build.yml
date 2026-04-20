@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: Build analyse and push docker container
+name: "Build, analyze, deploy artifacts, and push docker containers"
 on:
   push:
     tags:
@@ -14,13 +14,13 @@ on:
 
 jobs:
   build:
-    name: Build, analyze and deploy
+    name: "Build, analyze and deploy"
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
-      - name: Checkout
+      - name: "Checkout"
         uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
@@ -30,14 +30,14 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           cache: maven
-      - name: Cache SonarCloud packages
+      - name: "Cache SonarCloud packages"
         uses: actions/cache@v5
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Configure Maven for GitHub Packages
+      - name: "Configure Maven for GitHub Packages"
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: |
           mkdir -p ~/.m2
@@ -56,7 +56,7 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set maven options for cucumber containers
+      - name: "Set maven options for cucumber containers"
         id: maven_options
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
         run: echo 'maven_options=-DskipTestJarWithDependenciesAssembly=false' >> $GITHUB_OUTPUT
@@ -66,7 +66,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./mvnw -T1C -B -P pl,sm install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
 
-      - name: Deploy
+      - name: "Deploy artifacts"
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: |
           ./mvnw deploy -DaltDeploymentRepository=${GITHUB_REPO} -f super/pom.xml
@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO: "github::https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
 
-      - name: Staging war and jar files
+      - name: "Staging war and jar files"
         run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
       - uses: actions/upload-artifact@v6
@@ -88,7 +88,7 @@ jobs:
           path: staging
 
   docker:
-    name: Building docker images
+    name: "Building docker images"
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
     needs: build
@@ -147,21 +147,21 @@ jobs:
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-smartmetering
             context: ./integration-tests/cucumber-tests-platform-smartmetering
     steps:
-      - name: Checkout
+      - name: "Checkout"
         uses: actions/checkout@v6
-      - name: Download war files
+      - name: "Download war files"
         uses: actions/download-artifact@v7
         with:
           name: warFiles
-      - name: Show files in current context
+      - name: "Show files in current context"
         run: find ${{ matrix.context }}
-      - name: Log in to the Container registry
+      - name: "Log in to the Container registry"
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract Maven project version
+      - name: "Extract Maven project version"
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: echo "version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: maven
@@ -177,7 +177,7 @@ jobs:
             type=ref,event=tag
             type=ref,event=pr
             type=raw,value=latest,enable={{is_default_branch}}
-      - name: Build and push Docker image
+      - name: "Build and push Docker image"
         id: push
         uses: docker/build-push-action@v6
         with:
@@ -192,7 +192,7 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
 
   cucumber:
-    name: Running cucumber gxf containers
+    name: "Running cucumber gxf containers"
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
     needs: docker
@@ -202,21 +202,23 @@ jobs:
       matrix:
           values_file: [ci/common-values.yaml, ci/publiclighting-values.yaml]
     steps:
-      - name: Checkout gxf-gitops
+      - name: "Checkout gxf-gitops"
         uses: actions/checkout@v6
         with:
           repository: 'OSGP/gxf-gitops'
-      - name: Setup k3d cluster
+      - name: "Setup k3d cluster"
         run: bash setup.sh
-      - name: Create gxf platform
+      - name: "Create gxf platform"
         run: ./charts/gxf-platform/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2)
-      - name: Create and run gxf cucumber tests
+      - name: "Create and run gxf cucumber tests"
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
-      - name: Wait for jobs to finish
-        run: kubectl wait --for=condition=complete --all jobs --timeout=60m
-      - name: Run maven cucumber reporting
+      - name: "List running pods"
+        run: kubectl get pods
+      - name: "Wait for jobs to finish"
+        run: kubectl wait --for=condition=complete --all jobs --timeout=30m
+      - name: "Run maven cucumber reporting"
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
-      - name: Annotate cucumber report to github action
+      - name: "Annotate cucumber report to github action"
         uses: deblockt/cucumber-report-annotations-action@v1.20
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
