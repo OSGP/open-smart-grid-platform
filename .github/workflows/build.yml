@@ -16,6 +16,9 @@ jobs:
   build:
     name: Build, analyze and deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
