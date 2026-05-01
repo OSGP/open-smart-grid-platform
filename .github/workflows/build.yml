@@ -206,18 +206,60 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: 'OSGP/gxf-gitops'
+
       - name: "Setup k3d cluster"
         run: bash setup.sh
+
       - name: "Create gxf platform"
         run: ./charts/gxf-platform/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2)
+
       - name: "Create and run gxf cucumber tests"
         run: ./charts/gxf-cucumber-tests/template-apply.sh --imageTag $(echo -e "${{ needs.docker.outputs.tags }}" | head -n 1 | cut -d':' -f2) --valuesFile ${{ matrix.values_file }}
+
       - name: "List running pods"
         run: kubectl get pods
+
       - name: "Wait for jobs to finish"
+        id: wait_jobs
+        continue-on-error: true
         run: kubectl wait --for=condition=complete --all jobs --timeout=30m
+
+      - name: "Collect Kubernetes diagnostics on failure"
+        if: steps.wait_jobs.outcome == 'failure'
+        run: |
+          set -u
+          mkdir -p k8s-logs
+
+          echo "=== jobs ===" | tee k8s-logs/jobs.txt
+          kubectl get jobs -o wide | tee -a k8s-logs/jobs.txt || true
+
+          echo "=== pods ===" | tee k8s-logs/pods.txt
+          kubectl get pods -o wide | tee -a k8s-logs/pods.txt || true
+
+          kubectl describe jobs > k8s-logs/describe-jobs.txt || true
+          kubectl describe pods > k8s-logs/describe-pods.txt || true
+          kubectl get events --sort-by=.metadata.creationTimestamp > k8s-logs/events.txt || true
+
+          # Collect logs for all pods/containers.
+          while IFS= read -r pod; do
+            kubectl logs "$pod" --all-containers=true --timestamps=true > "k8s-logs/${pod}.log" 2>&1 || true
+            kubectl logs "$pod" --all-containers=true --previous --timestamps=true > "k8s-logs/${pod}.previous.log" 2>&1 || true
+          done < <(kubectl get pods -o name | sed 's|^pod/||')
+
+      - name: "Upload Kubernetes diagnostics"
+        if: steps.wait_jobs.outcome == 'failure'
+        uses: actions/upload-artifact@v6
+        with:
+          name: k8s-diagnostics
+          path: k8s-logs
+
+      - name: "Fail workflow if wait failed"
+        if: steps.wait_jobs.outcome == 'failure'
+        run: exit 1
+
       - name: "Run maven cucumber reporting"
         run: mvn -f charts/gxf-cucumber-tests/pom.xml verify
+
       - name: "Annotate cucumber report to github action"
         uses: deblockt/cucumber-report-annotations-action@v1.20
         with:
