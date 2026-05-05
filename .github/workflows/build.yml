@@ -140,6 +140,14 @@ jobs:
             context: ./osgp/protocol-adapter-oslp/signing-server
           - image: ghcr.io/osgp/osgp-web-device-simulator
             context: ./osgp/protocol-adapter-oslp/web-device-simulator
+          - image: ghcr.io/osgp/osgp-throttling-service
+            context: ./osgp/platform/osgp-throttling-service
+          - image: ghcr.io/osgp/osgp-protocol-adapter-dlms
+            context: ./osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms
+          - image: ghcr.io/osgp/dlms-device-simulator-starter
+            context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/dlms-device-simulator-starter
+          - image: ghcr.io/osgp/osgp-simulator-dlms-triggered
+            context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-common
             context: ./integration-tests/cucumber-tests-platform-common
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-publiclighting
