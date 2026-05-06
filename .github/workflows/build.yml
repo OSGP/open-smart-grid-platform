@@ -79,7 +79,7 @@ jobs:
           GITHUB_REPO: "github::https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
 
       - name: Staging war and jar files
-        run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name osgp-protocol-adapter-dlms-* -o -name osgp-throttling-service-* -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war -o -name *simulator*.jar -path ./target -prune \) -exec cp -prv --parents '{}' staging/ \;
+        run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name osgp-protocol-adapter-dlms-* -o -name osgp-throttling-service-* -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war -o -name *simulator*.jar \) -exec cp -prv --parents '{}' staging/ \;
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
       - uses: actions/upload-artifact@v6
         if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
