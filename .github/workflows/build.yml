@@ -67,7 +67,7 @@ jobs:
         run: ./mvnw -T1C -B -Ppl,sm install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
 
       - name: Deploy
-        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.ref, 'SMHE-3287-Fix-OSGP-docker-images') 
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: |
           ./mvnw deploy -Ppl,sm -DaltDeploymentRepository=${GITHUB_REPO}
         env:
