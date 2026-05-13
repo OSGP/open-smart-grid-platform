@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>protocol-adapter-dlms</artifactId>
-  <version>6.36.3</version>
+  <version>6.36.4</version>
   <packaging>pom</packaging>
   
   <properties>
