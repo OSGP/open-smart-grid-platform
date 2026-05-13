@@ -41,6 +41,7 @@ SPDX-License-Identifier: Apache-2.0
         <configuration>
           <attachClasses>true</attachClasses>
           <failOnMissingWebXml>false</failOnMissingWebXml>
+          <webappDirectory>${project.build.directory}/gxf/${project.artifactId}</webappDirectory>
           <nonFilteredFileExtensions>
             <nonFilteredFileExtension>gif</nonFilteredFileExtension>
             <nonFilteredFileExtension>ico</nonFilteredFileExtension>
