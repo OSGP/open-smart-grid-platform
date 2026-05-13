@@ -58,6 +58,7 @@ SPDX-License-Identifier: Apache-2.0
           <version>${maven.war.plugin.version}</version>
           <configuration>
             <failOnMissingWebXml>false</failOnMissingWebXml>
+            <webappDirectory>${project.build.directory}/gxf/${project.artifactId}</webappDirectory>
             <nonFilteredFileExtensions>
               <nonFilteredFileExtension>gif</nonFilteredFileExtension>
               <nonFilteredFileExtension>ico</nonFilteredFileExtension>
