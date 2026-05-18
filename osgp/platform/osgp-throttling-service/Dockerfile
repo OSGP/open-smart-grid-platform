@@ -11,5 +11,5 @@ RUN mkdir -p /var/log/osp && \
     mkdir -p /usr/local/tomcat/webapps/probe/ && \
     touch /usr/local/tomcat/webapps/probe/probe.txt
 
-COPY target/osgp-throttling-service-*/ /usr/local/tomcat/webapps/
+COPY target/gxf /usr/local/tomcat/webapps/
 
