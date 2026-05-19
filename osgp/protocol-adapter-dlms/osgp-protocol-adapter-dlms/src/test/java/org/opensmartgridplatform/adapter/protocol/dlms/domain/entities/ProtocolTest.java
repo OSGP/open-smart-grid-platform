@@ -43,15 +43,19 @@ public class ProtocolTest {
     assertThat(Protocol.withNameAndVersion("SMR", "5.0.0")).isEqualTo(Protocol.SMR_5_0_0);
     assertThat(Protocol.withNameAndVersion("SMR", "5.1")).isEqualTo(Protocol.SMR_5_1);
     assertThat(Protocol.withNameAndVersion("SMR", "5.2")).isEqualTo(Protocol.SMR_5_2);
+    assertThat(Protocol.withNameAndVersion("SMR", "5.2c")).isEqualTo(Protocol.SMR_5_2C);
+    assertThat(Protocol.withNameAndVersion("SMR", "5.5")).isEqualTo(Protocol.SMR_5_5);
     assertThat(Protocol.withNameAndVersion("other", "0.1")).isEqualTo(Protocol.OTHER_PROTOCOL);
   }
 
   @Test
   public void testIsSMR5() {
-    assertThat(Protocol.DSMR_4_2_2.isSmr5()).isEqualTo(false);
-    assertThat(Protocol.SMR_5_0_0.isSmr5()).isEqualTo(true);
-    assertThat(Protocol.SMR_5_1.isSmr5()).isEqualTo(true);
-    assertThat(Protocol.SMR_5_2.isSmr5()).isEqualTo(true);
-    assertThat(Protocol.OTHER_PROTOCOL.isSmr5()).isEqualTo(false);
+    assertThat(Protocol.DSMR_4_2_2.isSmr5()).isFalse();
+    assertThat(Protocol.SMR_5_0_0.isSmr5()).isTrue();
+    assertThat(Protocol.SMR_5_1.isSmr5()).isTrue();
+    assertThat(Protocol.SMR_5_2.isSmr5()).isTrue();
+    assertThat(Protocol.SMR_5_2C.isSmr5()).isTrue();
+    assertThat(Protocol.SMR_5_5.isSmr5()).isTrue();
+    assertThat(Protocol.OTHER_PROTOCOL.isSmr5()).isFalse();
   }
 }

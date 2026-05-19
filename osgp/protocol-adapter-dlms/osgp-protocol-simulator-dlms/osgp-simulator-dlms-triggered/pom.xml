@@ -15,7 +15,7 @@ SPDX-License-Identifier: Apache-2.0
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>osgp-protocol-simulator-dlms</artifactId>
-    <version>6.31.0-SNAPSHOT</version>
+    <version>6.37.0-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -58,6 +58,7 @@ SPDX-License-Identifier: Apache-2.0
           <version>${maven.war.plugin.version}</version>
           <configuration>
             <failOnMissingWebXml>false</failOnMissingWebXml>
+            <webappDirectory>${project.build.directory}/gxf/${project.artifactId}</webappDirectory>
             <nonFilteredFileExtensions>
               <nonFilteredFileExtension>gif</nonFilteredFileExtension>
               <nonFilteredFileExtension>ico</nonFilteredFileExtension>

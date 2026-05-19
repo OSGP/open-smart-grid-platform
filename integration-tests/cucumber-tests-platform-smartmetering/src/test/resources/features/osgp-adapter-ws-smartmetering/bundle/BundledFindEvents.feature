@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @FindEvents
+@SmartMetering @Platform @FindEvents @SMR52c
 Feature: SmartMetering Bundle - FindEvents
   As a grid operator 
   I want to retrieve the events from a meter via a bundle request
@@ -72,7 +72,8 @@ Feature: SmartMetering Bundle - FindEvents
       | TEST1031000000001    | SMR      |     4.3 |  21 |     9 |    7 |   30 |      |     |       |     |
       | TEST1027000000001    | SMR      |   5.0.0 |  21 |     9 |    7 |   30 |   19 |     |       |     |
       | TEST1028000000001    | SMR      |     5.1 |  21 |     9 |    7 |   30 |   19 | 169 |       |     |
-      | TEST1029000000001    | SMR      |     5.2 |  21 |     9 |    7 |   30 |   19 | 169 |     6 |   9 |
+      | TEST1029000000001    | SMR      |     5.2 |  21 |     9 |    7 |   30 |   19 | 169 |     6 |     |
+      | TEST1032000000001    | SMR      |    5.2c |  21 |     9 |    7 |   30 |   19 | 169 |     6 |   9 |
       | TEST1030000000001    | SMR      |     5.5 |  21 |     9 |    7 |   30 |   19 | 169 |     6 |   9 |
 
   Scenario Outline: Retrieve event codes for meter with protocol <protocol> <version> throws an Exception
@@ -148,7 +149,8 @@ Feature: SmartMetering Bundle - FindEvents
       | TEST1031000000001    | SMR      |     4.3 | not be | not be | not be | not be | be     | be     | be     | be     |
       | TEST1027000000001    | SMR      |   5.0.0 | not be | not be | not be | not be | not be | be     | be     | be     |
       | TEST1028000000001    | SMR      |     5.1 | not be | not be | not be | not be | not be | not be | be     | be     |
-      | TEST1029000000001    | SMR      |     5.2 | not be | not be | not be | not be | not be | not be | not be | not be |
+      | TEST1029000000001    | SMR      |     5.2 | not be | not be | not be | not be | not be | not be | not be | be     |
+      | TEST1032000000001    | SMR      |    5.2c | not be | not be | not be | not be | not be | not be | not be | not be |
       | TEST1030000000001    | SMR      |     5.5 | not be | not be | not be | not be | not be | not be | not be | not be |
 
   Scenario: Retrieve an unknown event code

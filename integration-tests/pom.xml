@@ -11,7 +11,7 @@ SPDX-License-Identifier: Apache-2.0
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>integration-tests</artifactId>
-  <version>6.31.0-SNAPSHOT</version>
+  <version>6.37.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -81,7 +81,7 @@ SPDX-License-Identifier: Apache-2.0
       <!-- Public Lighting -->
       <id>pl</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>cucumber-tests-platform-publiclighting</module>
@@ -93,7 +93,7 @@ SPDX-License-Identifier: Apache-2.0
       <!-- Smart meter -->
       <id>sm</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>cucumber-tests-platform-smartmetering</module>

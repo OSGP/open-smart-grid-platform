@@ -5,16 +5,20 @@
 name: Build analyse and push docker container
 on:
   push:
+    tags:
+      - 'v*'
     branches:
       - development
-      - 'release-*'
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
 jobs:
   build:
-    name: Build and analyze
+    name: Build, analyze and deploy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -27,25 +31,55 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Cache SonarCloud packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
+      - name: Configure Maven for GitHub Packages
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${GITHUB_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set maven options for cucumber containers
         id: maven_options
-        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
         run: echo 'maven_options=-DskipTestJarWithDependenciesAssembly=false' >> $GITHUB_OUTPUT
       - name: Build and analyse
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./mvnw -T1C -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
+        run: ./mvnw -T1C -B -Ppl,sm install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=gxf -Dsonar.projectKey=OSGP_open-smart-grid-platform ${{ steps.maven_options.outputs.maven_options }}
+
+      - name: Deploy
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
+        run: |
+          ./mvnw deploy -Ppl,sm -DaltDeploymentRepository=${GITHUB_REPO}
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: "github::https://maven.pkg.github.com/OSGP/open-smart-grid-platform"
+
       - name: Staging war and jar files
-        run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war \) -exec cp -prv --parents '{}' staging/ \;
-        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
-      - uses: actions/upload-artifact@v5
-        if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+        run: mkdir staging && find . -path ./staging -prune -o \( -name gxf -o -name osgp-protocol-adapter-dlms-* -o -name osgp-throttling-service-* -o -name cucumber-*-test-jar-with-dependencies.jar -o -name *simulator*.war -o -name *simulator*.jar \) -exec cp -prv --parents '{}' staging/ \;
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+      - uses: actions/upload-artifact@v6
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
         with:
           name: warFiles
           path: staging
@@ -53,7 +87,7 @@ jobs:
   docker:
     name: Building docker images
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+    if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'build_containers') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
     needs: build
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
@@ -103,6 +137,14 @@ jobs:
             context: ./osgp/protocol-adapter-oslp/signing-server
           - image: ghcr.io/osgp/osgp-web-device-simulator
             context: ./osgp/protocol-adapter-oslp/web-device-simulator
+          - image: ghcr.io/osgp/osgp-throttling-service
+            context: ./osgp/platform/osgp-throttling-service
+          - image: ghcr.io/osgp/osgp-protocol-adapter-dlms
+            context: ./osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms
+          - image: ghcr.io/osgp/dlms-device-simulator-starter
+            context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/dlms-device-simulator-starter
+          - image: ghcr.io/osgp/osgp-simulator-dlms-triggered
+            context: ./osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/osgp-simulator-dlms-triggered
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-common
             context: ./integration-tests/cucumber-tests-platform-common
           - image: ghcr.io/osgp/osgp-cucumber-tests-platform-publiclighting
@@ -113,7 +155,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Download war files
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: warFiles
       - name: Show files in current context
@@ -125,7 +167,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract Maven project version
-        if: contains(github.ref, 'release') || contains(github.ref, 'development')
+        if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development')
         run: echo "version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
         id: maven
       - name: Extract metadata (tags, labels) for Docker
@@ -157,7 +199,7 @@ jobs:
   cucumber:
     name: Running cucumber gxf containers
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'release') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
+    if: startsWith(github.ref, 'refs/tags/v') || contains(github.ref, 'development') || contains(github.event.pull_request.labels.*.name, 'cucumber_testing') || contains(github.event.pull_request.labels.*.name, 'dependencies')
     needs: docker
     permissions:
       checks: write

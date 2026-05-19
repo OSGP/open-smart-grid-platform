@@ -11,6 +11,7 @@ public enum Protocol {
   SMR_5_0_0("SMR", "5.0.0"),
   SMR_5_1("SMR", "5.1"),
   SMR_5_2("SMR", "5.2"),
+  SMR_5_2C("SMR", "5.2c"),
   SMR_5_5("SMR", "5.5"),
   OTHER_PROTOCOL("?", "?");
 

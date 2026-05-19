@@ -1,0 +1,103 @@
+# Creates a new release branch based on the development branch
+# and increases the minor version in the pom files in the development branch
+
+name: create-release-branch
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "The release version to create (in «major».«minor».«patch» format)."
+        required: true
+        type: string
+      dry_run:
+        description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
+        required: false
+        type: boolean
+        default: true
+
+env:
+  ENV_FILE: .github/workflows/.env
+
+jobs:
+  create-release-branch:
+    name: "Create a new release branch"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout current repo for env file and scripts"
+        if: success()
+        uses: actions/checkout@v6.0.2
+
+      - name: "Verify release version"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/common/verify-release-version.sh \
+            "${{ github.event.inputs.release_version }}" \
+            "^[0-9]+[.][0-9]+[.]0$"
+
+      - name: "Generate GitHub App token"
+        id: app-token
+        uses: actions/create-github-app-token@v3.0.0
+        with:
+          app-id: ${{ secrets.OSGP_CI_APP_ID }}
+          private-key: ${{ secrets.OSGP_CI_APP_PRIVATE_KEY }}
+          owner: OSGP
+
+      - name: "Configure git"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/common/configure-git.sh \
+            $ENV_FILE
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: "Checkout repositories"
+        if: success()
+        id: checkout
+        run: |
+          bash ./.github/workflows/scripts/common/checkout-repositories.sh \
+            $ENV_FILE
+
+      - name: "Verify repositories"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/release/verify-repositories.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}"
+
+      - name: "Update minor release version"
+        id: minor_version
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/release/update-minor-version.sh \
+            "${{ github.event.inputs.release_version }}"
+
+      - name: "Create release branches"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/release/create-release-branches.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}"
+
+      - name: "Increment pom version"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/release/increment-pom-version.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}"  \
+            "${{ github.event.inputs.release_version }}" \
+            "${{ steps.minor_version.outputs.new }}" \
+
+      - name: "Push changes"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/release/push-changes.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}" \
+            "${{ github.event.inputs.dry_run }}"

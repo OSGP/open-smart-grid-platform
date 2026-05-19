@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @ThdConfiguration
+@SmartMetering @Platform @ThdConfiguration @SMR52c
 Feature: SmartMetering Bundle - THD Configuation
   As a grid operator 
   I want to be able to set configuration for THD on a meter via a bundle request
@@ -27,7 +27,7 @@ Feature: SmartMetering Bundle - THD Configuation
 
     Examples:
       | deviceIdentification  | protocol | version |
-      | TEST1029000000002     | SMR      | 5.2     |
+      | TEST1032000000002     | SMR      | 5.2c    |
       | TEST1030000000002     | SMR      | 5.5     |
 
 
@@ -56,3 +56,4 @@ Feature: SmartMetering Bundle - THD Configuation
       | TEST1031000000002     | SMR      | 4.3     |
       | TEST1027000000002     | SMR      | 5.0.0   |
       | TEST1028000000002     | SMR      | 5.1     |
+      | TEST1029000000002     | SMR      | 5.2     |

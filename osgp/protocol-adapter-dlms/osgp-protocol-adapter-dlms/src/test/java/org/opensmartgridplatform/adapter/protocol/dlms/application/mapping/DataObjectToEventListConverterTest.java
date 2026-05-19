@@ -311,7 +311,7 @@ class DataObjectToEventListConverterTest {
   @Test
   void testEventsWithMagnitudeDetails() throws ProtocolAdapterException {
 
-    final Protocol protocol = Protocol.SMR_5_2;
+    final Protocol protocol = Protocol.SMR_5_2C;
 
     // GIVEN
     final DateTime dateTime1 = new DateTime(2021, 9, 16, 10, 35, 10, DateTimeZone.UTC);

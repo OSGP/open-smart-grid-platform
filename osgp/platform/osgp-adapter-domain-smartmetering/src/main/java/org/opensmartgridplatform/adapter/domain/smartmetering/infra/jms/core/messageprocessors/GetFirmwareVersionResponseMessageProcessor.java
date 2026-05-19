@@ -61,12 +61,10 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
 
       this.configurationService.handleGetFirmwareVersionResponse(
           deviceMessageMetadata, responseMessage.getResult(), osgpException, firmwareVersionList);
-    } else if (responseMessage.getDataObject() instanceof FirmwareVersionGasDto) {
+    } else if (responseMessage.getDataObject()
+        instanceof final FirmwareVersionGasDto firmwareVersionGasDto) {
       this.configurationService.handleGetFirmwareVersionGasResponse(
-          deviceMessageMetadata,
-          responseMessage.getResult(),
-          osgpException,
-          (FirmwareVersionGasDto) responseMessage.getDataObject());
+          deviceMessageMetadata, responseMessage.getResult(), osgpException, firmwareVersionGasDto);
     } else {
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,

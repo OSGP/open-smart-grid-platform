@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @Fingerprint @NightlyBuildOnly
+@SmartMetering @Platform @SmartMeteringConfiguration @Fingerprint @NightlyBuildOnly @SMR52c
 Feature: SmartMetering Bundle - GetThdFingerprint
   As a grid operator
   I want to be able to get the THD fingerprint and counters from a device via a bundle request
@@ -31,7 +31,7 @@ Feature: SmartMetering Bundle - GetThdFingerprint
 
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1029000000001    | SMR      | 5.2     |
+      | TEST1032000000001    | SMR      | 5.2c    |
       | TEST1030000000001    | SMR      | 5.5     |
 
   Scenario Outline: Get THD fingerprint on a single phase <protocol> <version> device
@@ -52,5 +52,5 @@ Feature: SmartMetering Bundle - GetThdFingerprint
 
     Examples:
       | deviceIdentification | protocol | version |
-      | TEST1029000000001    | SMR      | 5.2     |
+      | TEST1032000000001    | SMR      | 5.2c    |
       | TEST1030000000001    | SMR      | 5.5     |

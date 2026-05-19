@@ -13,8 +13,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +24,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -38,6 +38,10 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.objectconfig.CommunicationMethod;
 import org.opensmartgridplatform.dlms.services.ObjectConfigService;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
@@ -46,7 +50,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class GetGsmDiagnosticCommandExecutorTest {
 
   private GetGsmDiagnosticCommandExecutor executor;
@@ -68,13 +71,11 @@ class GetGsmDiagnosticCommandExecutorTest {
   private MessageMetadata messageMetadata;
 
   @BeforeEach
-  public void setUp() throws IOException, ObjectConfigException {
+  void setUp() throws IOException, ObjectConfigException {
     this.objectConfigService = new ObjectConfigService();
     this.executor = new GetGsmDiagnosticCommandExecutor(this.dlmsHelper, this.objectConfigService);
 
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-
-    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
   @Test
@@ -97,6 +98,7 @@ class GetGsmDiagnosticCommandExecutorTest {
   @ParameterizedTest
   @EnumSource(CommunicationMethod.class)
   void testHappy(final CommunicationMethod communicationMethod) throws Exception {
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
 
     final DlmsDevice testDevice = this.createDevice(Protocol.SMR_5_2, communicationMethod);
 
@@ -107,12 +109,14 @@ class GetGsmDiagnosticCommandExecutorTest {
     final GetResult result5 = mock(GetResult.class);
     final GetResult result6 = mock(GetResult.class);
     final GetResult result7 = mock(GetResult.class);
+    final GetResult result8 = mock(GetResult.class);
     when(result2.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(result3.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(result4.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(result5.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(result6.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(result7.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(result8.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
 
     final DataObject operator = mock(DataObject.class);
     when(result2.getResultData()).thenReturn(operator);
@@ -162,9 +166,17 @@ class GetGsmDiagnosticCommandExecutorTest {
     when(adjacentCellId.getValue()).thenReturn(256L);
     when(adjacentCellSignalQuality.getValue()).thenReturn((short) 7);
 
+    final DataObject captureTime = mock(DataObject.class);
+    when(result8.getResultData()).thenReturn(captureTime);
+    when(captureTime.getValue()).thenReturn(mock(CosemDateTimeDto.class));
+    when(this.dlmsHelper.readDateTime(eq(captureTime), any()))
+        .thenReturn(
+            new CosemDateTimeDto(
+                new CosemDateDto(2025, 2, 5), new CosemTimeDto(15, 56), 0, new ClockStatusDto(0)));
+
     when(this.dlmsHelper.getAndCheck(
             eq(this.connectionManager), eq(testDevice), eq("Get GsmDiagnostic"), any()))
-        .thenReturn(Arrays.asList(result2, result3, result4, result5, result6, result7));
+        .thenReturn(Arrays.asList(result2, result3, result4, result5, result6, result7, result8));
 
     // CALL
     final GetGsmDiagnosticResponseDto result =
@@ -176,13 +188,14 @@ class GetGsmDiagnosticCommandExecutorTest {
     verify(this.dlmsMessageListener)
         .setDescription(
             String.format(
-                "Get GsmDiagnostic, retrieve attributes: %s, %s, %s, %s, %s, %s",
+                "Get GsmDiagnostic, retrieve attributes: %s, %s, %s, %s, %s, %s, %s",
                 this.createAttributeAddress(obisCode, 2),
                 this.createAttributeAddress(obisCode, 3),
                 this.createAttributeAddress(obisCode, 4),
                 this.createAttributeAddress(obisCode, 5),
                 this.createAttributeAddress(obisCode, 6),
-                this.createAttributeAddress(obisCode, 7)));
+                this.createAttributeAddress(obisCode, 7),
+                this.createAttributeAddress(obisCode, 8)));
 
     // VERIFY contents of the return value
     assertThat(result.getOperator()).isEqualTo("AB");
@@ -204,6 +217,7 @@ class GetGsmDiagnosticCommandExecutorTest {
     assertThat(result.getAdjacentCells().get(0).getCellId()).isEqualTo(256L);
     assertThat(result.getAdjacentCells().get(0).getSignalQuality())
         .isEqualTo(SignalQualityDto.fromIndexValue(7));
+    assertThat(result.getCaptureTime()).isEqualTo(Date.from(Instant.parse("2025-02-05T15:56:00Z")));
   }
 
   private String getObisCode(final CommunicationMethod communicationMethod) {
@@ -225,6 +239,7 @@ class GetGsmDiagnosticCommandExecutorTest {
   void testUnhappy() throws Exception {
 
     // SETUP
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
 
     final GetResult result = mock(GetResult.class);
     when(result.getResultCode()).thenReturn(AccessResultCode.HARDWARE_FAULT);
@@ -249,10 +264,10 @@ class GetGsmDiagnosticCommandExecutorTest {
   }
 
   private DlmsDevice createDevice(final Protocol protocol, final CommunicationMethod method) {
-    final DlmsDevice device = new DlmsDevice();
-    device.setProtocol(protocol);
-    device.setCommunicationMethod(method.name());
-    device.setDeviceIdentification("1234567890");
-    return device;
+    final DlmsDevice newDevice = new DlmsDevice();
+    newDevice.setProtocol(protocol);
+    newDevice.setCommunicationMethod(method.name());
+    newDevice.setDeviceIdentification("1234567890");
+    return newDevice;
   }
 }

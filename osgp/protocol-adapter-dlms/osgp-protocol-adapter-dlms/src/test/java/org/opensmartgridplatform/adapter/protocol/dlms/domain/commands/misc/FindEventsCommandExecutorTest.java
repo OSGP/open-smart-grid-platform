@@ -63,6 +63,8 @@ class FindEventsCommandExecutorTest {
   private static final String SMR_5_0_0 = "SMR_5_0_0";
   private static final String SMR_5_1 = "SMR_5_1";
   private static final String SMR_5_2 = "SMR_5_2";
+  private static final String SMR_5_2C = "SMR_5_2C";
+  private static final String SMR_5_5 = "SMR_5_5";
 
   static {
     OBIS_MAPPING.put(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, "0.0.99.98.5.255");
@@ -172,10 +174,27 @@ class FindEventsCommandExecutorTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = EventLogCategoryDto.class)
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {"POWER_QUALITY_THD_EVENT_LOG"},
+      mode = EnumSource.Mode.EXCLUDE)
   void testSmr52Event(final EventLogCategoryDto eventLogCategoryDto)
       throws ProtocolAdapterException, IOException {
     this.testEventRetrieval(SMR_5_2, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = EventLogCategoryDto.class)
+  void testSmr52cEvent(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testEventRetrieval(SMR_5_2C, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = EventLogCategoryDto.class)
+  void testSmr55Event(final EventLogCategoryDto eventLogCategoryDto)
+      throws ProtocolAdapterException, IOException {
+    this.testEventRetrieval(SMR_5_5, eventLogCategoryDto);
   }
 
   @ParameterizedTest
@@ -225,9 +244,17 @@ class FindEventsCommandExecutorTest {
       value = EventLogCategoryDto.class,
       names = {"POWER_QUALITY_EXTENDED_EVENT_LOG", "POWER_QUALITY_THD_EVENT_LOG"},
       mode = Mode.INCLUDE)
-  void testNoSmr51Event(final EventLogCategoryDto eventLogCategoryDto)
-      throws ProtocolAdapterException, IOException {
+  void testNoSmr51Event(final EventLogCategoryDto eventLogCategoryDto) {
     this.testNoEventRetrieval(SMR_5_1, eventLogCategoryDto);
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = EventLogCategoryDto.class,
+      names = {"POWER_QUALITY_THD_EVENT_LOG"},
+      mode = Mode.INCLUDE)
+  void testNoSmr52Event(final EventLogCategoryDto eventLogCategoryDto) {
+    this.testNoEventRetrieval(SMR_5_2, eventLogCategoryDto);
   }
 
   @Test

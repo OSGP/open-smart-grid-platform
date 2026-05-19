@@ -91,7 +91,7 @@ class SetThdConfigurationCommandExecutorTest {
 
   @Test
   void testSuccess() throws ProtocolAdapterException {
-    final DlmsDevice device = this.createDlmsDevice(Protocol.SMR_5_2);
+    final DlmsDevice device = this.createDlmsDevice(Protocol.SMR_5_2C);
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.dlmsHelper.setWithList(
@@ -117,7 +117,7 @@ class SetThdConfigurationCommandExecutorTest {
 
   @Test
   void testFailureMeterReturnsError() throws ProtocolAdapterException {
-    final DlmsDevice device = this.createDlmsDevice(Protocol.SMR_5_2);
+    final DlmsDevice device = this.createDlmsDevice(Protocol.SMR_5_2C);
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.dlmsHelper.setWithList(
@@ -132,7 +132,7 @@ class SetThdConfigurationCommandExecutorTest {
   @ParameterizedTest
   @EnumSource(
       value = Protocol.class,
-      names = {"SMR_5_2", "SMR_5_5"},
+      names = {"SMR_5_2C", "SMR_5_5"},
       mode = EnumSource.Mode.EXCLUDE)
   void testFailureWrongProtocol(final Protocol protocol) {
     final DlmsDevice device = this.createDlmsDevice(protocol);

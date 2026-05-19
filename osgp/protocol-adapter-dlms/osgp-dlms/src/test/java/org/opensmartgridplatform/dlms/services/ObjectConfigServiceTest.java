@@ -260,6 +260,23 @@ class ObjectConfigServiceTest {
     assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
     assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
     assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE));
+    assertNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));
+  }
+
+  @Test
+  void testGetCosemObjectsSmr52c() throws ObjectConfigException {
+    final Map<DlmsObjectType, CosemObject> cosemObjects =
+        this.objectConfigService.getCosemObjects("SMR", "5.2c");
+
+    assertNotNull(cosemObjects);
+    assertThat(cosemObjects).hasSize(Protocol.SMR_5_2C.getNrOfCosemObjects());
+    assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_1));
+    assertNotNull(cosemObjects.get(DlmsObjectType.ALARM_REGISTER_2));
+    assertNotNull(cosemObjects.get(DlmsObjectType.NUMBER_OF_POWER_FAILURES));
+    assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
+    assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_MAGNITUDE));
     assertNotNull(cosemObjects.get(DlmsObjectType.POWER_QUALITY_THD_EVENT_MAGNITUDE));
     assertNotNull(cosemObjects.get(DlmsObjectType.LTE_DIAGNOSTIC));
     assertNull(cosemObjects.get(DlmsObjectType.PUSH_SETUP_UDP));

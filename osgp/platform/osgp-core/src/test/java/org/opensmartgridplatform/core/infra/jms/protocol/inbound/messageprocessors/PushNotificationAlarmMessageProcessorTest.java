@@ -130,9 +130,8 @@ public class PushNotificationAlarmMessageProcessorTest {
 
     this.pushNotificationAlarmMessageProcessor.processMessage(this.message);
 
-    assertThat(this.device.getLastSuccessfulConnectionTimestamp()).isNotNull();
-
-    verify(this.deviceRepository).save(this.device);
+    verify(this.deviceRepository)
+        .updateConnectionDetailsToSuccess(this.device.getDeviceIdentification());
   }
 
   @Test

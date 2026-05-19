@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -66,7 +66,7 @@ class GetThdFingerprintCommandExecutorTest {
   @ValueSource(booleans = {true, false})
   void testExecute(final boolean polyphase) throws Exception {
     final DlmsDevice testDevice = new DlmsDevice();
-    testDevice.setProtocol(Protocol.SMR_5_2);
+    testDevice.setProtocol(Protocol.SMR_5_2C);
     testDevice.setPolyphase(polyphase);
     testDevice.setWithListMax(10);
 
@@ -154,11 +154,15 @@ class GetThdFingerprintCommandExecutorTest {
     }
   }
 
-  @Test
-  void testExecuteNoObject() {
+  @ParameterizedTest
+  @EnumSource(
+      value = Protocol.class,
+      names = {"SMR_5_2C", "SMR_5_5", "OTHER_PROTOCOL"},
+      mode = EnumSource.Mode.EXCLUDE)
+  void testExecuteNoObject(final Protocol protocol) {
 
     final DlmsDevice testDevice = new DlmsDevice();
-    testDevice.setProtocol(Protocol.DSMR_2_2);
+    testDevice.setProtocol(protocol);
 
     // CALL
     assertThrows(

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @ThdConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly @ThdConfiguration @SMR52c
 Feature: SmartMetering Configuration - Set THD Configuration
   As a grid operator
   I want to be able to set the THD configuration on a device
@@ -26,10 +26,11 @@ Feature: SmartMetering Configuration - Set THD Configuration
 
     Examples:
       | deviceIdentification  | protocol | version | shouldBeSetOrNot  |
-      | TEST1029000000002     | SMR      | 5.2     | should be set     |
+      | TEST1032000000002     | SMR      | 5.2c    | should be set     |
       | TEST1030000000002     | SMR      | 5.5     | should be set     |
       | TEST1024000000002     | DSMR     | 2.2     | should not be set |
       | TEST1024000000002     | DSMR     | 4.2.2   | should not be set |
       | TEST1031000000002     | SMR      | 4.3     | should not be set |
       | TEST1027000000002     | SMR      | 5.0.0   | should not be set |
       | TEST1028000000002     | SMR      | 5.1     | should not be set |
+      | TEST1029000000002     | SMR      | 5.2     | should not be set |

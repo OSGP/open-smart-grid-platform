@@ -1,0 +1,96 @@
+# Finalizes the release by removing the -SNAPSHOT suffix from the versions in the pom files
+# and creating a new release tag
+
+name: create-final-release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "The release version that will be finalized"
+        required: true
+        type: string
+      dry_run:
+        description: "Flag indicating whether it is a dry-run or not. When set to true (the default) changes are not persisted."
+        required: false
+        type: boolean
+        default: true
+      tag_release_message:
+        description: "The message to be used in the release tag"
+        required: false
+        type: string
+        default: "New release version"
+
+env:
+  ENV_FILE: ".github/workflows/.env"
+
+jobs:
+  create-final-release:
+    name: "Create final release"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout current repo for env file and scripts"
+        if: success()
+        uses: actions/checkout@v6.0.2
+
+      - name: "Verify release version"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/common/verify-release-version.sh \
+            "${{ github.event.inputs.release_version }}" \
+            "^[0-9]+[.][0-9]+[.][0-9]+$"
+
+      - name: "Generate GitHub App token"
+        id: app-token
+        uses: actions/create-github-app-token@v3.0.0
+        with:
+          app-id: ${{ secrets.OSGP_CI_APP_ID }}
+          private-key: ${{ secrets.OSGP_CI_APP_PRIVATE_KEY }}
+          owner: OSGP
+
+      - name: "Configure git"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/common/configure-git.sh \
+            $ENV_FILE
+        env:
+          TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: "Checkout repositories"
+        if: success()
+        id: checkout
+        run: |
+          bash ./.github/workflows/scripts/common/checkout-repositories.sh \
+            $ENV_FILE
+
+      - name: "Verify repositories"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/final-release/verify-repositories.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}"
+
+      - name: "Update pom version"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/final-release/update-release-version.sh \
+            $ENV_FILE \
+            "${{ steps.checkout.outputs.repo_dir }}" \
+            "${{ github.event.inputs.release_version }}" \
+            "${{ github.event.inputs.dry_run }}"
+
+      - name: "Create release tag"
+        if: success()
+        run: |
+          bash ./.github/workflows/scripts/final-release/create-release-tag.sh \
+              $ENV_FILE \
+              "${{ steps.checkout.outputs.repo_dir }}" \
+              "${{ github.event.inputs.release_version }}" \
+              "${{ github.event.inputs.tag_release_message }}" \
+              "${{ github.event.inputs.dry_run }}"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}

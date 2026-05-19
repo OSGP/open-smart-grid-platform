@@ -34,6 +34,7 @@ class DlmsProfileValidatorTest {
     final DlmsProfile dlmsProfile50 = objectConfigService.getDlmsProfile("SMR", "5.0.0");
     final DlmsProfile dlmsProfile51 = objectConfigService.getDlmsProfile("SMR", "5.1");
     final DlmsProfile dlmsProfile52 = objectConfigService.getDlmsProfile("SMR", "5.2");
+    final DlmsProfile dlmsProfile52c = objectConfigService.getDlmsProfile("SMR", "5.2c");
     final DlmsProfile dlmsProfile55 = objectConfigService.getDlmsProfile("SMR", "5.5");
     DlmsProfileValidator.validate(
         Arrays.asList(
@@ -42,6 +43,7 @@ class DlmsProfileValidatorTest {
             dlmsProfile50,
             dlmsProfile51,
             dlmsProfile52,
+            dlmsProfile52c,
             dlmsProfile55));
   }
 

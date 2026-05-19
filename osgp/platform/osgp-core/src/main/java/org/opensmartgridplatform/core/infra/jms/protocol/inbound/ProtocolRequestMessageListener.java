@@ -68,6 +68,8 @@ public class ProtocolRequestMessageListener implements MessageListener {
       }
 
     } catch (final JMSException e) {
+      LOGGER.error("JMSException: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+    } catch (final Exception e) {
       LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
     }
   }
