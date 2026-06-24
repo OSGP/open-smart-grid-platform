@@ -55,8 +55,8 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.shared.version>6.37.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>6.37.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>6.2.19</spring.version>
-    <spring.data.version>3.5.15</spring.data.version>
-    <spring.data.commons.version>3.5.15</spring.data.commons.version>
+    <spring.data.version>3.5.12</spring.data.version>
+    <spring.data.commons.version>3.5.12</spring.data.commons.version>
     <spring.security.version>6.5.11</spring.security.version>
     <spring.ws.version>4.1.4</spring.ws.version>
     <spring.integration.version>6.5.9</spring.integration.version>
@@ -1246,33 +1246,6 @@ SPDX-License-Identifier: Apache-2.0
   <build>
     <pluginManagement>
       <plugins>
-        <!-- This plugin is managed to override the version of plexus-utils -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>${maven.install.plugin.version}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexus.utils.version}</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <!-- This plugin is managed to override the version of plexus-utils -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>${maven.resources.plugin.version}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexus.utils.version}</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-
         <plugin>
           <groupId>external.atlassian.jgitflow</groupId>
           <artifactId>jgitflow-maven-plugin</artifactId>
@@ -1293,68 +1266,26 @@ SPDX-License-Identifier: Apache-2.0
           </configuration>
         </plugin>
 
-        <!-- This plugin is managed to override the version of plexus-utils -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
           <version>${maven.clean.plugin.version}</version>
-          <dependencies>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-utils</artifactId>
-                <version>${plexus.utils.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
 
-        <!-- This plugin is managed to override the version of plexus-utils and commons-io-->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven.compiler.plugin.version}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexus.utils.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>commons-io</groupId>
-              <artifactId>commons-io</artifactId>
-              <version>${apache.commons.io.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
-        <!-- This plugin is managed to override the version of plexus-utils -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexus.utils.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
-        <!-- This plugin is managed to override the version of plexus-utils and commons-beanutils -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <version>${maven.dependency.plugin.version}</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexus.utils.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>commons-beanutils</groupId>
-              <artifactId>commons-beanutils</artifactId>
-              <version>${commons.beanutils.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
 
         <plugin>
@@ -1542,13 +1473,6 @@ SPDX-License-Identifier: Apache-2.0
               <param>src/integration-test/java</param>
             </additionalSourceDirectories>
           </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexus.utils.version}</version>
-            </dependency>
-          </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
