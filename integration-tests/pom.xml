@@ -74,7 +74,6 @@ SPDX-License-Identifier: Apache-2.0
     <module>cucumber-tests-platform</module>
 
     <module>cucumber-tests-platform-common</module>
-    <module>cucumber-tests-platform-smartmetering</module>
   </modules>
 
   <profiles>
