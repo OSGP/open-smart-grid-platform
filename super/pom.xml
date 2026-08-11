@@ -136,7 +136,7 @@ SPDX-License-Identifier: Apache-2.0
     <SunriseSunsetCalculator.version>1.2</SunriseSunsetCalculator.version>
     <ant.junit.version>1.10.15</ant.junit.version>
     <args4j.version>2.37</args4j.version>
-    <cucumber.version>5.7.0</cucumber.version>
+    <cucumber.version>7.31.0</cucumber.version>
     <testcontainers.version>1.21.3</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.7.8</postgresql.version>

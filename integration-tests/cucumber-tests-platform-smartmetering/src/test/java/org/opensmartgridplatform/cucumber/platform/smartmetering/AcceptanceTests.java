@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
       "classpath:features/osgp-adapter-ws-core",
       "classpath:features/osgp-adapter-ws-smartmetering"
     },
-    tags = {"not @Skip or not @NightlyBuildOnly"},
+    tags = "not @Skip or not @NightlyBuildOnly",
     glue = {
       "classpath:org.opensmartgridplatform.cucumber.platform.glue",
       "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
@@ -26,9 +26,9 @@ import org.junit.runner.RunWith;
       "pretty",
       "html:target/output/osgp-cucumber-tests-platform-smartmetering/Cucumber-report",
       "html:target/output/osgp-cucumber-tests-platform-smartmetering/Cucumber-html-report.html",
-      "json:target/output/osgp-cucumber-tests-platform-smartmetering/cucumber.json"
+      "json:target/output/osgp-cucumber-tests-platform-smartmetering/cucumber.json",
+      "fail-fast"
     },
     snippets = SnippetType.CAMELCASE,
-    strict = true,
     dryRun = false)
 public class AcceptanceTests {}
