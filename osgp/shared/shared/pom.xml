@@ -183,7 +183,7 @@ SPDX-License-Identifier: Apache-2.0
     </dependency>
 
     <dependency>
-      <groupId>org.apache.activemq</groupId>
+      <groupId>org.apache.artemis</groupId>
       <artifactId>artemis-jakarta-client</artifactId>
     </dependency>
 

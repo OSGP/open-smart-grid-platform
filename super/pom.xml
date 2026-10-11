@@ -54,14 +54,14 @@ SPDX-License-Identifier: Apache-2.0
     <osgp.dlms.version>6.37.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>6.37.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>6.37.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>6.2.11</spring.version>
-    <spring.data.version>3.5.3</spring.data.version>
-    <spring.data.commons.version>3.5.3</spring.data.commons.version>
-    <spring.security.version>6.5.5</spring.security.version>
-    <spring.ws.version>4.1.1</spring.ws.version>
-    <spring.integration.version>6.5.3</spring.integration.version>
+    <spring.version>6.2.19</spring.version>
+    <spring.data.version>3.5.12</spring.data.version>
+    <spring.data.commons.version>3.5.12</spring.data.commons.version>
+    <spring.security.version>6.5.11</spring.security.version>
+    <spring.ws.version>4.1.4</spring.ws.version>
+    <spring.integration.version>6.5.9</spring.integration.version>
     <reactor.version>2024.0.11</reactor.version>
-    <assertj.version>3.27.6</assertj.version>
+    <assertj.version>3.27.7</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>4.8.0</mockito.core.version>
     <okhttp3.mockwebserver.version>4.12.0</okhttp3.mockwebserver.version>
@@ -72,28 +72,29 @@ SPDX-License-Identifier: Apache-2.0
     <jakarta.persistence.api.version>3.1.0</jakarta.persistence.api.version>
     <jakarta.validation.api.version>3.1.1</jakarta.validation.api.version>
     <jakarta.jms.api.version>3.1.0</jakarta.jms.api.version>
-    <artemis.jakarta.client.version>2.42.0</artemis.jakarta.client.version>
+    <artemis.jakarta.client.version>2.54.0</artemis.jakarta.client.version>
     <junit.version>5.12.2</junit.version>
     <junit.platform.launcher.version>1.12.2</junit.platform.launcher.version>
     <byte.buddy.version>1.18.2</byte.buddy.version>
     <joda.version>2.14.0</joda.version>
     <flyway.version>9.22.3</flyway.version>
-    <slf4j.version>2.0.17</slf4j.version>
+    <slf4j.version>2.0.18</slf4j.version>
     <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
     <apache.commons.text.version>1.14.0</apache.commons.text.version>
     <apache.httpcomponents.client5.version>5.5</apache.httpcomponents.client5.version>
     <apache.httpcomponents.core5.version>5.3.5</apache.httpcomponents.core5.version>
     <apache.httpcomponents.httpasyncclient.version>4.1.5</apache.httpcomponents.httpasyncclient.version>
     <commons.codec.version>1.19.0</commons.codec.version>
+    <commons.beanutils.version>1.11.0</commons.beanutils.version>
     <orika.version>1.5.4</orika.version>
     <msal.version>1.23.1</msal.version>
-    <jxr.version>3.3.2</jxr.version>
+    <jxr.version>3.6.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.9.0</maven.project.info.reports.plugin.version>
     <maven.site.plugin>3.21.0</maven.site.plugin>
     <maven.javadoc.version>3.11.3</maven.javadoc.version>
     <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
     <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
-    <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
+    <maven.dependency.plugin.version>3.11.0</maven.dependency.plugin.version>
     <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
     <maven.failsafe.plugin.version>3.5.4</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
@@ -101,20 +102,23 @@ SPDX-License-Identifier: Apache-2.0
     <maven.exec.plugin.version>3.5.1</maven.exec.plugin.version>
     <maven.enforcer.plugin.version>3.6.1</maven.enforcer.plugin.version>
     <maven.enforcer.maven.version>3.8.5</maven.enforcer.maven.version>
-    <jaxb2.maven.plugin.version>3.1.0</jaxb2.maven.plugin.version>
+    <jaxb2.maven.plugin.version>4.1.0</jaxb2.maven.plugin.version>
     <jaxb.api.version>4.0.1</jaxb.api.version>
-    <jaxb.core.version>4.0.4</jaxb.core.version>
+    <jaxb.core.version>4.0.9</jaxb.core.version>
     <spotbugs.maven.plugin.version>4.6.0.0</spotbugs.maven.plugin.version>
     <pmd.maven.plugin.version>3.27.0</pmd.maven.plugin.version>
     <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>12.1.6</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.10.0</versions.maven.plugin.version>
     <fmt-maven-plugin.version>2.29</fmt-maven-plugin.version>
-    <apache.activemq.version>6.1.6</apache.activemq.version>
+    <apache.activemq.version>6.2.6</apache.activemq.version>
     <apache.commons.schema>2.3.2</apache.commons.schema>
-    <logback.version>1.5.21</logback.version>
+    <logback.version>1.5.34</logback.version>
     <maven.clean.plugin.version>3.5.0</maven.clean.plugin.version>
-    <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
+    <maven.install.plugin.version>3.1.4</maven.install.plugin.version>
+    <maven.resources.plugin.version>3.5.0</maven.resources.plugin.version>
+    <plexus.utils.version>4.0.3</plexus.utils.version>
+    <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
     <openmuc.jdlms.version>1.8.0</openmuc.jdlms.version>
     <openmuc.jdlms-annotation.version>1.8.0</openmuc.jdlms-annotation.version>
     <beanit.openiec61850.version>1.8.0</beanit.openiec61850.version>
@@ -125,7 +129,7 @@ SPDX-License-Identifier: Apache-2.0
     <jackson.version>2.15.3</jackson.version>
     <cxf.version>4.1.3</cxf.version>
     <cxf.core.version>4.1.1</cxf.core.version>
-    <quartz.version>2.3.2</quartz.version>
+    <quartz.version>2.5.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.16.0</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
@@ -139,20 +143,20 @@ SPDX-License-Identifier: Apache-2.0
     <cucumber.version>5.7.0</cucumber.version>
     <testcontainers.version>1.21.3</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
-    <postgresql.version>42.7.8</postgresql.version>
+    <postgresql.version>42.7.11</postgresql.version>
     <jakarta.xml.soap-api.version>3.0.1</jakarta.xml.soap-api.version>
     <kafka.version>3.8.1</kafka.version>
     <avro.version>1.11.4</avro.version>
-    <spring.kafka.version>3.3.10</spring.kafka.version>
+    <spring.kafka.version>3.3.16</spring.kafka.version>
     <scala.lang.version>2.13.18</scala.lang.version>
     <lombok.version>1.18.32</lombok.version>
     <hivemq-mqtt-client.version>1.3.9</hivemq-mqtt-client.version>
-    <apache.commons.io.version>2.16.1</apache.commons.io.version>
+    <apache.commons.io.version>2.22.0</apache.commons.io.version>
     <apache.commons.compress.version>1.26.1</apache.commons.compress.version>
     <bucket4j.version>8.10.1</bucket4j.version>
     <jedis.version>5.1.3</jedis.version>
     <redisson.version>3.51.0</redisson.version>
-    <bouncycastle.bcprov-jdk18on.version>1.78.1</bouncycastle.bcprov-jdk18on.version>
+    <bouncycastle.bcprov-jdk18on.version>1.84</bouncycastle.bcprov-jdk18on.version>
     <!-- Default always skip integration tests, to ensure all developer data
       is retained -->
     <skipITs>true</skipITs>
@@ -506,7 +510,7 @@ SPDX-License-Identifier: Apache-2.0
         <version>${jakarta.jms.api.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.activemq</groupId>
+        <groupId>org.apache.artemis</groupId>
         <artifactId>artemis-jakarta-client</artifactId>
         <version>${artemis.jakarta.client.version}</version>
       </dependency>
@@ -1239,39 +1243,6 @@ SPDX-License-Identifier: Apache-2.0
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
-    <repository>
-      <id>fuse-repo</id>
-      <name>Fuse Source</name>
-      <url>https://repo.fusesource.com/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>oss-sonatype</id>
-      <name>oss-sonatype</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>maven-repo1</id>
-      <name>Maven Repository</name>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -1306,13 +1277,11 @@ SPDX-License-Identifier: Apache-2.0
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven.compiler.plugin.version}</version>
         </plugin>
-
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
         </plugin>
-
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>

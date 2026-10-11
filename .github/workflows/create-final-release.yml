@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: "Checkout current repo for env file and scripts"
         if: success()
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 #v6.0.3
 
       - name: "Verify release version"
         if: success()
@@ -45,7 +45,7 @@ jobs:
 
       - name: "Generate GitHub App token"
         id: app-token
-        uses: actions/create-github-app-token@v3.0.0
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 #v3.0.0
         with:
           app-id: ${{ secrets.OSGP_CI_APP_ID }}
           private-key: ${{ secrets.OSGP_CI_APP_PRIVATE_KEY }}
